@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Events | L BNK48 Fan Website</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+
+        body {
+            background-color: #F9FAFB; 
+            color: #1F2937; 
+        }
+
+        nav {
+            background: rgba(255, 255, 255, 0.95) !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        nav .logo {
+            color: #333 !important;
+            text-shadow: none !important;
+        }
+        nav .nav-links a {
+            color: #555 !important;
+        }
+        nav .nav-links a:hover {
+            color: var(--electric-magenta) !important;
+        }
+        .hamburger span {
+            background-color: #333; 
+        }
+
+        h2 {
+            color: #111;
+            text-shadow: none;
+            margin-bottom: 4rem !important; 
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .schedule-grid {
+                display: grid !important; 
+                grid-template-columns: 1fr !important; 
+                gap: 1.5rem;
+                
+                overflow-x: visible !important;
+                padding: 0 !important;
+                flex-wrap: wrap !important;
+                scroll-snap-type: none !important;
+            }
+
+            .event-card {
+                flex: none !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                scroll-snap-align: none !important;
+            }
+        }
+    </style>
+
+    <script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+
+    <nav class="scrolled"> 
+        <div class="logo">
+            <a href="index.html" style="color:inherit; text-decoration:none;">L's Fan Site</a> 
+            <span class="beta-tag">BETA</span>
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#bio">Profile</a></li>
+            <li><a href="events.html" class="active">Schedule</a></li>
+            <li><a href="index.html#Socials">Socials</a></li>
+        </ul>
+
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobile-menu">
+        <div class="close-menu" id="close-menu">&times;</div>
+        <div class="mobile-logo" style="font-family: 'Orbitron'; margin-bottom: 2rem; font-size: 1.2rem; color: white;">
+            L's Fan Site <span class="beta-tag">BETA</span>
+        </div> 
+        <ul class="mobile-nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#bio">Profile</a></li>
+            <li><a href="events.html">Schedule</a></li>
+            <li><a href="index.html#Socials">Socials</a></li>
+        </ul>
+    </div>
+    <div class="menu-overlay" id="menu-overlay"></div>
+
+
+    <section id="all-events" style="padding-top: 120px; border-bottom: none;">
+        <div class="container">
+            <h2>All Events</h2>
+            
+            <div id="event-list" class="schedule-grid"></div>
+            
+        </div>
+    </section>
+
+    <footer>
+        <p>L BNK48 Fan Website. Created by Fluff.</p>
+    </footer>
+
+    <script src="script.js"></script>
+
+    <script>
+    const events = [
+        {
+            title: "BNK48 & CGM48 Sports Day 2026",
+            date: "15 February 2026",
+            location: "Island Hall 3FL., Fashion Island, Bangkok",
+            link: "https://www.facebook.com/bnk48official/posts/pfbid0Ch8GtNoLYuxLV4DvpDQ1sKzrC33ky7D3KmZTrdocj4UUqQy9zYYya6AHBauHznXWl",
+            image: "assets/events/3.png",
+            status: "Upcoming"
+        },
+        {
+            title: "Japan Expo Thailand 2026",
+            date: "8 February 2026",
+            location: "Central World, Bangkok",
+            link: "https://www.facebook.com/japanexpothailand/posts/%E0%B8%8A%E0%B9%88%E0%B8%A7%E0%B8%87%E0%B9%80%E0%B8%A7%E0%B8%A5%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%97%E0%B8%B8%E0%B8%81%E0%B8%84%E0%B8%99%E0%B9%80%E0%B8%9D%E0%B9%89%E0%B8%B2%E0%B8%A3%E0%B8%AD-%E0%B8%81%E0%B8%B3%E0%B8%A5%E0%B8%B1%E0%B8%87%E0%B8%88%E0%B8%B0%E0%B8%81%E0%B8%A5%E0%B8%B1%E0%B8%9A%E0%B8%A1%E0%B8%B2%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B8%A3%E0%B8%AD%E0%B8%A2%E0%B8%A2%E0%B8%B4%E0%B9%89%E0%B8%A1%E0%B8%AD%E0%B8%B5%E0%B8%81%E0%B8%84%E0%B8%A3%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B9%80%E0%B8%95%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%A1%E0%B8%9E%E0%B8%9A%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%AA%E0%B8%94%E0%B9%83%E0%B8%AA%E0%B8%88%E0%B8%B2%E0%B8%81%E0%B8%A8%E0%B8%B4/898060842568920/",
+            image: "assets/events/2.png",
+            status: "Upcoming"
+        },
+                {
+            title: "Honda Megafesto 2026",
+            date: "8 February 2026",
+            location: "Bravo BKK, Bangkok",
+            link: "https://www.facebook.com/hellofungjai/posts/-%E0%B8%A1%E0%B8%B2%E0%B9%80%E0%B8%95%E0%B8%B4%E0%B8%A1%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%AA%E0%B8%94%E0%B9%83%E0%B8%AA%E0%B8%81%E0%B8%B1%E0%B8%9A-bnk48-%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%87%E0%B8%B2%E0%B8%99-honda-megafesto-%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%98%E0%B8%B5%E0%B8%A1%E0%B8%AA%E0%B9%84%E0%B8%95%E0%B8%A5%E0%B9%8C%E0%B9%80%E0%B8%88%E0%B9%81%E0%B8%9B%E0%B8%99-%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%81%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1/1437682918022481/",
+            image: "assets/events/1.png",
+            status: "Upcoming"
+        },
+                {
+            title: "HACHI CHA Booth",
+            date: "6 February 2026",
+            location: "Central World, Bangkok",
+            link: "https://x.com/sisasterteam/status/2019375417199853893?s=20",
+            image: "assets/events/4.jpg",
+            status: "Past"
+        },
+        {
+            title: "12-Gatsu no Kangaroo Fansign",
+            date: "25 January 2026",
+            location: "MBK Center, Bangkok",
+            link: "https://x.com/bnk48official/status/2014984914735947909/photo/1",
+            image: "assets/events/p1.jpg",
+            status: "Past"
+        },
+        {
+            title: "Masaka no Confession Busking & Random Play Dance Party",
+            date: "17 January 2026",
+            location: "Paradise Park, Bangkok",
+            link: "https://www.facebook.com/bnk48official/posts/-masakanoconfessionth_roadshow-masakanoconfessionth_busking-bnk48-masaka-no-conf/1449268916557750/",
+            image: "assets/events/p2.jpg",
+            status: "Past"
+        },
+        {
+            title: "BNK48 & CGM48 Sports Day 2026: GUARDIANS OF GODDESS",
+            date: "10-11 December 2025",
+            location: "MBK Center, Bangkok",
+            link: "https://www.facebook.com/bnk48official/posts/-masakanoconfessionth_roadshow-masakanoconfessionth_busking-bnk48-masaka-no-conf/1449268916557750/",
+            image: "assets/events/p3.jpg",
+            status: "Past"
+        },
+        {
+            title: "Masaka no Confession Handshake Event",
+            date: "27-28 December 2025",
+            location: "MCC Hall, The Mall Lifestore Bangkapi, Bangkok",
+            link: "https://www.facebook.com/bnk48official/posts/-masakanoconfessionth_handshake-bnk48-20th-single-masaka-no-confession-%E0%B8%84%E0%B8%B3%E0%B8%AA%E0%B8%B2%E0%B8%A3%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%97/1413526126798696/",
+            image: "assets/events/p4.jpg",
+            status: "Past"
+        },
+        {
+            title: "BNK48 & CGM48 Christmas Festival 2025 [KANGAROO VILLAGE]",
+            date: "19-21 December 2025",
+            location: "MCC Hall, The Mall Lifestore Bangkae, Bangkok",
+            link: "https://www.facebook.com/bnk48official/posts/%EF%B8%8F-bnk48cgm48kangaroovillage-%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%AD%E0%B8%B5%E0%B8%A2%E0%B8%94%E0%B8%9A%E0%B8%B9%E0%B8%98%E0%B8%81%E0%B8%B4%E0%B8%88%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1%E0%B8%A0%E0%B8%B2%E0%B8%A2%E0%B9%83%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99bnk48-cgm48-christmas-fe/1423369772480998/",
+            image: "assets/events/p5.jpg",
+            status: "Past"
+        },
+    ];
+
+    const listContainer = document.getElementById('event-list');
+
+    if (listContainer) {
+        listContainer.innerHTML = events.map(event => {
+            const isPast = event.status === "Past";
+            
+            const cardStyle = isPast ? 'style="opacity: 0.8;"' : '';
+            const badgeStyle = isPast ? 'style="background: #6B7280;"' : '';
+
+            return `
+            <a href="${event.link}" target="_blank" class="event-card" ${cardStyle}>
+                <div class="card-image">
+                    <img src="${event.image}" alt="${event.title}">
+                </div>
+                <div class="card-content">
+                    <span class="status-badge" ${badgeStyle}>${event.status}</span>
+                    <h3 class="event-title">${event.title}</h3>
+                    <div class="event-meta">
+                        <div class="meta-row">📅 ${event.date}</div>
+                        <div class="meta-row">📍 ${event.location}</div>
+                    </div>
+                </div>
+            </a>
+            `;
+        }).join('');
+    }
+    </script>
+</body>
+</html>

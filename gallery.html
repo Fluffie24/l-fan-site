@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L BNK48 - Gallery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #FFFFFF; 
+            color: var(--text-dark);   
+            background-image: none;    
+            min-height: 100vh;
+        }
+
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        
+        nav .logo, 
+        nav .nav-links a {
+            color: var(--text-dark) !important;
+            text-shadow: none !important;
+        }
+
+        nav .nav-links a:hover {
+            color: var(--electric-magenta) !important;
+        }
+
+        .hamburger span {
+            background-color: var(--text-dark) !important;
+        }
+
+        .gallery-page-header {
+            text-align: center;
+            padding: 8rem 1rem 3rem;
+        }
+
+        .gallery-page-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark); 
+            text-shadow: none;       
+        }
+
+        .gallery-subtitle {
+            font-family: 'Kanit', sans-serif;
+            color: var(--text-gray);
+            font-size: 1rem;
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .month-section {
+            padding: 0 8% 4rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .month-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 25px;
+            
+            background: transparent;
+            border: 2px solid var(--electric-magenta);
+            border-radius: 50px;
+            
+            color: var(--electric-magenta);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+        }
+
+        .masonry-grid {
+            column-count: 4; 
+            column-gap: 1.5rem;
+        }
+
+        .gallery-item {
+            break-inside: avoid;
+            margin-bottom: 1.5rem;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            
+            background: transparent;
+            border: none; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
+            
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+            filter: none;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(217, 4, 142, 0.15);
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.03);
+        }
+
+        .gallery-item::after {
+            content: '\f00e'; 
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 2rem;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0,0,0,0.3);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+
+        .gallery-item:hover::after {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        @media (max-width: 1200px) {
+            .masonry-grid { column-count: 3; }
+        }
+
+        @media (max-width: 768px) {
+            .masonry-grid { column-count: 2; column-gap: 1rem; }
+            .gallery-page-header { padding-top: 7rem; }
+            .gallery-page-header h1 { font-size: 2.5rem; }
+            .month-section { padding: 0 5% 3rem; }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem;
+            border: 2px dashed rgba(0,0,0,0.05); 
+            border-radius: 12px;
+            color: var(--text-gray);
+            font-family: 'Kanit', sans-serif;
+            background: #FAFAFA;
+        }
+    </style>
+
+    <script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <a href="index.html" style="text-decoration:none; color:inherit;">
+                L's Fan Site <span class="beta-tag">BETA</span>
+            </a>
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="index.html#hero">Home</a></li>
+            <li><a href="index.html#bio">Profile</a></li>
+            <li><a href="index.html#schedule">Schedule</a></li>
+            <li><a href="index.html#Socials">Socials</a></li>
+            <li><a href="index.html#gallery" style="color: var(--electric-magenta) !important;">Gallery</a></li>
+        </ul>
+
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobile-menu">
+        <div class="close-menu" id="close-menu">&times;</div>
+        <div class="mobile-logo" style="font-family: 'Orbitron'; margin-bottom: 2rem; font-size: 1.2rem; color: #fff;">
+            L's Fan Site <span class="beta-tag">BETA</span>
+        </div>
+        <ul class="mobile-nav-links">
+            <li><a href="index.html#hero">Home</a></li>
+            <li><a href="index.html#bio">Profile</a></li>
+            <li><a href="index.html#schedule">Schedule</a></li>
+            <li><a href="index.html#Socials">Socials</a></li>
+            <li><a href="#" style="color: var(--electric-magenta);">Gallery</a></li>
+        </ul>
+    </div>
+    <div class="menu-overlay" id="menu-overlay"></div>
+
+    <header class="gallery-page-header">
+        <h1>Gallery</h1>
+        <p class="gallery-subtitle">
+            รวมภาพความทรงจำของน้องแอลที่ถ่ายโดยพี่ ๆ ตากล้อง<br>
+            <span style="font-size: 0.85rem; color: var(--electric-magenta); font-weight: 500;">(คลิกที่รูปเพื่อดูภาพเต็มและเครดิตค้าบ)</span>
+        </p>
+    </header>
+
+    <section class="month-section">
+        <div class="month-header">
+            <i class="far fa-calendar-alt"></i> February 2026
+        </div>
+        <div class="masonry-grid">
+            <div class="gallery-item"><img src="assets/gallery/27.jpg" data-post-url="https://x.com/NNuttieezz/status/2019694516547309587?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/28.jpg" data-post-url="https://x.com/RedPaintJob/status/2019704856295231923?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/29.jpg" data-post-url="https://x.com/FatjoeJeng666/status/2019751163831156759?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/30.jpg" data-post-url="https://x.com/nod9n44/status/2019828575659319442?s=20"></div>
+
+        </div>
+    </section>
+
+    <section class="month-section">
+        <div class="month-header">
+            <i class="far fa-calendar-alt"></i> January 2026
+        </div>
+        <div class="masonry-grid">
+            <div class="gallery-item"><img src="assets/gallery/1.jpg"></div>
+            <div class="gallery-item"><img src="assets/gallery/5.jpg"></div>
+            <div class="gallery-item"><img src="assets/gallery/6.jpg"></div>
+            <div class="gallery-item"><img src="assets/gallery/7.jpg" data-post-url="https://x.com/iAmKung48/status/2019385002501542373?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/12.jpg" data-post-url="https://x.com/Netventure2/status/2015318365049631110?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/11.jpg" data-post-url="https://x.com/Lens48mm/status/2016161178658161106?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/10.jpg" data-post-url="https://x.com/hornokhook48/status/2016700324980150674?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/13.jpg" data-post-url="https://x.com/iAmKung48/status/2014331771094229399?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/14.jpg" data-post-url="https://x.com/TDS_048/status/2014045891179524490?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/15.jpg" data-post-url="https://x.com/iAmKung48/status/2013752777193746626?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/16.jpg" data-post-url="https://x.com/hornokhook48/status/2013439587457159288?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/17.jpg" data-post-url="https://x.com/hornokhook48/status/2013439335849435641?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/18.jpg" data-post-url="https://x.com/hornokhook48/status/2013438833136943170?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/20.jpg" data-post-url="https://x.com/iAmKung48/status/2012195208851775867?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/21.jpg" data-post-url="https://x.com/hornokhook48/status/2012121859454837242?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/22.jpg" data-post-url="https://x.com/hornokhook48/status/2011989281011548478?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/23.jpg" data-post-url="https://x.com/SkipWorkfor48TH/status/2010786553992528152?s=20"></div>
+        </div>
+    </section>
+
+    <section class="month-section">
+        <div class="month-header">
+            <i class="fas fa-history"></i> December 2025 & Older
+        </div>
+        <div class="masonry-grid">
+            <div class="gallery-item"><img src="assets/gallery/2.jpg" data-post-url="https://www.facebook.com/story.php?story_fbid=1270121891817393&id=100064587825978"></div>
+            <div class="gallery-item"><img src="assets/gallery/8.jpg" data-post-url="https://x.com/KLapirattanakul/status/2019040431808606285?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/25.jpg" data-post-url="https://x.com/hornokhook48/status/2008365403957788954?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/19.jpg" data-post-url="https://x.com/Lens48mm/status/2012891820049781059?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/24.jpg" data-post-url="https://x.com/FatjoeJeng666/status/2008904367718723681?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/26.jpg" data-post-url="https://x.com/hornokhook48/status/2007278742478200832?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/9.jpg" data-post-url="https://x.com/SkipWorkfor48TH/status/2017039503547121906?s=20"></div>
+            <div class="gallery-item"><img src="assets/gallery/3.jpg"></div>
+            <div class="gallery-item"><img src="assets/gallery/4.jpg"></div>
+        </div>
+    </section>
+
+    <footer>
+        <p>L BNK48 Fan Website. Created by Fluff.</p>
+    </footer>
+
+    <div id="image-modal" class="image-modal">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="full-image">
+        
+        <a id="modal-post-link" href="#" target="_blank" class="modal-link-btn">
+            View Post <i class="fas fa-external-link-alt"></i>
+        </a>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

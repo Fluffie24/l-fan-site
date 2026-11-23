@@ -2288,11 +2288,25 @@ button.song-pill:hover {
     transform: translateY(-2px);
 }
 
+button.song-pill.active {
+    background: rgba(56, 189, 248, 0.36);
+    border-color: #7DD3FC;
+    color: var(--white);
+    box-shadow: 0 0 0 2px rgba(125, 211, 252, 0.25);
+}
+
 .song-pill.is-center {
     background: linear-gradient(135deg, rgba(253, 224, 71, 0.26), rgba(245, 158, 11, 0.28));
     border-color: rgba(253, 224, 71, 0.72);
     color: #FEF08A;
     font-weight: 700;
+}
+
+button.song-pill.is-center.active {
+    background: linear-gradient(135deg, rgba(253, 224, 71, 0.38), rgba(245, 158, 11, 0.42));
+    border-color: #FDE047;
+    color: #FEF9C3;
+    box-shadow: 0 0 0 2px rgba(253, 224, 71, 0.32);
 }
 
 .song-pill.is-center small {

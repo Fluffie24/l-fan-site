@@ -234,6 +234,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const infoTag = document.getElementById('video-tag');
         const infoTitle = document.getElementById('video-title');
         const counterEl = document.getElementById('video-counter');
+        const discTabs = document.querySelectorAll('.disc-tab');
+        const songPills = document.querySelectorAll('#discography-pills .song-pill');
         let currentIndex = 0;
         let switchTimer = null;
 
@@ -319,6 +321,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 t.setAttribute('aria-selected', String(isActive));
             });
 
+            songPills.forEach((pill) => {
+                const isMatch = Number(pill.dataset.highlightIdx) === currentIndex;
+                pill.classList.toggle('active', isMatch);
+            });
+
             if (shouldScrollIntoView) {
                 thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             }
@@ -338,9 +345,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         /* Discography filter & quick-jump to matching Highlight */
-        const discTabs = document.querySelectorAll('.disc-tab');
-        const songPills = document.querySelectorAll('#discography-pills .song-pill');
-
         discTabs.forEach((tab) => {
             tab.addEventListener('click', () => {
                 const filter = tab.dataset.filter;

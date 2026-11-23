@@ -90,7 +90,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ============ SCROLL REVEAL ============ */
-    const revealEls = document.querySelectorAll('.reveal');
+    const revealEls = Array.from(document.querySelectorAll('.reveal'));
+    function revealInViewport() {
+        const thresholdY = window.innerHeight + 100;
+        revealEls.forEach((el) => {
+            if (!el.classList.contains('is-visible')) {
+                const rect = el.getBoundingClientRect();
+                if (rect.top <= thresholdY && rect.bottom >= -100) {
+                    el.classList.add('is-visible');
+                }
+            }
+        });
+    }
+
     if (revealEls.length > 0 && 'IntersectionObserver' in window) {
         const revealObserver = new IntersectionObserver(
             (entries, obs) => {
@@ -101,9 +113,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
             },
-            { threshold: 0.08, rootMargin: '0px 0px -30px 0px' }
+            { threshold: 0, rootMargin: '100px 0px 100px 0px' }
         );
         revealEls.forEach((el) => revealObserver.observe(el));
+        window.addEventListener('scroll', revealInViewport, { passive: true });
+        window.addEventListener('resize', revealInViewport, { passive: true });
+        window.addEventListener('load', revealInViewport, { passive: true });
+        revealInViewport();
     } else {
         revealEls.forEach((el) => el.classList.add('is-visible'));
     }

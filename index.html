@@ -196,7 +196,7 @@
                     <div class="bio-info reveal">
                         <div class="bio-name-block">
                             <h3>Sirikorn Nilkasap</h3>
-                            <span class="nickname">L · แอล 💙</span>
+                            <span class="nickname">L · แอล</span>
                         </div>
 
                         <p class="bio-text">
@@ -382,17 +382,18 @@
                 <div class="highlights-stage reveal">
                     <div class="video-info-bar">
                         <div id="video-info" class="video-info">
-                            <span class="video-tag" id="video-tag">GE6 #13 Undergirls Center · Coming Soon</span>
-                            <h3 class="video-title" id="video-title">Wataridoritachi ni Sora wa Mienai</h3>
+                            <span class="video-tag" id="video-tag">First Time Center</span>
+                            <h3 class="video-title" id="video-title">BNK48 17th Single "BORDERLESS"</h3>
                         </div>
                         <div class="video-counter" id="video-counter" aria-label="Selected highlight">01 / 16</div>
                     </div>
 
                     <div class="main-video-wrapper">
-                        <a id="main-video-link" href="#highlights" class="is-coming-soon" aria-disabled="true"
-                            aria-label="Wataridoritachi ni Sora wa Mienai Coming Soon">
+                        <a id="main-video-link" href="https://www.youtube.com/watch?v=VJiLD4D8f7U" target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Watch BNK48 17th Single &quot;BORDERLESS&quot; on YouTube">
                             <div class="main-video-display">
-                                <div id="coming-soon-stage" class="coming-soon-stage">
+                                <div id="coming-soon-stage" class="coming-soon-stage" hidden>
                                     <svg class="cs-birds" viewBox="0 0 260 90" fill="none" aria-hidden="true">
                                         <path d="M22 58 Q34 44 46 53 Q57 42 69 51" stroke="currentColor"
                                             stroke-width="2" stroke-linecap="round" />
@@ -407,8 +408,8 @@
                                     <span class="cs-meta">GE6 Undergirls Center (#13)</span>
                                 </div>
                                 <img id="main-video-img" src="https://img.youtube.com/vi/VJiLD4D8f7U/maxresdefault.jpg"
-                                    alt="Highlight preview" loading="lazy" decoding="async" hidden>
-                                <div id="main-play-overlay" class="play-overlay" hidden>
+                                    alt="BNK48 17th Single &quot;BORDERLESS&quot;" loading="lazy" decoding="async">
+                                <div id="main-play-overlay" class="play-overlay">
                                     <div class="play-circle" aria-hidden="true"><i class="fas fa-play"></i></div>
                                 </div>
                             </div>
@@ -421,20 +422,21 @@
                         </button>
 
                         <div class="video-scroller" id="video-scroller" role="listbox" aria-label="Highlight videos">
-                            <button type="button" class="video-thumb video-thumb-soon active" data-coming-soon="true"
+                            <button type="button" class="video-thumb active" data-id="VJiLD4D8f7U"
+                                data-tag="First Time Center" data-title="BNK48 17th Single &quot;BORDERLESS&quot;"
+                                aria-selected="true">
+                                <img src="https://img.youtube.com/vi/VJiLD4D8f7U/mqdefault.jpg" alt="BORDERLESS"
+                                    loading="lazy" decoding="async">
+                                <span class="thumb-caption">BORDERLESS</span>
+                            </button>
+
+                            <button type="button" class="video-thumb video-thumb-soon" data-coming-soon="true"
                                 data-tag="GE6 #13 Undergirls Center · Coming Soon"
-                                data-title="Wataridoritachi ni Sora wa Mienai" aria-selected="true">
+                                data-title="Wataridoritachi ni Sora wa Mienai" aria-selected="false">
                                 <span class="thumb-soon-box">
                                     <span class="thumb-soon-pill">🕊️ SOON</span>
                                 </span>
                                 <span class="thumb-caption">Wataridoritachi...</span>
-                            </button>
-
-                            <button type="button" class="video-thumb" data-id="VJiLD4D8f7U" data-tag="First Time Center"
-                                data-title="BNK48 17th Single &quot;BORDERLESS&quot;" aria-selected="false">
-                                <img src="https://img.youtube.com/vi/VJiLD4D8f7U/mqdefault.jpg" alt="BORDERLESS"
-                                    loading="lazy" decoding="async">
-                                <span class="thumb-caption">BORDERLESS</span>
                             </button>
 
                             <button type="button" class="video-thumb" data-id="qGfB0t3yxbk"
@@ -504,14 +506,6 @@
                                 <span class="thumb-caption">Oh my pumpkin!</span>
                             </button>
 
-                            <button type="button" class="video-thumb" data-id="FmsjksPiYSA"
-                                data-tag="Chapter Next Single"
-                                data-title="12-Gatsu no Kangaroo – จิงโจ้น้อยเดือนธันวาคม" aria-selected="false">
-                                <img src="https://img.youtube.com/vi/FmsjksPiYSA/mqdefault.jpg"
-                                    alt="12-Gatsu no Kangaroo" loading="lazy" decoding="async">
-                                <span class="thumb-caption">12-Gatsu no Kangaroo</span>
-                            </button>
-
                             <button type="button" class="video-thumb" data-id="m7OPbYYU-wI" data-tag="BNK48 20th Single"
                                 data-title="BNK48 20th Single &quot;Masaka no Confession&quot;" aria-selected="false">
                                 <img src="https://img.youtube.com/vi/m7OPbYYU-wI/mqdefault.jpg"
@@ -525,6 +519,14 @@
                                 <img src="https://img.youtube.com/vi/hRKIxcSHex8/mqdefault.jpg" alt="Saikou ka yo"
                                     loading="lazy" decoding="async">
                                 <span class="thumb-caption">Saikou ka yo</span>
+                            </button>
+
+                            <button type="button" class="video-thumb" data-id="FmsjksPiYSA"
+                                data-tag="Chapter Next Single"
+                                data-title="12-Gatsu no Kangaroo – จิงโจ้น้อยเดือนธันวาคม" aria-selected="false">
+                                <img src="https://img.youtube.com/vi/FmsjksPiYSA/mqdefault.jpg"
+                                    alt="12-Gatsu no Kangaroo" loading="lazy" decoding="async">
+                                <span class="thumb-caption">12-Gatsu no Kangaroo</span>
                             </button>
 
                             <button type="button" class="video-thumb" data-id="XdgepyaRVKs" data-tag="BNK48 6th Album"
@@ -560,10 +562,11 @@
                             </div>
                         </div>
                         <div class="discography-pills" id="discography-pills">
-                            <button type="button" class="song-pill is-center active" data-highlight-idx="0">⭐ Wataridoritachi
-                                ni Sora wa Mienai <small>Center · Soon</small></button>
-                            <button type="button" class="song-pill is-center" data-highlight-idx="1">⭐ BORDERLESS
+                            <button type="button" class="song-pill is-center active" data-highlight-idx="0">⭐ BORDERLESS
                                 <small>Center</small></button>
+                            <button type="button" class="song-pill is-center" data-highlight-idx="1">⭐
+                                Wataridoritachi
+                                ni Sora wa Mienai <small>Center · Soon</small></button>
                             <button type="button" class="song-pill" data-highlight-idx="2">Shoujotachi yo</button>
                             <button type="button" class="song-pill" data-highlight-idx="3">Iiwake Maybe</button>
                             <button type="button" class="song-pill" data-highlight-idx="4">Dare no Koto wo Ichiban
@@ -574,11 +577,14 @@
                             <button type="button" class="song-pill" data-highlight-idx="8">#Sukinanda</button>
                             <button type="button" class="song-pill" data-highlight-idx="9">GAGAGA</button>
                             <button type="button" class="song-pill" data-highlight-idx="10">Oh my pumpkin!</button>
-                            <button type="button" class="song-pill" data-highlight-idx="11">12-Gatsu no Kangaroo</button>
-                            <button type="button" class="song-pill" data-highlight-idx="12">Masaka no Confession</button>
-                            <button type="button" class="song-pill" data-highlight-idx="13">Saikou ka yo</button>
+                            <button type="button" class="song-pill" data-highlight-idx="11">Masaka no
+                                Confession</button>
+                            <button type="button" class="song-pill" data-highlight-idx="12">Saikou ka yo</button>
+                            <button type="button" class="song-pill" data-highlight-idx="13">12-Gatsu no
+                                Kangaroo</button>
                             <button type="button" class="song-pill" data-highlight-idx="14">Ponytail to Shushu</button>
-                            <button type="button" class="song-pill" data-highlight-idx="15">Kimi to Doko ka e Ikitai</button>
+                            <button type="button" class="song-pill" data-highlight-idx="15">Kimi to Doko ka e
+                                Ikitai</button>
                         </div>
                     </div>
                 </div>

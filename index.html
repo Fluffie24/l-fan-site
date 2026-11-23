@@ -1,436 +1,725 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L BNK48 Fan Website</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.3/src/lite-yt-embed.css" />
-    <script src="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.3/src/lite-yt-embed.js"></script>
-    <script>
-  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-</script>
-<script defer src="/_vercel/insights/script.js"></script>
+    <title>L BNK48 · Sirikorn Nilkasap</title>
+    <meta name="description"
+        content="เว็บไซต์แฟนคลับของ แอล - สิริกร นิลกษาปน์ (L BNK48) รุ่นที่ 4 ทีม NV · GE6 อันดับที่ 13 Center เพลง Wataridoritachi ni Sora wa Mienai">
+    <meta name="keywords"
+        content="L BNK48, แอล BNK48, สิริกร นิลกษาปน์, Sirikorn Nilkasap, BNK48 รุ่น 4, Team NV, Sisasterteam, Wataridoritachi ni Sora wa Mienai, นกอพยพ, GE6">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Fluff">
+    <meta name="theme-color" content="#0EA5E9">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
 
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="L's Fan Site">
+    <meta property="og:title" content="L BNK48 · Sirikorn Nilkasap">
+    <meta property="og:description"
+        content="รวมประวัติ ผลงาน Highlights และช่องทางติดตาม แอล - สิริกร นิลกษาปน์ (L BNK48)">
+    <meta property="og:image" content="assets/hero-ge6.jpg">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="L BNK48 · Sirikorn Nilkasap">
+    <meta name="twitter:description"
+        content="รวมประวัติ ผลงาน Highlights และช่องทางติดตาม แอล - สิริกร นิลกษาปน์ (L BNK48)">
+    <meta name="twitter:image" content="assets/hero-ge6.jpg">
+
+    <!-- Icons & Preload -->
+    <link rel="icon" type="image/png" href="assets/profile.png">
+    <link rel="apple-touch-icon" href="assets/profile.png">
+    <link rel="preload" as="image" href="assets/hero-ge6.jpg" media="(min-width: 769px)">
+    <link rel="preload" as="image" href="assets/hero-ge6-mobile.jpg" media="(max-width: 768px)">
+
+    <!-- Fonts & Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600&family=Outfit:wght@600;700;800&family=Prompt:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "L's Fan Site — L BNK48",
+      "description": "เว็บไซต์แฟนคลับของ แอล - สิริกร นิลกษาปน์ (L BNK48) รุ่นที่ 4 ทีม NV",
+      "inLanguage": "th"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Sirikorn Nilkasap",
+      "alternateName": ["L BNK48", "แอล BNK48", "สิริกร นิลกษาปน์"],
+      "birthDate": "2003-02-13",
+      "memberOf": {
+        "@type": "MusicGroup",
+        "name": "BNK48"
+      },
+      "sameAs": [
+        "https://www.instagram.com/l.bnk48official/",
+        "https://www.facebook.com/bnk48official.l/",
+        "https://www.tiktok.com/@l.bnk48official",
+        "https://app.bnk48.com/members/bnk48/l"
+      ]
+    }
+    </script>
+
+    <!-- Vercel Web Analytics -->
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
 </head>
+
 <body>
 
-    <nav>
-    <div class="logo">L's Fan Site <span class="beta-tag">BETA</span></div>
-    
-    <ul class="nav-links">
-        <li><a href="#hero">Home</a></li>
-        <li><a href="#bio">Profile</a></li>
-        <li><a href="#schedule">Schedule</a></li>
-        <li><a href="#Socials">Socials</a></li>
-        <li><a href="#gallery">Gallery</a></li>
-    </ul>
+    <div id="sky-sparkles" aria-hidden="true"></div>
 
-    <div class="hamburger" id="hamburger">
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
-</nav>
+    <nav aria-label="Main navigation">
+        <a href="#hero" class="logo">
+            <span class="logo-dot" aria-hidden="true"></span>
+            <span class="logo-main">L's Fan Site</span>
+        </a>
 
-<div class="mobile-menu" id="mobile-menu">
-    <div class="close-menu" id="close-menu">&times;</div>
-    <div class="mobile-logo" style="font-family: 'Orbitron'; margin-bottom: 2rem; font-size: 1.2rem;">
-        L's Fan Site <span class="beta-tag">BETA</span>
-    </div> <ul class="mobile-nav-links">
-        <li><a href="#hero">Home</a></li>
-        <li><a href="#bio">Profile</a></li>
-        <li><a href="#schedule">Schedule</a></li>
-        <li><a href="#Socials">Socials</a></li>
-    </ul>
-</div>
-<div class="menu-overlay" id="menu-overlay"></div>
+        <ul class="nav-links">
+            <li><a href="#hero" class="active">Home</a></li>
+            <li><a href="#bio">Profile</a></li>
+            <li><a href="#ge6">GE6</a></li>
+            <li><a href="#highlights">Highlights</a></li>
+            <li><a href="#socials">Socials</a></li>
+            <li><a href="#fanbase">Sisasterteam</a></li>
+            <li class="nav-divider" aria-hidden="true"></li>
+            <li><a href="events.html" class="nav-page-link">Events</a></li>
+            <li><a href="gallery.html" class="nav-page-link">Gallery</a></li>
+        </ul>
 
-<header id="hero">
-    <div class="hero-overlay"></div>
-    
-    <div class="hero-content">
-        <h1 title="L BNK48">L BNK48</h1>
-        <p class="subtitle">Sirikorn Nilkasap</p>
-    </div>
+        <button type="button" class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false"
+            aria-controls="mobile-menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
 
-    <div id="countdown" class="countdown-container">
-        <p class="countdown-header">นับถอยหลังสู่วันเกิดอายุ 23 ขวบ ของนุ้งแอล</p>
-        <div class="countdown-wrapper">
-            <div class="countdown-item">
-                <div class="flip-card"><span id="days">00</span></div>
-                <span class="label">Days</span>
-            </div>
-            <div class="countdown-item">
-                <div class="flip-card"><span id="hours">00</span></div>
-                <span class="label">Hours</span>
-            </div>
-            <div class="countdown-item">
-                <div class="flip-card"><span id="minutes">00</span></div>
-                <span class="label">Minutes</span>
-            </div>
-            <div class="countdown-item">
-                <div class="flip-card"><span id="seconds">00</span></div>
-                <span class="label">Seconds</span>
-            </div>
+    <aside class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation" aria-hidden="true">
+        <div class="mobile-menu-header">
+            <span class="mobile-logo">L's Fan Site ✨</span>
+            <button type="button" class="close-menu" id="close-menu" aria-label="Close menu">&times;</button>
         </div>
-    </div>
-        
-        <div class="vinyl-container">
-            <div class="vinyl" id="vinyl-record" role="button" tabindex="0" aria-pressed="false" aria-label="Play music">
-                <div class="vinyl-label"></div>
-                <button id="play-btn" class="play-icon" aria-hidden="true">▶</button>
-                <svg class="vinyl-text" viewBox="0 0 200 200" aria-hidden="true">
-                    <defs>
-                        <path id="arc" d="M30,100 a70,70 0 1,1 140,0" />
-                    </defs>
-                    <text>
-                        <textPath href="#arc" startOffset="10%"></textPath>
-                    </text>
-                </svg>
-            </div>
-        </div>
-    </header>
+        <ul class="mobile-nav-links">
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#bio">Profile</a></li>
+            <li><a href="#ge6">GE6🕊️</a></li>
+            <li><a href="#highlights">Highlights</a></li>
+            <li><a href="#socials">Socials</a></li>
+            <li><a href="#fanbase">Sisasterteam</a></li>
+            <li class="mobile-nav-sep" aria-hidden="true"></li>
+            <li><a href="events.html">Events</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+        </ul>
+    </aside>
+    <div class="menu-overlay" id="menu-overlay"></div>
 
-    <section id="schedule">
-        <div class="container">
-            <h2>Upcoming Events</h2>
-            
-            <div class="schedule-grid">
-                
-                <a href="https://www.facebook.com/hellofungjai/posts/-%E0%B8%A1%E0%B8%B2%E0%B9%80%E0%B8%95%E0%B8%B4%E0%B8%A1%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%AA%E0%B8%94%E0%B9%83%E0%B8%AA%E0%B8%81%E0%B8%B1%E0%B8%99%E0%B8%81%E0%B8%B1%E0%B8%9A-bnk48-%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%87%E0%B8%B2%E0%B8%99-honda-megafesto-%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%98%E0%B8%B5%E0%B8%A1%E0%B8%AA%E0%B9%84%E0%B8%95%E0%B8%A5%E0%B9%8C%E0%B9%80%E0%B8%88%E0%B9%81%E0%B8%9B%E0%B8%99-%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%81%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1/1437682918022481/" target="_blank" class="event-card">
-                    <div class="card-image">
-                        <img src="assets/events/1.png" alt="Event Poster 1"> 
-                    </div>
-                    <div class="card-content">
-                        <span class="status-badge">Upcoming</span>
-                        <h3 class="event-title">Honda Megafesto 2026</h3>
-                        <div class="event-meta">
-                            <div class="meta-row">📅 8 February 2026</div>
-                            <div class="meta-row">📍 Bravo BKK</div>
-                            <div class="meta-row">⌚ 16.00-17.00</div>
-                        </div>
-                    </div>
-                </a>
+    <main>
+        <!-- ============ FULL-BLEED HERO ============ -->
+        <header id="hero">
+            <div class="hero-overlay" aria-hidden="true"></div>
 
-                <a href="https://www.facebook.com/japanexpothailand/posts/%E0%B8%8A%E0%B9%88%E0%B8%A7%E0%B8%87%E0%B9%80%E0%B8%A7%E0%B8%A5%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%97%E0%B8%B8%E0%B8%81%E0%B8%84%E0%B8%99%E0%B9%80%E0%B8%9D%E0%B9%89%E0%B8%B2%E0%B8%A3%E0%B8%AD-%E0%B8%81%E0%B8%B3%E0%B8%A5%E0%B8%B1%E0%B8%87%E0%B8%88%E0%B8%B0%E0%B8%81%E0%B8%A5%E0%B8%B1%E0%B8%9A%E0%B8%A1%E0%B8%B2%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B8%A3%E0%B8%AD%E0%B8%A2%E0%B8%A2%E0%B8%B4%E0%B9%89%E0%B8%A1%E0%B8%AD%E0%B8%B5%E0%B8%81%E0%B8%84%E0%B8%A3%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B9%80%E0%B8%95%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%A1%E0%B8%9E%E0%B8%9A%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%AA%E0%B8%94%E0%B9%83%E0%B8%AA%E0%B8%88%E0%B8%B2%E0%B8%81%E0%B8%A8%E0%B8%B4/898060842568920/" target="_blank" class="event-card">
-                    <div class="card-image">
-                        <img src="assets/events/2.png" alt="Event Poster 2">
-                    </div>
-                    <div class="card-content">
-                        <span class="status-badge">Upcoming</span>
-                        <h3 class="event-title">Japan Expo Thailand 2026</h3>
-                        <div class="event-meta">
-                            <div class="meta-row">📅 8 February 2026</div>
-                            <div class="meta-row">📍 Central World</div>
-                            <div class="meta-row">⌚ 20.10-20.40</div>
-                        </div>
-                    </div>
-                </a>
+            <svg class="hero-birds" viewBox="0 0 280 95" fill="none" aria-hidden="true">
+                <path d="M18 62 Q30 48 42 57 Q53 46 66 55" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" />
+                <path d="M100 36 Q110 24 120 32 Q130 23 140 31" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" />
+                <path d="M172 58 Q180 48 188 54 Q196 47 204 53" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" />
+                <path d="M226 24 Q233 17 240 22 Q247 16 254 21" stroke="currentColor" stroke-width="1.3"
+                    stroke-linecap="round" />
+            </svg>
 
-                <a href="https://www.facebook.com/bnk48official/posts/pfbid0Ch8GtNoLYuxLV4DvpDQ1sKzrC33ky7D3KmZTrdocj4UUqQy9zYYya6AHBauHznXWl" target="_blank" class="event-card">
-                    <div class="card-image">
-                        <img src="assets/events/3.png" alt="Event Poster 3">
-                    </div>
-                    <div class="card-content">
-                        <span class="status-badge">Upcoming</span>
-                        <h3 class="event-title">BNK48 & CGM48 Sports Day 2026</h3>
-                        <div class="event-meta">
-                            <div class="meta-row">📅 15 February 2026</div>
-                            <div class="meta-row">📍 Island Hall 3FL., Fashion Island</div>
-                        </div>
-                    </div>
-                </a>
+            <div class="hero-inner">
+                <div class="hero-content">
+                    <span class="hero-pill">✨ BNK48 4th Gen · Team NV</span>
+                    <h1 title="L BNK48">L <span class="hero-hl">BNK48</span></h1>
+                    <p class="subtitle">Sirikorn Nilkasap</p>
 
-            </div>
-            </div> <div class="view-all-container">
-        <a href="events.html" class="neon-btn">See All Events</a>
-    </div>
-        </div>
-    </section>
-
-    <section id="bio">
-        <h2>Profile</h2>
-        <div class="container bio-grid">
-            <div class="bio-img">
-                <img src="assets/info.jpg" alt="L's Photo" class="profile-photo">
-            </div>
-
-            <div class="bio-info">
-                <h3>Sirikorn Nilkasap</h3>
-                <span class="nickname">L (แอล)</span>
-
-                <p class="bio-text">
-                    แอล - สิริกร นิลกษาปน์ พี่คนรองของ BNK48 รุ่นที่ 4 เมมเบอร์ที่โดดเด่นในด้าน performance อันมีสเน่ห์ และพิสูจน์มาแล้วว่าทำถึงทุกแนวเพลงทั้ง น่ารัก แซ่บ เท่ และรั่ว ด้านวาไรตี้ก็ไม่น้อยหน้าใคร การันตีด้วยฉายา "น้องภัยพิบัติ" ที่เล่นใหญ่ เล่นเกิน จนทำเอาเมมเบอร์ (และแฟนคลับ) ต่างอึ้งกันมานักต่อนัก
-                </p>
-
-                <div class="bio-data">
-                    <div class="data-row">
-                        <span class="data-label">วันเกิด</span>
-                        <span class="data-value">13 กุมภาพันธ์ 2003 (22 ขวบ)</span>
-                    </div>
-                    <div class="data-row">
-                        <span class="data-label">ทีม</span>
-                        <span class="data-value">NV</span>
-                    </div>
-                    <div class="data-row">
-                        <span class="data-label">สิ่งที่ชอบ</span>
-                        <span class="data-value">มันเกลียว, นั่งเหม่อ, นอน, โคนัน, สีเทา, <span style="color: hotpink;">ปาล์มมี่</span></span>
-                    </div>
-                    <div class="data-row">
-                        <span class="data-label">Catchphrase</span>
-                        <span class="data-value">"ถึง L จะไม่ใช่ alphabet ตัวที่หนึ่ง แต่ขออยู่ในที่ที่นึงในหัวใจของคุณได้ไหมคะ"</span>
-                    </div>
-                    <div class="data-row">
-                        <span class="data-label">Catchphrase 2</span>
-                        <span class="data-value">"พี่คะใส่เสื้อเบอร์ไร ก็ให้ตอบเขาไปว่าไซส์ L ไซส์ L<br>Alphabet 12 คือไรก็ให้ตอบเขาไปว่าตัว L ตัว L<br>แล้วถ้าถามว่าโอชิใครก็ให้ตอบเขาไปว่าน้อง L น้อง L<br>มีแอลนู่นแอลนั่นแอลนี่ มีแอลนู่นแอลนั่นแอลนี่<br>ก็มีแต่ L คนนี้ ก็มีแต่ L มีแต่ L"</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-<section id="highlights">
-        <h2>Highlights</h2>
-        <div class="container">
-            
-            <div id="video-info" class="video-info">
-                <span class="video-tag" id="video-tag"><i class="fas fa-star"></i>First Time Center</span>
-                <h3 class="video-title" id="video-title">BNK48 17th Single &quot;BORDERLESS&quot;</h3>
-                <p class="video-desc" id="video-desc">เซนเตอร์ครั้งแรกกับเพลงที่ทั้งเท่ สวย และเบียวสุด ๆ ในเวลาเดียวกัน</p>
-            </div>
-
-            <div class="main-video-wrapper">
-                <a id="main-video-link" href="https://www.youtube.com/watch?v=VJiLD4D8f7U" target="_blank">
-                    <div class="main-video-display">
-                        <img id="main-video-img" src="https://img.youtube.com/vi/VJiLD4D8f7U/maxresdefault.jpg" alt="Main Highlight">
-                        <div class="play-overlay">
-                            <div class="play-circle">▶</div>
-                        </div>
-                        <div class="video-glow"></div>
-                    </div>
-                </a>
-            </div>
-
-            <div class="scroller-wrapper">
-                <button id="scroll-left" class="nav-arrow left" aria-label="Scroll Left">❮</button>
-                
-                <div class="video-scroller" id="video-scroller">
-                    
-                    <div class="video-thumb active" 
-                         data-id="VJiLD4D8f7U"
-                         data-tag="First Time Center"
-                         data-title="BNK48 17th Single &quot;BORDERLESS&quot;"
-                         data-desc="เซนเตอร์ครั้งแรกกับเพลงที่ทั้งเท่ สวย และเบียวสุด ๆ ในเวลาเดียวกัน">
-                        <img src="https://img.youtube.com/vi/VJiLD4D8f7U/mqdefault.jpg" alt="Video 1">
-                    </div>
-
-                    <div class="video-thumb" 
-                         data-id="qGfB0t3yxbk"
-                         data-tag="BNK48 4TH Generation Debut Song"
-                         data-title="Shoujotachi yo – วันใหม่"
-                         data-desc="เพลง Debut ของเหล่าดวงดาวทั้ง 11 🌟">
-                        <img src="https://img.youtube.com/vi/qGfB0t3yxbk/mqdefault.jpg" alt="Video 6">
-                    </div>
-
-                    <div class="video-thumb" 
-                         data-id="PHTJsOSx-6I"
-                         data-tag="First Time Senbatsu"
-                         data-title="BNK48 13th Single &quot;Iiwake Maybe&quot;"
-                         data-desc="เพลงในตำนานของ 48 Group และเป็นเพลงแรกที่แอลติดเซ็ม">
-                        <img src="https://img.youtube.com/vi/PHTJsOSx-6I/mqdefault.jpg" alt="Video 7">
-                    </div>
-
-                    <div class="video-thumb" 
-                         data-id="5LP_6i0yaLg"
-                         data-tag="L's First General Election Single (#19)"
-                         data-title="Dare No Koto Wo Ichiban Aishiteru?"
-                         data-desc="แฟนแคมในตำนานของแอลที่ใครเห็นก็ต้องอึ้งกับความเข้าถึงบทบาท">
-                        <img src="https://img.youtube.com/vi/5LP_6i0yaLg/mqdefault.jpg" alt="Video 2">
-                    </div>
-
-                    <div class="video-thumb" 
-                         data-id="PtvscGOEHbA"
-                         data-tag="Chapter Next Single"
-                         data-title="12-Gatsu no Kangaroo – จิงโจ้น้อยเดือนธันวาคม"
-                         data-desc="เพลงต้อนรับฤดูหนาว(?) ที่แอลออกแบบทั้งชุดและบล็อกกิ้ง">
-                        <img src="https://img.youtube.com/vi/PtvscGOEHbA/mqdefault.jpg" alt="Video 5">
-                    </div>
-
-                    <div class="video-thumb" 
-                         data-id="m7OPbYYU-wI"
-                         data-tag="Newest Single"
-                         data-title="BNK48 20th Single &quot;Masaka no Confession&quot;"
-                         data-desc="กลับมาในลุคสาวผมสั้น กับบทบาทเจ้าชายน้อยเคะจะโมด">
-                        <img src="https://img.youtube.com/vi/m7OPbYYU-wI/mqdefault.jpg" alt="Video 4">
-                    </div>
-
-                    <div class="video-thumb" 
-                         data-id="ZjnDycaWuhg"
-                         data-tag="General Election Senbatsu (#9)"
-                         data-title="BNK48 19th Single &quot;Colorcon Wink&quot;"
-                         data-desc="GE ครั้งที่สองของแอลที่ได้ถึงลำดับที่ 9 และได้ไปถ่าย MV ที่ญี่ปุ่น">
-                        <img src="https://img.youtube.com/vi/ZjnDycaWuhg/mqdefault.jpg" alt="Video 3">
-                    </div>
-
-                </div>
-
-                <button id="scroll-right" class="nav-arrow right" aria-label="Scroll Right">❯</button>
-            </div>
-        </div>
-    </section>
-
-<section id="Socials">
-    <div class="container">
-        <div class="contact-group">
-            <div class="socials-split-wrapper">
-                
-                <div class="socials-left">
-                    <div class="group-header">
-                        <img src="assets/profile.png" alt="L BNK48" class="group-avatar">
-                        <div class="group-title-area">
-                            <h3>L's Socials</h3>
-                            <p>Contact for work: 06-5979-4806 <br> Line: @iamofficialartist</p>
-                        </div>
-                    </div>
-                    
-                    <div class="link-grid">
-                        <a href="https://www.instagram.com/l.bnk48official/" target="_blank" class="bar-link ig-bar">
-                            <i class="fab fa-instagram"></i>
-                            <span>Instagram</span>
-                            <i class="fas fa-external-link-alt"></i>
+                    <div class="hero-actions">
+                        <a href="#bio" class="btn btn-pop">
+                            Profile <i class="fas fa-arrow-down" aria-hidden="true"></i>
                         </a>
-                        <a href="https://www.facebook.com/bnk48official.l/" target="_blank" class="bar-link fb-bar">
-                            <i class="fab fa-facebook-f"></i>
-                            <span>Facebook</span>
-                            <i class="fas fa-external-link-alt"></i>
+                        <a href="#highlights" class="btn btn-glass">
+                            <i class="fas fa-play" aria-hidden="true"></i> Highlights
                         </a>
-                        <a href="https://www.tiktok.com/@l.bnk48official" target="_blank" class="bar-link tiktok-bar">
-                            <i class="fab fa-tiktok"></i>
-                            <span>TikTok</span>
-                            <i class="fas fa-external-link-alt"></i>
-                        </a>
-                        <a href="https://app.bnk48.com/members/bnk48/l" target="_blank" class="bar-link app-bar">
-                            <i class="fas fa-star"></i>
-                            <span>iAM48 Official Application</span>
-                            <i class="fas fa-external-link-alt"></i>
+                        <a href="https://ltraintodream.vercel.app/" target="_blank" rel="noopener noreferrer"
+                            class="btn btn-sun">
+                            🕊️ GE6<i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
 
-                <div class="socials-right">
-                    <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@l.bnk48official" data-unique-id="l.bnk48official" data-embed-type="creator" style="max-width: 780px; min-width: 288px;" > 
-                        <section> 
-                            <a target="_blank" href="https://www.tiktok.com/@l.bnk48official?refer=creator_embed">@l.bnk48official</a> 
-                        </section> 
-                    </blockquote> 
-                    <script async src="https://www.tiktok.com/embed.js"></script>
-                </div>
-
+                <a href="#ge6" class="hero-ge6-badge">
+                    <span class="badge-rank">🏆 #13</span>
+                    <span class="badge-body">
+                        <strong>渡り鳥たちに空は見えない</strong>
+                        <small>GE6 Undergirls Center</small>
+                    </span>
+                </a>
             </div>
-        </div>
+        </header>
 
-        <div class="contact-group" style="margin-top: 3rem;">
-            <div class="socials-split-wrapper">
-                
-                <div class="socials-left">
-                    <script src="https://elfsightcdn.com/platform.js" async></script>
-                    <div class="elfsight-app-a7151689-ef2d-47f2-a7c4-7df720a55f55" data-elfsight-app-lazy></div>
+        <!-- ============ PROFILE ============ -->
+        <section id="bio">
+            <div class="container">
+                <div class="section-heading reveal">
+                    <h2>Profile</h2>
                 </div>
 
-                <div class="socials-right" style="display: flex; flex-direction: column; gap: 1.5rem;">
-                    
-                    <div class="fanbase-socials" style="width: 100%; max-width: none;">
-                        <div class="group-header" style="margin-bottom: 1rem;">
-                            <div class="group-title-area center-text" style="text-align: left;">
-                                <h3>Sisasterteam</h3>
-                                <p>L BNK48 Fanbase</p>
+                <div class="bio-grid">
+                    <div class="bio-img reveal">
+                        <div class="profile-frame">
+                            <img src="assets/info.jpg" alt="แอล - สิริกร นิลกษาปน์ (L BNK48)" class="profile-photo"
+                                loading="lazy" decoding="async">
+                            <span class="photo-sticker sticker-top">✨ Team NV</span>
+                            <span class="photo-sticker sticker-bottom">🐈‍⬛ น้องภัยพิบัติ</span>
+                        </div>
+                    </div>
+
+                    <div class="bio-info reveal">
+                        <div class="bio-name-block">
+                            <h3>Sirikorn Nilkasap</h3>
+                            <span class="nickname">L · แอล 💙</span>
+                        </div>
+
+                        <p class="bio-text">
+                            แอล - สิริกร นิลกษาปน์ พี่คนรองของ BNK48 รุ่นที่ 4 เมมเบอร์ผู้โดดเด่นในด้าน performance
+                            ที่ทำถึงทุกแนวเพลงทั้ง น่ารัก แซ่บ เท่ และรั่ว ด้านวาไรตี้ก็ไม่น้อยหน้าใคร การันตีด้วยฉายา
+                            "น้องภัยพิบัติ" ที่เล่นใหญ่ เล่นเกิน จนทำเอาและแฟนคลับต่างอึ้งกันมานักต่อนัก
+                        </p>
+
+                        <div class="bio-cards">
+                            <div class="bio-mini-card card-sky">
+                                <span class="mini-icon">🎂</span>
+                                <span class="mini-label">วันเกิด</span>
+                                <p class="mini-value">13 กุมภาพันธ์ 2003<br><small>(<span id="l-age">23</span>
+                                        ขวบ)</small></p>
+                            </div>
+                            <div class="bio-mini-card card-violet">
+                                <span class="mini-icon">⭐</span>
+                                <span class="mini-label">รุ่น / ทีม</span>
+                                <p class="mini-value">BNK48 4th Gen<br><small>Team NV</small></p>
+                            </div>
+                            <div class="bio-mini-card card-sun">
+                                <span class="mini-icon">🩸</span>
+                                <span class="mini-label">กรุ๊ปเลือด</span>
+                                <p class="mini-value">กรุ๊ป B<br><small>สัญลักษณ์: แมวดำ 🐈‍⬛</small></p>
+                            </div>
+                            <div class="bio-mini-card card-mint">
+                                <span class="mini-icon">🌪️</span>
+                                <span class="mini-label">ชื่อด้อม</span>
+                                <p class="mini-value">ภัยพิบัติ<br><small>#ผู้ประสบภัยพิบัติครับจ้า</small></p>
+                            </div>
+                            <div class="bio-mini-card card-pink bio-mini-wide">
+                                <span class="mini-icon">💖</span>
+                                <span class="mini-label">สิ่งที่ชอบ</span>
+                                <p class="mini-value">
+                                    มันเกลียว, นั่งเหม่อ, นอนดูโคนัน, สีเทา &amp; สีชมพู,
+                                    <a href="https://www.instagram.com/palmmy.bnk48official/" target="_blank"
+                                        rel="noopener noreferrer" class="palmmy-link">ปาล์มมี่</a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="catchphrase-grid">
+                            <blockquote class="quote-box">
+                                <span class="quote-label">💬 Catchphrase</span>
+                                <p>"ถึง L จะไม่ใช่ alphabet ตัวที่หนึ่ง แต่ขออยู่ในที่ที่นึงในหัวใจของคุณได้ไหมคะ"</p>
+                            </blockquote>
+
+                            <blockquote class="quote-box quote-box-pink">
+                                <span class="quote-label">🎤 Catchphrase 2</span>
+                                <p>
+                                    "พี่คะใส่เสื้อเบอร์ไร ก็ให้ตอบเขาไปว่าไซส์ L ไซส์ L<br>
+                                    Alphabet 12 คือไรก็ให้ตอบเขาไปว่าตัว L ตัว L<br>
+                                    แล้วถ้าถามว่าโอชิใครก็ให้ตอบเขาไปว่าน้อง L น้อง L<br>
+                                    มีแอลนู่นแอลนั่นแอลนี่ มีแอลนู่นแอลนั่นแอลนี่<br>
+                                    ก็มีแต่ L คนนี้ ก็มีแต่ L มีแต่ L"
+                                </p>
+                            </blockquote>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Facts About Me (from L's own self-intro) -->
+                <div class="facts-block reveal">
+                    <div class="facts-header">
+                        <h3>Facts about L <span>₍ᐢ. ̫.ᐢ₎</span></h3>
+                    </div>
+                    <div class="facts-grid">
+                        <div class="fact-card fact-sky">
+                            <span class="fact-emoji">💌</span>
+                            <h4>ที่มาของชื่อ L</h4>
+                            <p>มาจากคำว่า <strong>Elle</strong> (ภาษาฝรั่งเศส = ผู้หญิง) และเกิดวันที่ 13 ก.พ. เลยคิดว่าตัว L ตัวเดียวอาจหมายถึง <strong>Love</strong> ด้วย</p>
+                        </div>
+                        <div class="fact-card fact-violet">
+                            <span class="fact-emoji">📺</span>
+                            <h4>อนิเมะที่รักมาก</h4>
+                            <p>ดู<strong>โคนัน</strong>มาตั้งแต่เด็ก (เมนมัตสึดะ &amp; น้องซานาดะ) และชอบเรื่อง <strong>IDOLiSH7</strong> (เมนพี่เท็น)</p>
+                        </div>
+                        <div class="fact-card fact-pink">
+                            <span class="fact-emoji">🎨</span>
+                            <h4>สีเทา &amp; สีชมพู</h4>
+                            <p>ชอบทั้งสีเทาและสีชมพู ชอบมองไปที่ของสีเทา ๆ แต่ของติดตัวส่วนใหญ่จะเป็นสีชมพู</p>
+                        </div>
+                        <div class="fact-card fact-sun">
+                            <span class="fact-emoji">🍟</span>
+                            <h4>ของกินโปรด</h4>
+                            <p><strong>มันฝรั่งเกลียวทอด</strong> ของโปรดอันดับหนึ่งในใจ คิดถึงมันเกลียวตลอด!</p>
+                        </div>
+                        <div class="fact-card fact-mint">
+                            <span class="fact-emoji">🐾</span>
+                            <h4>สัตว์ที่ชอบ &amp; กลัว</h4>
+                            <p>ชอบแมว, หมาโกลเด้น, แพนด้า, เสือ, เม่นแคระ · แอบกลัวค้างคาวกับปลาดุก</p>
+                        </div>
+                        <div class="fact-card fact-blue">
+                            <span class="fact-emoji">🎧</span>
+                            <h4>เพลงญี่ปุ่นโปรด</h4>
+                            <p>ชอบฟังเพลงญี่ปุ่นมาก เพลงโปรดคือ <strong>"Be With You"</strong> จากอนิเมะ <em>Hotarubi no Mori e</em></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ GE6 / WATARIDORI CELEBRATION ============ -->
+        <section id="ge6">
+            <div class="container">
+                <div class="wataridori-card reveal">
+                    <svg class="wataridori-birds" viewBox="0 0 280 120" fill="none" aria-hidden="true">
+                        <path d="M24 76 Q37 60 50 70 Q62 58 75 68" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" />
+                        <path d="M104 44 Q115 31 126 40 Q136 30 148 39" stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round" />
+                        <path d="M174 68 Q182 58 190 65 Q198 56 206 63" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" />
+                        <path d="M222 28 Q229 20 236 25 Q243 19 250 24" stroke="currentColor" stroke-width="1.3"
+                            stroke-linecap="round" />
+                    </svg>
+
+                    <div class="wataridori-copy">
+                        <div class="wataridori-pills">
+                            <span class="wataridori-jp">🕊️ 渡り鳥たちに空は見えない</span>
+                            <span class="wataridori-soon-pill">BNK48 Ver. Coming Soon</span>
+                        </div>
+                        <h2>Wataridoritachi ni Sora wa Mienai</h2>
+                        <p class="wataridori-sub">
+                            BNK48 &amp; CGM48 Senbatsu General Election 2026
+                        </p>
+                        <p class="wataridori-note">
+                            เซ็นเตอร์เพลง Undergirls จากการเลือกตั้งครั้งที่ 6
+                        </p>
+                        <div class="wataridori-links">
+                            <a href="https://www.youtube.com/live/hplcuzVZGbs?si=61-eiVexIQ1vmFJ4&t=6940"
+                                target="_blank" rel="noopener noreferrer" class="btn btn-white">
+                                <i class="fas fa-play" aria-hidden="true"></i> สปีชประกาศผล GE6
+                            </a>
+                            <a href="https://www.youtube.com/watch?v=N2UNXRsw5Eg" target="_blank"
+                                rel="noopener noreferrer" class="btn btn-glass">
+                                ฟังต้นฉบับ (NGT48)
+                            </a>
+                            <a href="https://ltraintodream.vercel.app/" target="_blank" rel="noopener noreferrer"
+                                class="btn btn-sun">
+                                L Train to Dream <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="wataridori-stat">
+                        <div class="rank-display">
+                            <span class="rank-crown">🏆 GE6 Final Rank</span>
+                            <span class="rank-number">#13</span>
+                            <span class="rank-tokens">44,980.98 Tokens</span>
+                            <span class="rank-role">Center Watadori 🕊️</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ HIGHLIGHTS ============ -->
+        <section id="highlights">
+            <div class="container">
+                <div class="section-heading section-heading-dark reveal">
+                    <h2>Highlights</h2>
+                </div>
+
+                <div class="highlights-stage reveal">
+                    <div class="video-info-bar">
+                        <div id="video-info" class="video-info">
+                            <span class="video-tag" id="video-tag">GE6 #13 Undergirls Center · Coming Soon</span>
+                            <h3 class="video-title" id="video-title">Wataridoritachi ni Sora wa Mienai</h3>
+                        </div>
+                        <div class="video-counter" id="video-counter" aria-label="Selected highlight">01 / 08</div>
+                    </div>
+
+                    <div class="main-video-wrapper">
+                        <a id="main-video-link" href="#highlights" class="is-coming-soon" aria-disabled="true"
+                            aria-label="Wataridoritachi ni Sora wa Mienai Coming Soon">
+                            <div class="main-video-display">
+                                <div id="coming-soon-stage" class="coming-soon-stage">
+                                    <svg class="cs-birds" viewBox="0 0 260 90" fill="none" aria-hidden="true">
+                                        <path d="M22 58 Q34 44 46 53 Q57 42 69 51" stroke="currentColor"
+                                            stroke-width="2" stroke-linecap="round" />
+                                        <path d="M104 30 Q114 19 124 27 Q133 18 144 26" stroke="currentColor"
+                                            stroke-width="1.8" stroke-linecap="round" />
+                                        <path d="M180 54 Q188 45 196 51 Q204 44 212 50" stroke="currentColor"
+                                            stroke-width="1.5" stroke-linecap="round" />
+                                    </svg>
+                                    <span class="cs-badge">🕊️ COMING SOON</span>
+                                    <p class="cs-jp">渡り鳥たちに空は見えない</p>
+                                    <h4 class="cs-title">Wataridoritachi ni Sora wa Mienai</h4>
+                                    <span class="cs-meta">BNK48 Undergirls · Center L BNK48 (GE6 #13)</span>
+                                </div>
+                                <img id="main-video-img" src="https://img.youtube.com/vi/VJiLD4D8f7U/maxresdefault.jpg"
+                                    alt="Highlight preview" loading="lazy" decoding="async" hidden>
+                                <div id="main-play-overlay" class="play-overlay" hidden>
+                                    <div class="play-circle" aria-hidden="true"><i class="fas fa-play"></i></div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="scroller-wrapper">
+                        <button type="button" id="scroll-left" class="nav-arrow left" aria-label="Previous highlight">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+
+                        <div class="video-scroller" id="video-scroller" role="listbox" aria-label="Highlight videos">
+                            <button type="button" class="video-thumb video-thumb-soon active" data-coming-soon="true"
+                                data-tag="GE6 #13 Undergirls Center · Coming Soon"
+                                data-title="Wataridoritachi ni Sora wa Mienai" aria-selected="true">
+                                <span class="thumb-soon-box">
+                                    <span class="thumb-soon-pill">🕊️ SOON</span>
+                                </span>
+                                <span class="thumb-caption">Wataridoritachi...</span>
+                            </button>
+
+                            <button type="button" class="video-thumb" data-id="VJiLD4D8f7U" data-tag="First Time Center"
+                                data-title="BNK48 17th Single &quot;BORDERLESS&quot;" aria-selected="false">
+                                <img src="https://img.youtube.com/vi/VJiLD4D8f7U/mqdefault.jpg" alt="BORDERLESS"
+                                    loading="lazy" decoding="async">
+                                <span class="thumb-caption">BORDERLESS</span>
+                            </button>
+
+                            <button type="button" class="video-thumb" data-id="qGfB0t3yxbk"
+                                data-tag="BNK48 4th Generation Debut" data-title="Shoujotachi yo – วันใหม่"
+                                aria-selected="false">
+                                <img src="https://img.youtube.com/vi/qGfB0t3yxbk/mqdefault.jpg" alt="Shoujotachi yo"
+                                    loading="lazy" decoding="async">
+                                <span class="thumb-caption">Shoujotachi yo</span>
+                            </button>
+
+                            <button type="button" class="video-thumb" data-id="PHTJsOSx-6I"
+                                data-tag="First Time Senbatsu" data-title="BNK48 13th Single &quot;Iiwake Maybe&quot;"
+                                aria-selected="false">
+                                <img src="https://img.youtube.com/vi/PHTJsOSx-6I/mqdefault.jpg" alt="Iiwake Maybe"
+                                    loading="lazy" decoding="async">
+                                <span class="thumb-caption">Iiwake Maybe</span>
+                            </button>
+
+                            <button type="button" class="video-thumb" data-id="5LP_6i0yaLg"
+                                data-tag="First General Election Single (#19)"
+                                data-title="Dare No Koto Wo Ichiban Aishiteru?" aria-selected="false">
+                                <img src="https://img.youtube.com/vi/5LP_6i0yaLg/mqdefault.jpg"
+                                    alt="Dare No Koto Wo Ichiban Aishiteru?" loading="lazy" decoding="async">
+                                <span class="thumb-caption">Dare No Koto Wo...</span>
+                            </button>
+
+                            <button type="button" class="video-thumb" data-id="PtvscGOEHbA"
+                                data-tag="Chapter Next Single"
+                                data-title="12-Gatsu no Kangaroo – จิงโจ้น้อยเดือนธันวาคม" aria-selected="false">
+                                <img src="https://img.youtube.com/vi/PtvscGOEHbA/mqdefault.jpg"
+                                    alt="12-Gatsu no Kangaroo" loading="lazy" decoding="async">
+                                <span class="thumb-caption">12-Gatsu no Kangaroo</span>
+                            </button>
+
+                            <button type="button" class="video-thumb" data-id="m7OPbYYU-wI" data-tag="BNK48 20th Single"
+                                data-title="BNK48 20th Single &quot;Masaka no Confession&quot;" aria-selected="false">
+                                <img src="https://img.youtube.com/vi/m7OPbYYU-wI/mqdefault.jpg"
+                                    alt="Masaka no Confession" loading="lazy" decoding="async">
+                                <span class="thumb-caption">Masaka no Confession</span>
+                            </button>
+
+                            <button type="button" class="video-thumb" data-id="ZjnDycaWuhg"
+                                data-tag="General Election Senbatsu (#9)"
+                                data-title="BNK48 19th Single &quot;Colorcon Wink&quot;" aria-selected="false">
+                                <img src="https://img.youtube.com/vi/ZjnDycaWuhg/mqdefault.jpg" alt="Colorcon Wink"
+                                    loading="lazy" decoding="async">
+                                <span class="thumb-caption">Colorcon Wink</span>
+                            </button>
+                        </div>
+
+                        <button type="button" id="scroll-right" class="nav-arrow right" aria-label="Next highlight">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <!-- Senbatsu & Center Discography -->
+                    <div class="discography-box">
+                        <div class="discography-head">
+                            <h3>🎵 เพลงที่ติดเซ็มบัตสึ <span>(16 เพลง · 2× Center)</span></h3>
+                            <div class="discography-tabs" role="tablist" aria-label="Filter songs">
+                                <button type="button" class="disc-tab active" data-filter="all" aria-selected="true">ทั้งหมด (16)</button>
+                                <button type="button" class="disc-tab" data-filter="center" aria-selected="false">⭐ Center (2)</button>
+                            </div>
+                        </div>
+                        <div class="discography-pills" id="discography-pills">
+                            <button type="button" class="song-pill is-center" data-highlight-idx="0">⭐ Wataridoritachi ni Sora wa Mienai <small>Center · Soon</small></button>
+                            <button type="button" class="song-pill is-center" data-highlight-idx="1">⭐ BORDERLESS <small>Center</small></button>
+                            <button type="button" class="song-pill" data-highlight-idx="2">Shoujotachi yo</button>
+                            <button type="button" class="song-pill" data-highlight-idx="3">Iiwake Maybe</button>
+                            <span class="song-pill">สัญญานะ</span>
+                            <span class="song-pill">Kibouteki Refrain</span>
+                            <button type="button" class="song-pill" data-highlight-idx="4">Dare no Koto wo Ichiban Aishiteru?</button>
+                            <span class="song-pill">#Sukinanda</span>
+                            <span class="song-pill">GAGAGA</span>
+                            <button type="button" class="song-pill" data-highlight-idx="7">Colorcon Wink</button>
+                            <span class="song-pill">Oh my pumpkin!</span>
+                            <button type="button" class="song-pill" data-highlight-idx="5">12-Gatsu no Kangaroo</button>
+                            <button type="button" class="song-pill" data-highlight-idx="6">Masaka no Confession</button>
+                            <span class="song-pill">Saikou ka yo</span>
+                            <span class="song-pill">Ponytail to Shushu</span>
+                            <span class="song-pill">Kimi to Dokoka e Ikitai</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ L'S SOCIALS ============ -->
+        <section id="socials">
+            <div class="container">
+                <div class="section-heading reveal">
+                    <h2>Socials</h2>
+                </div>
+
+                <div class="surface-card surface-card-pop reveal">
+                    <div class="socials-split-wrapper">
+                        <div class="socials-left">
+                            <div class="group-header">
+                                <div class="avatar-ring">
+                                    <img src="assets/profile.png" alt="L BNK48" class="group-avatar" loading="lazy"
+                                        decoding="async">
+                                </div>
+                                <div class="group-title-area">
+                                    <h3>L's Socials</h3>
+                                    <p class="work-label">Contact for work (iAM Official)</p>
+                                    <div class="copy-chips">
+                                        <button type="button" class="copy-chip" data-copy="06-5979-4806"
+                                            title="Copy phone number">
+                                            <i class="fas fa-phone"></i>
+                                            <span>06-5979-4806</span>
+                                            <i class="far fa-copy copy-icon"></i>
+                                        </button>
+                                        <button type="button" class="copy-chip" data-copy="@iamofficialartist"
+                                            title="Copy Line ID">
+                                            <i class="fab fa-line"></i>
+                                            <span>@iamofficialartist</span>
+                                            <i class="far fa-copy copy-icon"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="link-grid">
+                                <a href="https://www.instagram.com/l.bnk48official/" target="_blank"
+                                    rel="noopener noreferrer" class="bar-link ig-bar">
+                                    <i class="fab fa-instagram"></i>
+                                    <span>Instagram · @l.bnk48official</span>
+                                    <i class="fas fa-arrow-up-right-from-square"></i>
+                                </a>
+                                <a href="https://www.facebook.com/bnk48official.l/" target="_blank"
+                                    rel="noopener noreferrer" class="bar-link fb-bar">
+                                    <i class="fab fa-facebook-f"></i>
+                                    <span>Facebook · L BNK48</span>
+                                    <i class="fas fa-arrow-up-right-from-square"></i>
+                                </a>
+                                <a href="https://www.tiktok.com/@l.bnk48official" target="_blank"
+                                    rel="noopener noreferrer" class="bar-link tiktok-bar">
+                                    <i class="fab fa-tiktok"></i>
+                                    <span>TikTok · @l.bnk48official (หิวข้าวตอนตีสอง)</span>
+                                    <i class="fas fa-arrow-up-right-from-square"></i>
+                                </a>
+                                <a href="https://app.bnk48.com/members/bnk48/l" target="_blank"
+                                    rel="noopener noreferrer" class="bar-link app-bar">
+                                    <i class="fas fa-star"></i>
+                                    <span>iAM48 Official Application</span>
+                                    <i class="fas fa-arrow-up-right-from-square"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="socials-right embed-box">
+                            <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@l.bnk48official"
+                                data-unique-id="l.bnk48official" data-embed-type="creator"
+                                style="max-width: 780px; min-width: 288px;">
+                                <section>
+                                    <a target="_blank" rel="noopener noreferrer"
+                                        href="https://www.tiktok.com/@l.bnk48official?refer=creator_embed">@l.bnk48official</a>
+                                </section>
+                            </blockquote>
+                            <script async src="https://www.tiktok.com/embed.js"></script>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- L's Instagram Feed Widget -->
+                <div class="surface-card surface-card-ig reveal">
+                    <div class="ig-widget-header">
+                        <div class="ig-widget-title">
+                            <span class="ig-badge-icon"><i class="fab fa-instagram" aria-hidden="true"></i></span>
+                            <div>
+                                <h3>Instagram Feed</h3>
+                                <p>@l.bnk48official</p>
+                            </div>
+                        </div>
+                        <a href="https://www.instagram.com/l.bnk48official/" target="_blank" rel="noopener noreferrer"
+                            class="btn btn-ig-follow">
+                            Follow on Instagram <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                    <div class="ig-embed-wrap">
+                        <script src="https://elfsightcdn.com/platform.js" async></script>
+                        <div class="elfsight-app-a7151689-ef2d-47f2-a7c4-7df720a55f55" data-elfsight-app-lazy></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ SISASTERTEAM FANBASE ============ -->
+        <section id="fanbase">
+            <div class="container">
+                <div class="section-heading reveal">
+                    <h2>Sisasterteam</h2>
+                    <p class="section-sub">L BNK48 Fanbase · ด้อมภัยพิบัติ 🐈‍⬛💙</p>
+                </div>
+
+                <div class="surface-card surface-card-sky reveal">
+                    <div class="fanbase-grid">
+                        <div class="fanbase-intro">
+                            <span class="fanbase-cat-badge">🐈‍⬛ #ผู้ประสบภัยพิบัติครับจ้า</span>
+                            <h3>มาเป็นชาวผู้ประสบภัยด้วยกัน!</h3>
+                            <p>
+                                ช่องทางหลักของบ้านแฟนคลับน้องแอล สำหรับติดตามตารางงาน โปรเจกต์ซัพพอร์ต และร่วมพูดคุยกับชาวผู้ประสบภัยทุกคน
+                            </p>
+                            <div class="hashtag-box">
+                                <span class="hashtag-label">กดเพื่อคัดลอกแฮชแท็ก:</span>
+                                <div class="copy-chips">
+                                    <button type="button" class="copy-chip" data-copy="#LBNK48" title="Copy #LBNK48">
+                                        <span>#LBNK48</span>
+                                        <i class="far fa-copy copy-icon"></i>
+                                    </button>
+                                    <button type="button" class="copy-chip" data-copy="#ผู้ประสบภัยพิบัติครับจ้า"
+                                        title="Copy #ผู้ประสบภัยพิบัติครับจ้า">
+                                        <span>#ผู้ประสบภัยพิบัติครับจ้า</span>
+                                        <i class="far fa-copy copy-icon"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
                         <div class="link-grid">
-                            <a href="https://line.me/ti/g2/FBVCguipgNcVIkijYYzpney0QyGKM7v8mADIGA" target="_blank" class="bar-link line-bar">
+                            <a href="https://line.me/ti/g2/FBVCguipgNcVIkijYYzpney0QyGKM7v8mADIGA" target="_blank"
+                                rel="noopener noreferrer" class="bar-link line-bar">
                                 <i class="fab fa-line"></i>
-                                <span>Join Line OpenChat</span>
-                                <i class="fas fa-external-link-alt"></i>
+                                <span>Line OpenChat · ผู้ประสบภัยพิบัติครับจ้า ☄️</span>
+                                <i class="fas fa-arrow-up-right-from-square"></i>
                             </a>
-                            <a href="https://www.openlink.co/sisasterteam" target="_blank" class="bar-link x-bar">
+                            <a href="https://x.com/sisasterteam" target="_blank" rel="noopener noreferrer"
+                                class="bar-link x-dark-bar">
+                                <i class="fa-brands fa-x-twitter"></i>
+                                <span>X (Twitter) · @sisasterteam</span>
+                                <i class="fas fa-arrow-up-right-from-square"></i>
+                            </a>
+                            <a href="https://www.instagram.com/sisasterteam/" target="_blank" rel="noopener noreferrer"
+                                class="bar-link ig-bar">
+                                <i class="fab fa-instagram"></i>
+                                <span>Instagram · @sisasterteam</span>
+                                <i class="fas fa-arrow-up-right-from-square"></i>
+                            </a>
+                            <a href="https://www.openlink.co/sisasterteam" target="_blank" rel="noopener noreferrer"
+                                class="bar-link x-bar">
                                 <i class="fas fa-link"></i>
-                                <span>Sisasterteam Socials</span>
-                                <i class="fas fa-external-link-alt"></i>
+                                <span>Sisasterteam All Socials (OpenLink)</span>
+                                <i class="fas fa-arrow-up-right-from-square"></i>
+                            </a>
+                            <a href="https://ltraintodream.vercel.app/" target="_blank" rel="noopener noreferrer"
+                                class="bar-link dream-bar">
+                                <i class="fas fa-feather-pointed"></i>
+                                <span>L Train to Dream · GE6 Archive</span>
+                                <i class="fas fa-arrow-up-right-from-square"></i>
                             </a>
                         </div>
                     </div>
-
-                    <div class="fanbase-announcement" style="width: 100%; max-width: none;">
-                        <h4>Latest Announcement</h4>
-                        <div class="announcement-photos">
-                            <img src="assets/announcement/1.jpg" alt="Announcement Photo 1">
-                            <img src="assets/announcement/2.jpg" alt="Announcement Photo 2">
-                        </div>
-                        <div class="announcement-text">
-                            </div>
-                    </div>
-
                 </div>
             </div>
-        </div>
-    </div>
-</section>
-
-<section id="gallery">
-        <div class="container">
-            <h2>Gallery</h2>
-            <p class="section-subtitle"></p>
-            
-            <div class="gallery-grid">
-                <img src="assets/gallery/1.jpg" alt="L BNK48">
-                <img src="assets/gallery/2.jpg" alt="L BNK48" data-post-url="https://www.facebook.com/story.php?story_fbid=1270121891817393&id=100064587825978">
-                <img src="assets/gallery/10.jpg" alt="L BNK48" data-post-url="https://x.com/hornokhook48/status/2016700324980150674?s=20">
-                <img src="assets/gallery/4.jpg" alt="L BNK48">
-                <img src="assets/gallery/5.jpg" alt="L BNK48">
-                <img src="assets/gallery/6.jpg" alt="L BNK48">
-                <img src="assets/gallery/8.jpg" alt="L BNK48" data-post-url="https://x.com/KLapirattanakul/status/2019040431808606285?s=20">
-                <img src="assets/gallery/9.jpg" alt="L BNK48" data-post-url="https://x.com/SkipWorkfor48TH/status/2017039503547121906?s=20">
-                <img src="assets/gallery/12.jpg" alt="L BNK48" data-post-url="https://x.com/Netventure2/status/2015318365049631110?s=20">
-                <img src="assets/gallery/11.jpg" alt="L BNK48" data-post-url="https://x.com/Lens48mm/status/2016161178658161106?s=20">
-            </div>
-
-            <div class="view-all-container">
-                <a href="gallery.html" class="neon-btn dark-mode-btn">See More Photos</a>
-            </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
     <footer>
-        <p>L BNK48 Fan Website. Created by Fluff.</p>
+        <div class="footer-inner">
+            <div class="footer-brand">L BNK48 Fan Website 💙</div>
+            <div class="footer-nav" role="navigation" aria-label="Footer navigation">
+                <a href="#hero">Home</a>
+                <a href="#bio">Profile</a>
+                <a href="#ge6">GE6</a>
+                <a href="#highlights">Highlights</a>
+                <a href="#socials">Socials</a>
+                <a href="#fanbase">Sisasterteam</a>
+                <a href="events.html">Events</a>
+                <a href="gallery.html">Gallery</a>
+            </div>
+            <p class="footer-meta">
+                Fan-made website for Sirikorn Nilkasap (L BNK48) · Not affiliated with BNK48 or iAM
+            </p>
+            <p class="footer-credit">
+                Created by
+                <a href="https://x.com/Fluffff24" target="_blank" rel="noopener noreferrer" class="creator-link">
+                    <i class="fa-brands fa-x-twitter" aria-hidden="true"></i> Fluff
+                </a>
+            </p>
+        </div>
     </footer>
 
-    <audio id="bg-music" loop>
+    <!-- Floating BGM & Back-to-Top -->
+    <div class="bgm-dock" id="bgm-dock">
+        <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top" title="Back to top">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+
+        <div class="vinyl-widget" id="vinyl-widget">
+            <button type="button" class="vinyl" id="vinyl-record" aria-pressed="false"
+                aria-label="Play background music" title="Toggle background music">
+                <span class="vinyl-disc" id="vinyl-disc"></span>
+                <span id="play-btn" class="play-icon" aria-hidden="true"><i class="fas fa-play"></i></span>
+            </button>
+        </div>
+    </div>
+
+    <audio id="bg-music" loop preload="none">
         <source src="assets/music.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 
-<div id="image-modal" class="image-modal">
-    <span class="close-modal">&times;</span>
-    <img class="modal-content" id="full-image">
-    
-    <a id="modal-post-link" href="#" target="_blank" class="modal-link-btn">
-        View Post <i class="fas fa-external-link-alt"></i>
-    </a>
-</div>
-
     <script src="script.js"></script>
-
-
-    <div id="disclaimer-popup" class="disclaimer-popup">
-        <p>เว็บไซต์นี้จัดทำขึ้นเล่น ๆ เท่านั้น ไม่เกี่ยวกับบ้านเบสแต่อย่างใด หากมีอะไรผิดพลาดได้โปรดเถอะสวรรค์จงเอามาลงที่ผมแต่เพียงผู้เดียว</p>
-        <button id="close-disclaimer" aria-label="Close">×</button>
-    </div>
 </body>
+
 </html>

@@ -4,115 +4,128 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Events | L BNK48 Fan Website</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="description" content="ตารางงานและกิจกรรมทั้งหมดของ แอล - สิริกร นิลกษาปน์ (L BNK48)">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0EA5E9">
+    <link rel="icon" type="image/png" href="assets/profile.png">
+    <link rel="apple-touch-icon" href="assets/profile.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600&family=Outfit:wght@600;700;800&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    
+
     <style>
-
         body {
-            background-color: #F9FAFB; 
-            color: #1F2937; 
+            background: linear-gradient(180deg, #F0F9FF 0%, #FFF7FB 100%);
+            color: var(--ink);
         }
 
-        nav {
-            background: rgba(255, 255, 255, 0.95) !important;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        }
-        nav .logo {
-            color: #333 !important;
-            text-shadow: none !important;
-        }
-        nav .nav-links a {
-            color: #555 !important;
-        }
-        nav .nav-links a:hover {
-            color: var(--electric-magenta) !important;
-        }
-        .hamburger span {
-            background-color: #333; 
+        #all-events {
+            padding-top: 7.5rem;
+            min-height: calc(100vh - 180px);
         }
 
-        h2 {
-            color: #111;
-            text-shadow: none;
-            margin-bottom: 4rem !important; 
-            text-align: center;
+        .event-card.is-past {
+            opacity: 0.88;
         }
 
-        @media (max-width: 768px) {
-            .schedule-grid {
-                display: grid !important; 
-                grid-template-columns: 1fr !important; 
-                gap: 1.5rem;
-                
-                overflow-x: visible !important;
-                padding: 0 !important;
-                flex-wrap: wrap !important;
-                scroll-snap-type: none !important;
-            }
+        .event-card.is-past:hover {
+            opacity: 1;
+        }
 
-            .event-card {
-                flex: none !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                scroll-snap-align: none !important;
-            }
+        .status-badge.past {
+            background: #64748B;
         }
     </style>
 
+    <!-- Vercel Web Analytics -->
     <script>
-  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-</script>
-<script defer src="/_vercel/insights/script.js"></script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 
-    <nav class="scrolled"> 
-        <div class="logo">
-            <a href="index.html" style="color:inherit; text-decoration:none;">L's Fan Site</a> 
-            <span class="beta-tag">BETA</span>
-        </div>
-        
+    <nav class="scrolled" data-always-solid="true" aria-label="Main navigation">
+        <a href="index.html" class="logo">
+            <span class="logo-dot" aria-hidden="true"></span>
+            <span class="logo-main">L's Fan Site</span>
+        </a>
+
         <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#hero">Home</a></li>
             <li><a href="index.html#bio">Profile</a></li>
-            <li><a href="events.html" class="active">Schedule</a></li>
-            <li><a href="index.html#Socials">Socials</a></li>
+            <li><a href="index.html#ge6">GE6</a></li>
+            <li><a href="index.html#highlights">Highlights</a></li>
+            <li><a href="index.html#socials">Socials</a></li>
+            <li><a href="index.html#fanbase">Sisasterteam</a></li>
+            <li class="nav-divider" aria-hidden="true"></li>
+            <li><a href="events.html" class="nav-page-link active">Events</a></li>
+            <li><a href="gallery.html" class="nav-page-link">Gallery</a></li>
         </ul>
 
-        <div class="hamburger" id="hamburger">
+        <button type="button" class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
             <span></span>
             <span></span>
             <span></span>
-        </div>
+        </button>
     </nav>
 
-    <div class="mobile-menu" id="mobile-menu">
-        <div class="close-menu" id="close-menu">&times;</div>
-        <div class="mobile-logo" style="font-family: 'Orbitron'; margin-bottom: 2rem; font-size: 1.2rem; color: white;">
-            L's Fan Site <span class="beta-tag">BETA</span>
-        </div> 
+    <aside class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation" aria-hidden="true">
+        <div class="mobile-menu-header">
+            <span class="mobile-logo">L's Fan Site ✨</span>
+            <button type="button" class="close-menu" id="close-menu" aria-label="Close menu">&times;</button>
+        </div>
         <ul class="mobile-nav-links">
-            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#hero">Home</a></li>
             <li><a href="index.html#bio">Profile</a></li>
-            <li><a href="events.html">Schedule</a></li>
-            <li><a href="index.html#Socials">Socials</a></li>
+            <li><a href="index.html#ge6">GE6 · นกอพยพ 🪽</a></li>
+            <li><a href="index.html#highlights">Highlights</a></li>
+            <li><a href="index.html#socials">Socials</a></li>
+            <li><a href="index.html#fanbase">Sisasterteam</a></li>
+            <li class="mobile-nav-sep" aria-hidden="true"></li>
+            <li><a href="events.html" class="active">Events</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
         </ul>
-    </div>
+    </aside>
     <div class="menu-overlay" id="menu-overlay"></div>
 
+    <main>
+        <section id="all-events">
+            <div class="container">
+                <div class="section-heading">
+                    <h2>All Events</h2>
+                </div>
 
-    <section id="all-events" style="padding-top: 120px; border-bottom: none;">
-        <div class="container">
-            <h2>All Events</h2>
-            
-            <div id="event-list" class="schedule-grid"></div>
-            
-        </div>
-    </section>
+                <div id="event-list" class="schedule-grid"></div>
+            </div>
+        </section>
+    </main>
 
     <footer>
-        <p>L BNK48 Fan Website. Created by Fluff.</p>
+        <div class="footer-inner">
+            <div class="footer-brand">L BNK48 Fan Website 💙</div>
+            <div class="footer-nav" role="navigation" aria-label="Footer navigation">
+                <a href="index.html#hero">Home</a>
+                <a href="index.html#bio">Profile</a>
+                <a href="index.html#ge6">GE6</a>
+                <a href="index.html#highlights">Highlights</a>
+                <a href="index.html#socials">Socials</a>
+                <a href="index.html#fanbase">Sisasterteam</a>
+                <a href="events.html">Events</a>
+                <a href="gallery.html">Gallery</a>
+            </div>
+            <p class="footer-meta">
+                Fan-made website for Sirikorn Nilkasap (L BNK48) · Not affiliated with BNK48 or iAM
+            </p>
+            <p class="footer-credit">
+                Created by
+                <a href="https://x.com/Fluffff24" target="_blank" rel="noopener noreferrer" class="creator-link">
+                    <i class="fa-brands fa-x-twitter" aria-hidden="true"></i> Fluff
+                </a>
+            </p>
+        </div>
     </footer>
 
     <script src="script.js"></script>
@@ -133,17 +146,17 @@
             location: "Central World, Bangkok",
             link: "https://www.facebook.com/japanexpothailand/posts/%E0%B8%8A%E0%B9%88%E0%B8%A7%E0%B8%87%E0%B9%80%E0%B8%A7%E0%B8%A5%E0%B8%B2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%97%E0%B8%B8%E0%B8%81%E0%B8%84%E0%B8%99%E0%B9%80%E0%B8%9D%E0%B9%89%E0%B8%B2%E0%B8%A3%E0%B8%AD-%E0%B8%81%E0%B8%B3%E0%B8%A5%E0%B8%B1%E0%B8%87%E0%B8%88%E0%B8%B0%E0%B8%81%E0%B8%A5%E0%B8%B1%E0%B8%9A%E0%B8%A1%E0%B8%B2%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B8%A3%E0%B8%AD%E0%B8%A2%E0%B8%A2%E0%B8%B4%E0%B9%89%E0%B8%A1%E0%B8%AD%E0%B8%B5%E0%B8%81%E0%B8%84%E0%B8%A3%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B9%80%E0%B8%95%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%A1%E0%B8%9E%E0%B8%9A%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%AA%E0%B8%94%E0%B9%83%E0%B8%AA%E0%B8%88%E0%B8%B2%E0%B8%81%E0%B8%A8%E0%B8%B4/898060842568920/",
             image: "assets/events/2.png",
-            status: "Upcoming"
+            status: "Past"
         },
-                {
+        {
             title: "Honda Megafesto 2026",
             date: "8 February 2026",
             location: "Bravo BKK, Bangkok",
             link: "https://www.facebook.com/hellofungjai/posts/-%E0%B8%A1%E0%B8%B2%E0%B9%80%E0%B8%95%E0%B8%B4%E0%B8%A1%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%AA%E0%B8%94%E0%B9%83%E0%B8%AA%E0%B8%81%E0%B8%B1%E0%B8%9A-bnk48-%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%87%E0%B8%B2%E0%B8%99-honda-megafesto-%E0%B8%81%E0%B8%B1%E0%B8%9A%E0%B8%98%E0%B8%B5%E0%B8%A1%E0%B8%AA%E0%B9%84%E0%B8%95%E0%B8%A5%E0%B9%8C%E0%B9%80%E0%B8%88%E0%B9%81%E0%B8%9B%E0%B8%99-%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%81%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1/1437682918022481/",
             image: "assets/events/1.png",
-            status: "Upcoming"
+            status: "Past"
         },
-                {
+        {
             title: "HACHI CHA Booth",
             date: "6 February 2026",
             location: "Central World, Bangkok",
@@ -190,33 +203,28 @@
             link: "https://www.facebook.com/bnk48official/posts/%EF%B8%8F-bnk48cgm48kangaroovillage-%E0%B8%A3%E0%B8%B2%E0%B8%A2%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%AD%E0%B8%B5%E0%B8%A2%E0%B8%94%E0%B8%9A%E0%B8%B9%E0%B8%98%E0%B8%81%E0%B8%B4%E0%B8%88%E0%B8%81%E0%B8%A3%E0%B8%A3%E0%B8%A1%E0%B8%A0%E0%B8%B2%E0%B8%A2%E0%B9%83%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99bnk48-cgm48-christmas-fe/1423369772480998/",
             image: "assets/events/p5.jpg",
             status: "Past"
-        },
+        }
     ];
 
     const listContainer = document.getElementById('event-list');
 
     if (listContainer) {
-        listContainer.innerHTML = events.map(event => {
-            const isPast = event.status === "Past";
-            
-            const cardStyle = isPast ? 'style="opacity: 0.8;"' : '';
-            const badgeStyle = isPast ? 'style="background: #6B7280;"' : '';
-
+        listContainer.innerHTML = events.map((event) => {
+            const isPast = event.status === 'Past';
             return `
-            <a href="${event.link}" target="_blank" class="event-card" ${cardStyle}>
+            <a href="${event.link}" target="_blank" rel="noopener noreferrer" class="event-card ${isPast ? 'is-past' : ''}">
                 <div class="card-image">
-                    <img src="${event.image}" alt="${event.title}">
+                    <img src="${event.image}" alt="${event.title}" loading="lazy" decoding="async">
                 </div>
                 <div class="card-content">
-                    <span class="status-badge" ${badgeStyle}>${event.status}</span>
+                    <span class="status-badge ${isPast ? 'past' : ''}">${event.status}</span>
                     <h3 class="event-title">${event.title}</h3>
                     <div class="event-meta">
-                        <div class="meta-row">📅 ${event.date}</div>
-                        <div class="meta-row">📍 ${event.location}</div>
+                        <div class="meta-row"><i class="far fa-calendar"></i> ${event.date}</div>
+                        <div class="meta-row"><i class="fas fa-location-dot"></i> ${event.location}</div>
                     </div>
                 </div>
-            </a>
-            `;
+            </a>`;
         }).join('');
     }
     </script>

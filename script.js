@@ -3,16 +3,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const sparklesRoot = document.getElementById('sky-sparkles');
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (sparklesRoot && !prefersReducedMotion) {
-        const items = ['✦', '🪽', '✨', '💙', '⋆'];
+        const iconClasses = [
+            'fas fa-star',
+            'fas fa-feather-pointed',
+            'fas fa-wand-magic-sparkles',
+            'fas fa-heart',
+            'fas fa-dove',
+        ];
         const colors = ['#38BDF8', '#0EA5E9', '#F472B6', '#FBBF24', '#60A5FA'];
         const count = window.innerWidth <= 768 ? 8 : 14;
         for (let i = 0; i < count; i += 1) {
-            const sp = document.createElement('span');
-            sp.className = 'sky-particle';
-            sp.textContent = items[i % items.length];
+            const sp = document.createElement('i');
+            sp.className = `sky-particle ${iconClasses[i % iconClasses.length]}`;
+            sp.setAttribute('aria-hidden', 'true');
             sp.style.color = colors[i % colors.length];
             sp.style.left = `${(i * (100 / count) + Math.random() * 6).toFixed(1)}vw`;
-            sp.style.fontSize = `${(11 + Math.random() * 11).toFixed(0)}px`;
+            sp.style.fontSize = `${(11 + Math.random() * 10).toFixed(0)}px`;
             sp.style.animationDuration = `${(11 + Math.random() * 11).toFixed(1)}s`;
             sp.style.animationDelay = `${(-Math.random() * 18).toFixed(1)}s`;
             sparklesRoot.appendChild(sp);

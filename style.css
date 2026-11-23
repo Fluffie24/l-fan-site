@@ -41,6 +41,7 @@ body {
     color: var(--ink);
     font-family: 'Prompt', sans-serif;
     line-height: 1.7;
+    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
 }
@@ -72,7 +73,6 @@ button:focus-visible {
 main {
     position: relative;
     z-index: 1;
-    overflow-x: clip;
 }
 
 .container {
@@ -1410,8 +1410,8 @@ section {
 .nav-arrow.left { left: -54px; }
 .nav-arrow.right { right: -54px; }
 
-/* ============ SOCIALS & SISASTERTEAM SECTIONS ============ */
-#socials {
+/* ============ CHANNELS & SISASTERTEAM SECTIONS ============ */
+#l-channels {
     background:
         radial-gradient(circle at 12% 20%, rgba(244, 63, 142, 0.08) 0%, transparent 40%),
         linear-gradient(180deg, #FFF7FB 0%, #FFFFFF 100%);
@@ -1464,14 +1464,14 @@ section {
     background: linear-gradient(90deg, #0EA5E9, #38BDF8, #FCD34D);
 }
 
-.socials-split-wrapper {
+.connect-split {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2.5rem;
     align-items: start;
 }
 
-.socials-left {
+.connect-main {
     min-width: 0;
 }
 
@@ -1792,7 +1792,6 @@ footer {
     background: var(--stage-navy);
     color: rgba(224, 242, 254, 0.86);
     position: relative;
-    overflow-x: clip;
 }
 
 footer::before {
@@ -2303,14 +2302,14 @@ button.song-pill:hover {
     border-radius: 999px;
 }
 
-/* Instagram Feed Card inside #socials */
-.surface-card-ig {
+/* Instagram Feed Card inside #l-channels */
+.surface-card-feed {
     margin-top: 2rem;
     border: 2px solid #FBCFE8;
     box-shadow: 0 20px 48px rgba(225, 48, 108, 0.1);
 }
 
-.surface-card-ig::before {
+.surface-card-feed::before {
     content: '';
     position: absolute;
     top: 0;
@@ -2320,7 +2319,7 @@ button.song-pill:hover {
     background: linear-gradient(90deg, #F09433 0%, #DC2743 50%, #BC1888 100%);
 }
 
-.ig-widget-header {
+.feed-header {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -2329,13 +2328,13 @@ button.song-pill:hover {
     margin-bottom: 1.5rem;
 }
 
-.ig-widget-title {
+.feed-title {
     display: flex;
     align-items: center;
     gap: 0.9rem;
 }
 
-.ig-badge-icon {
+.feed-badge-icon {
     width: 48px;
     height: 48px;
     border-radius: 16px;
@@ -2347,7 +2346,7 @@ button.song-pill:hover {
     box-shadow: 0 8px 20px rgba(220, 39, 67, 0.28);
 }
 
-.ig-widget-title h3 {
+.feed-title h3 {
     font-family: 'Outfit', 'Mitr', sans-serif;
     font-size: 1.4rem;
     font-weight: 800;
@@ -2355,13 +2354,13 @@ button.song-pill:hover {
     line-height: 1.15;
 }
 
-.ig-widget-title p {
+.feed-title p {
     font-size: 0.88rem;
     color: var(--muted);
     font-weight: 500;
 }
 
-.btn-ig-follow {
+.btn-follow-feed {
     background: linear-gradient(45deg, #F09433 0%, #DC2743 50%, #BC1888 100%);
     color: var(--white);
     padding: 0.68rem 1.35rem;
@@ -2369,12 +2368,12 @@ button.song-pill:hover {
     box-shadow: 0 8px 22px rgba(220, 39, 67, 0.28);
 }
 
-.btn-ig-follow:hover {
+.btn-follow-feed:hover {
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 12px 26px rgba(220, 39, 67, 0.38);
 }
 
-.ig-embed-wrap {
+.feed-embed-wrap {
     width: 100%;
     min-width: 0;
     border-radius: 18px;
@@ -2501,7 +2500,7 @@ button.song-pill:hover {
         width: 100%;
     }
 
-    .socials-split-wrapper,
+    .connect-split,
     .fanbase-grid {
         grid-template-columns: 1fr;
         gap: 1.75rem;
@@ -3212,31 +3211,31 @@ button.song-pill:hover {
         font-size: 0.76rem;
     }
 
-    .surface-card-ig {
+    .surface-card-feed {
         margin-top: 1.35rem;
     }
 
-    .ig-widget-header {
+    .feed-header {
         gap: 0.8rem;
         margin-bottom: 1.1rem;
     }
 
-    .ig-badge-icon {
+    .feed-badge-icon {
         width: 40px;
         height: 40px;
         border-radius: 13px;
         font-size: 1.2rem;
     }
 
-    .ig-widget-title h3 {
+    .feed-title h3 {
         font-size: 1.18rem;
     }
 
-    .ig-widget-title p {
+    .feed-title p {
         font-size: 0.8rem;
     }
 
-    .btn-ig-follow {
+    .btn-follow-feed {
         width: 100%;
         padding: 0.66rem 1rem;
         font-size: 0.84rem;

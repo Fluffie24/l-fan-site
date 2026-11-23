@@ -34,6 +34,7 @@
 html {
     scroll-behavior: smooth;
     scroll-padding-top: 82px;
+    overflow-x: clip;
 }
 
 body {
@@ -41,8 +42,13 @@ body {
     color: var(--ink);
     font-family: 'Prompt', sans-serif;
     line-height: 1.7;
-    overflow-x: hidden;
+    overflow-x: clip;
     -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+}
+
+a, button {
+    touch-action: manipulation;
 }
 
 body.no-scroll {
@@ -361,11 +367,13 @@ nav.scrolled .hamburger span {
     background: linear-gradient(180deg, #FFFFFF 0%, #F0F9FF 100%);
     border-left: 2px solid var(--border-sky);
     z-index: 3000;
-    padding: 1.4rem 1.5rem 2rem;
+    padding: 1.4rem 1.5rem calc(2rem + env(safe-area-inset-bottom));
     transition: right 0.34s cubic-bezier(0.22, 1, 0.36, 1);
     box-shadow: -14px 0 42px rgba(14, 116, 198, 0.18);
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 .mobile-menu.active {
@@ -1664,6 +1672,13 @@ section {
 .tiktok-embed {
     margin: 0 !important;
     width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+}
+
+.embed-box iframe {
+    max-width: 100% !important;
+    min-width: 0 !important;
 }
 
 .fanbase-column {
@@ -2125,6 +2140,10 @@ footer::before {
     line-height: 1.7;
 }
 
+.facts-swipe-meta {
+    display: none;
+}
+
 /* Senbatsu & Center Discography Box inside #highlights */
 .discography-box {
     margin-top: 2.25rem;
@@ -2394,7 +2413,11 @@ button.song-pill:hover {
 
 @media (max-width: 900px) {
     nav {
-        padding: 0.9rem 5%;
+        padding: 0.8rem 1.15rem;
+    }
+
+    nav.scrolled {
+        padding: 0.72rem 1.15rem;
     }
 
     .nav-links {
@@ -2407,18 +2430,22 @@ button.song-pill:hover {
 
     .bio-grid {
         grid-template-columns: 1fr;
-        gap: 2.75rem;
+        gap: 2.25rem;
     }
 
     .bio-img {
-        max-width: 340px;
+        max-width: 300px;
         margin: 0 auto;
     }
 
     .wataridori-card {
         grid-template-columns: 1fr;
-        padding: 2.2rem;
-        gap: 1.75rem;
+        padding: 2rem 1.65rem;
+        gap: 1.5rem;
+    }
+
+    .wataridori-stat {
+        order: -1;
     }
 
     .rank-display {
@@ -2428,7 +2455,7 @@ button.song-pill:hover {
     .socials-split-wrapper,
     .fanbase-grid {
         grid-template-columns: 1fr;
-        gap: 2rem;
+        gap: 1.75rem;
     }
 
     .fanbase-intro {
@@ -2441,116 +2468,873 @@ button.song-pill:hover {
     }
 
     .surface-card {
-        padding: 1.85rem;
+        padding: 1.65rem 1.35rem;
     }
 }
 
 @media (max-width: 768px) {
+    html {
+        scroll-padding-top: 66px;
+    }
+
+    .logo-main {
+        font-size: 1.16rem;
+    }
+
+    .hamburger {
+        padding: 7px 8px;
+        border-radius: 10px;
+    }
+
+    .hamburger span {
+        width: 20px;
+    }
+
+    /* ---- HERO (Mobile-First Editorial Composition) ---- */
     #hero {
+        min-height: 100svh;
         background-image: url("assets/hero-ge6-mobile.jpg");
-        background-position: center 16%;
-        padding: 14rem 5% 3.5rem;
+        background-position: center 14%;
+        padding: 5.5rem 1rem 4.6rem;
     }
 
     .hero-overlay {
         background:
-            linear-gradient(180deg, rgba(16, 32, 70, 0.36) 0%, rgba(16, 32, 70, 0.04) 26%, rgba(16, 32, 70, 0.58) 58%, rgba(16, 32, 70, 0.92) 100%);
+            linear-gradient(180deg, rgba(14, 28, 62, 0.44) 0%, rgba(14, 28, 62, 0.04) 22%, rgba(14, 28, 62, 0.14) 48%, rgba(14, 28, 62, 0.78) 72%, rgba(12, 24, 54, 0.95) 100%);
     }
 
     .hero-birds {
-        width: 155px;
-        top: 11%;
-        right: 4%;
+        width: 120px;
+        top: 9.5%;
+        right: 3%;
+        opacity: 0.75;
     }
 
     .hero-inner {
         flex-direction: column;
         align-items: center;
         text-align: center;
-        gap: 1.35rem;
+        gap: 0.9rem;
     }
 
     .hero-content {
+        width: 100%;
+        max-width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
     }
 
+    .hero-pill {
+        padding: 0.3rem 0.85rem;
+        font-size: 0.76rem;
+        margin-bottom: 0.55rem;
+    }
+
+    #hero h1 {
+        font-size: clamp(2.35rem, 11vw, 3.15rem);
+        margin-bottom: 0.2rem;
+    }
+
+    .subtitle {
+        font-size: clamp(0.84rem, 3.4vw, 1.05rem);
+        letter-spacing: 2px;
+        margin-bottom: 0.95rem;
+    }
+
     .hero-actions {
+        width: 100%;
         justify-content: center;
+        gap: 0.45rem;
+    }
+
+    .hero-actions .btn {
+        padding: 0.6rem 0.92rem;
+        font-size: 0.8rem;
+        gap: 0.35rem;
     }
 
     .hero-ge6-badge {
-        max-width: 100%;
+        width: 100%;
+        max-width: 340px;
+        justify-content: center;
+        padding: 0.62rem 0.9rem;
+        border-radius: 16px;
+        gap: 0.72rem;
     }
 
+    .badge-rank {
+        font-size: 0.86rem;
+        padding: 0.32rem 0.7rem;
+    }
+
+    .badge-body strong {
+        font-size: 0.82rem;
+    }
+
+    .badge-body small {
+        font-size: 0.7rem;
+    }
+
+    /* ---- SECTIONS SPACING ---- */
     section {
-        padding: 4.25rem 5%;
+        padding: 3.5rem 1rem;
+    }
+
+    #ge6 {
+        padding: 3rem 1rem;
     }
 
     .section-heading {
-        margin-bottom: 2.25rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .section-heading h2 {
+        font-size: clamp(1.8rem, 7vw, 2.25rem);
+    }
+
+    .section-heading h2::after {
+        width: 56px;
+        height: 4px;
+        margin-top: 0.55rem;
+    }
+
+    .section-sub {
+        font-size: 0.9rem;
+    }
+
+    /* ---- PROFILE (Compact Polaroid + 2-Col Bento + Swipeable Facts) ---- */
+    .bio-grid {
+        gap: 1.85rem;
+    }
+
+    .bio-img {
+        max-width: 242px;
+    }
+
+    .profile-frame {
+        padding: 10px;
+        border-radius: 22px;
+    }
+
+    .profile-frame::before {
+        inset: 10px -10px -10px 10px;
+        border-radius: 22px;
+    }
+
+    .profile-photo {
+        border-radius: 14px;
+    }
+
+    .photo-sticker {
+        padding: 0.32rem 0.75rem;
+        font-size: 0.72rem;
+    }
+
+    .sticker-top {
+        top: -10px;
+        right: -6px;
+    }
+
+    .sticker-bottom {
+        bottom: 14px;
+        left: -8px;
+    }
+
+    .bio-info {
+        gap: 1.1rem;
     }
 
     .bio-name-block {
         justify-content: center;
         text-align: center;
+        gap: 0.55rem;
     }
 
+    .bio-name-block h3 {
+        font-size: clamp(1.55rem, 6.8vw, 1.95rem);
+    }
+
+    .nickname {
+        font-size: 0.85rem;
+        padding: 0.24rem 0.82rem;
+    }
+
+    .bio-text {
+        font-size: 0.92rem;
+        line-height: 1.8;
+        text-align: center;
+    }
+
+    .bio-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.68rem;
+    }
+
+    .bio-mini-card {
+        padding: 0.88rem 0.9rem;
+        border-radius: 16px;
+        min-width: 0;
+    }
+
+    .mini-icon {
+        font-size: 1.15rem;
+        margin-bottom: 0.22rem;
+    }
+
+    .mini-label {
+        font-size: 0.72rem;
+        margin-bottom: 0.14rem;
+    }
+
+    .mini-value {
+        font-size: 0.86rem;
+        line-height: 1.45;
+        overflow-wrap: break-word;
+    }
+
+    .palmmy-link {
+        white-space: nowrap;
+    }
+
+    .mini-value small {
+        font-size: 0.72rem;
+        line-height: 1.4;
+        display: inline-block;
+    }
+
+    .catchphrase-grid {
+        gap: 0.75rem;
+    }
+
+    .quote-box {
+        padding: 1rem 1.05rem;
+        border-radius: 16px;
+        border-left-width: 5px;
+    }
+
+    .quote-label {
+        font-size: 0.76rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .quote-box p {
+        font-size: 0.84rem;
+        line-height: 1.75;
+    }
+
+    /* Swipeable Facts Deck on Mobile */
+    .facts-block {
+        margin-top: 2.35rem;
+    }
+
+    .facts-header {
+        margin-bottom: 1rem;
+    }
+
+    .facts-header h3 {
+        font-size: 1.4rem;
+    }
+
+    .facts-grid {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-padding-inline: 1rem;
+        gap: 0.8rem;
+        margin: 0 -1rem;
+        padding: 0.25rem 1rem 0.75rem;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .facts-grid::-webkit-scrollbar {
+        display: none;
+    }
+
+    .fact-card {
+        flex: 0 0 80%;
+        max-width: 292px;
+        scroll-snap-align: start;
+        padding: 1.15rem 1.15rem;
+        border-radius: 18px;
+    }
+
+    .fact-emoji {
+        width: 36px;
+        height: 36px;
+        border-radius: 11px;
+        font-size: 1.12rem;
+        margin-bottom: 0.55rem;
+    }
+
+    .fact-card h4 {
+        font-size: 0.94rem;
+        margin-bottom: 0.28rem;
+    }
+
+    .fact-card p {
+        font-size: 0.84rem;
+        line-height: 1.65;
+    }
+
+    .facts-swipe-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-top: 0.35rem;
+        padding: 0 0.15rem;
+    }
+
+    .facts-dots {
+        display: flex;
+        align-items: center;
+        gap: 0.38rem;
+    }
+
+    .fact-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        border: none;
+        padding: 0;
+        background: #BAE6FD;
+        cursor: pointer;
+        transition: width 0.25s ease, background 0.25s ease;
+    }
+
+    .fact-dot.active {
+        width: 20px;
+        background: linear-gradient(90deg, var(--sky-bright), var(--pink-pop));
+    }
+
+    .facts-swipe-hint {
+        font-size: 0.74rem;
+        font-weight: 600;
+        color: var(--muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    /* ---- GE6 / WATARIDORI CELEBRATION CARD ---- */
+    .wataridori-card {
+        padding: 1.45rem 1.2rem;
+        border-radius: 24px;
+        gap: 1.25rem;
+    }
+
+    .wataridori-birds {
+        width: 145px;
+        top: 8px;
+        right: 10px;
+        opacity: 0.75;
+    }
+
+    .rank-display {
+        min-width: 0;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto auto auto;
+        column-gap: 1rem;
+        row-gap: 0.15rem;
+        align-items: center;
+        text-align: left;
+        padding: 0.95rem 1.15rem;
+        border-radius: 20px;
+    }
+
+    .rank-number {
+        grid-column: 1;
+        grid-row: 1 / 4;
+        font-size: 2.9rem;
+        line-height: 0.95;
+    }
+
+    .rank-crown {
+        grid-column: 2;
+        grid-row: 1;
+        font-size: 0.72rem;
+        margin-bottom: 0;
+    }
+
+    .rank-tokens {
+        grid-column: 2;
+        grid-row: 2;
+        justify-self: start;
+        margin-top: 0.15rem;
+        padding: 0.18rem 0.65rem;
+        font-size: 0.76rem;
+    }
+
+    .rank-role {
+        grid-column: 2;
+        grid-row: 3;
+        margin-top: 0.15rem;
+        font-size: 0.82rem;
+    }
+
+    .wataridori-pills {
+        gap: 0.4rem;
+        margin-bottom: 0.7rem;
+    }
+
+    .wataridori-jp {
+        font-size: 0.78rem;
+        padding: 0.25rem 0.75rem;
+    }
+
+    .wataridori-soon-pill {
+        font-size: 0.74rem;
+        padding: 0.25rem 0.72rem;
+    }
+
+    .wataridori-copy h2 {
+        font-size: clamp(1.38rem, 6vw, 1.8rem);
+        line-height: 1.18;
+        margin-bottom: 0.35rem;
+    }
+
+    .wataridori-sub {
+        font-size: 0.84rem;
+        margin-bottom: 0.45rem;
+    }
+
+    .wataridori-note {
+        font-size: 0.86rem;
+        line-height: 1.7;
+        margin-bottom: 1.1rem;
+    }
+
+    .wataridori-links {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.55rem;
+    }
+
+    .wataridori-links .btn {
+        width: 100%;
+        padding: 0.68rem 0.75rem;
+        font-size: 0.79rem;
+        gap: 0.38rem;
+        text-align: center;
+    }
+
+    .wataridori-links .btn:first-child {
+        grid-column: 1 / -1;
+        font-size: 0.86rem;
+        padding: 0.76rem 1rem;
+    }
+
+    /* ---- HIGHLIGHTS STAGE & DISCOGRAPHY ---- */
     .video-info-bar {
-        flex-direction: column;
+        flex-direction: row;
         align-items: flex-start;
-        gap: 0.5rem;
+        justify-content: space-between;
+        gap: 0.65rem;
+        margin-bottom: 0.9rem;
+    }
+
+    .video-info {
+        min-width: 0;
+    }
+
+    .video-tag {
+        padding: 0.24rem 0.72rem;
+        border-radius: 12px;
+        font-size: 0.72rem;
+        line-height: 1.35;
+        margin-bottom: 0.38rem;
+    }
+
+    .video-title {
+        font-size: clamp(1.06rem, 4.5vw, 1.32rem);
+        line-height: 1.3;
+    }
+
+    .video-counter {
+        font-size: 0.76rem;
+        letter-spacing: 1px;
+        padding: 0.28rem 0.7rem;
+        flex-shrink: 0;
+    }
+
+    .main-video-wrapper {
+        margin-bottom: 0.95rem;
+    }
+
+    .main-video-display {
+        border-radius: 18px;
+        min-height: 204px;
+    }
+
+    .coming-soon-stage {
+        padding: 1rem 1.05rem;
+    }
+
+    .cs-birds {
+        width: 130px;
+        top: 8%;
+        right: 5%;
+        opacity: 0.65;
+    }
+
+    .cs-badge {
+        padding: 0.28rem 0.82rem;
+        font-size: 0.72rem;
+        letter-spacing: 1.3px;
+        margin-bottom: 0.45rem;
+    }
+
+    .cs-jp {
+        font-size: 0.8rem;
+        letter-spacing: 1.2px;
+        margin-bottom: 0.2rem;
+    }
+
+    .cs-title {
+        font-size: clamp(1.12rem, 5vw, 1.55rem);
+        line-height: 1.18;
+        margin-bottom: 0.48rem;
+    }
+
+    .cs-meta {
+        font-size: 0.71rem;
+        padding: 0.24rem 0.72rem;
+        line-height: 1.35;
     }
 
     .play-circle {
-        width: 62px;
-        height: 62px;
-        font-size: 1.25rem;
+        width: 56px;
+        height: 56px;
+        font-size: 1.15rem;
+    }
+
+    .nav-arrow {
+        display: none;
+    }
+
+    .video-scroller {
+        gap: 0.65rem;
+        margin: 0 -1rem;
+        padding: 0.5rem 1rem 0.65rem;
+        width: calc(100% + 2rem);
+        scroll-snap-type: x proximity;
+        scroll-padding-inline: 1rem;
+        -webkit-overflow-scrolling: touch;
     }
 
     .video-thumb {
-        flex: 0 0 144px;
+        flex: 0 0 136px;
+        border-radius: 12px;
+        scroll-snap-align: start;
+    }
+
+    .thumb-caption {
+        font-size: 0.68rem;
+        padding: 0.85rem 0.45rem 0.28rem;
+    }
+
+    .discography-box {
+        margin-top: 1.45rem;
+        padding: 1.15rem 1rem;
+        border-radius: 18px;
+    }
+
+    .discography-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.65rem;
+        margin-bottom: 0.9rem;
+    }
+
+    .discography-head h3 {
+        font-size: 0.98rem;
+        line-height: 1.35;
+    }
+
+    .discography-head h3 span {
+        display: block;
+        font-size: 0.78rem;
+        margin-top: 0.1rem;
+    }
+
+    .disc-tab {
+        font-size: 0.76rem;
+        padding: 0.34rem 0.8rem;
+    }
+
+    .discography-pills {
+        gap: 0.42rem;
+    }
+
+    .song-pill {
+        padding: 0.38rem 0.74rem;
+        font-size: 0.76rem;
+        border-radius: 14px;
+        max-width: 100%;
+        flex-wrap: wrap;
+        text-align: left;
+        line-height: 1.35;
+    }
+
+    .song-pill.is-center small {
+        font-size: 0.66rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    /* ---- SOCIALS & SISASTERTEAM ---- */
+    .surface-card {
+        padding: 1.35rem 1rem;
+        border-radius: 22px;
     }
 
     .group-header {
         flex-direction: column;
         text-align: center;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .group-avatar {
+        width: 68px;
+        height: 68px;
+    }
+
+    .group-title-area h3 {
+        font-size: 1.35rem;
+    }
+
+    .work-label {
+        font-size: 0.78rem;
+        margin-bottom: 0.45rem;
     }
 
     .copy-chips {
         justify-content: center;
+        gap: 0.4rem;
+    }
+
+    .copy-chip {
+        font-size: 0.75rem;
+        padding: 0.36rem 0.72rem;
+    }
+
+    .link-grid {
+        gap: 0.65rem;
+    }
+
+    .bar-link {
+        padding: 0.8rem 0.88rem;
+        border-radius: 15px;
+        font-size: 0.83rem;
+        line-height: 1.4;
+    }
+
+    .bar-link i:first-child {
+        width: 20px;
+        font-size: 1.08rem;
+        margin-right: 0.5rem;
+        flex-shrink: 0;
+    }
+
+    .bar-link span {
+        min-width: 0;
+        overflow-wrap: break-word;
+    }
+
+    .bar-link i:last-child {
+        flex-shrink: 0;
+        margin-left: 0.45rem;
+        font-size: 0.76rem;
+    }
+
+    .surface-card-ig {
+        margin-top: 1.35rem;
+    }
+
+    .ig-widget-header {
+        gap: 0.8rem;
+        margin-bottom: 1.1rem;
+    }
+
+    .ig-badge-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 13px;
+        font-size: 1.2rem;
+    }
+
+    .ig-widget-title h3 {
+        font-size: 1.18rem;
+    }
+
+    .ig-widget-title p {
+        font-size: 0.8rem;
+    }
+
+    .btn-ig-follow {
+        width: 100%;
+        padding: 0.66rem 1rem;
+        font-size: 0.84rem;
+    }
+
+    .fanbase-grid {
+        gap: 1.35rem;
+    }
+
+    .fanbase-intro {
+        gap: 0.68rem;
+    }
+
+    .fanbase-cat-badge {
+        font-size: 0.78rem;
+        padding: 0.3rem 0.85rem;
+    }
+
+    .fanbase-intro h3 {
+        font-size: 1.42rem;
+    }
+
+    .fanbase-intro p {
+        font-size: 0.88rem;
+        line-height: 1.72;
+    }
+
+    /* ---- FOOTER & COMPACT FLOATING DOCK ---- */
+    footer {
+        padding: 2.35rem 1rem calc(4.8rem + env(safe-area-inset-bottom));
+    }
+
+    .footer-brand {
+        font-size: 1.12rem;
+    }
+
+    .footer-nav {
+        gap: 0.35rem 0.85rem;
+    }
+
+    .footer-nav a {
+        font-size: 0.82rem;
+        padding: 0.18rem 0.2rem;
+    }
+
+    .footer-meta {
+        font-size: 0.74rem;
+        line-height: 1.55;
     }
 
     .bgm-dock {
-        right: 1rem;
-        bottom: 1rem;
+        flex-direction: row;
+        align-items: center;
+        right: 0.8rem;
+        bottom: calc(0.8rem + env(safe-area-inset-bottom));
+        gap: 0.5rem;
+    }
+
+    .back-to-top {
+        width: 38px;
+        height: 38px;
+        font-size: 0.82rem;
     }
 
     .vinyl {
-        width: 56px;
-        height: 56px;
+        width: 48px;
+        height: 48px;
+        border-width: 2.5px;
+    }
+
+    .play-icon {
+        width: 22px;
+        height: 22px;
+        font-size: 0.62rem;
     }
 }
 
-@media (max-width: 520px) {
-    .bio-cards,
+@media (max-width: 390px) {
+    #hero {
+        padding: 5.2rem 0.85rem 4.35rem;
+    }
+
+    .hero-actions .btn {
+        padding: 0.56rem 0.78rem;
+        font-size: 0.76rem;
+    }
+
+    section,
+    #ge6 {
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
+    }
+
     .facts-grid {
-        grid-template-columns: 1fr;
+        margin: 0 -0.85rem;
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
+        scroll-padding-inline: 0.85rem;
     }
 
-    .discography-box {
-        padding: 1.25rem;
+    .video-scroller {
+        margin: 0 -0.85rem;
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
+        width: calc(100% + 1.7rem);
+        scroll-padding-inline: 0.85rem;
     }
 
-    .surface-card,
-    .wataridori-card {
-        padding: 1.5rem;
-        border-radius: 24px;
+    .bio-mini-card {
+        padding: 0.78rem 0.76rem;
     }
 
-    .btn {
-        padding: 0.72rem 1.25rem;
-        font-size: 0.88rem;
+    .mini-value {
+        font-size: 0.82rem;
+    }
+
+    .mini-value small {
+        font-size: 0.68rem;
+    }
+
+    .bar-link {
+        font-size: 0.81rem;
+        padding: 0.78rem 0.85rem;
+    }
+
+    .wataridori-links .btn {
+        font-size: 0.74rem;
+        padding: 0.64rem 0.55rem;
+    }
+
+    .video-tag {
+        font-size: 0.68rem;
+        padding: 0.22rem 0.62rem;
+    }
+}
+
+@media (hover: none) {
+    .btn-pop:hover,
+    .btn-glass:hover,
+    .btn-sun:hover,
+    .btn-white:hover,
+    .hero-ge6-badge:hover,
+    .profile-frame:hover,
+    .bio-mini-card:hover,
+    .quote-box:hover,
+    .fact-card:hover,
+    .rank-display:hover,
+    .bar-link:hover,
+    .event-card:hover,
+    .video-thumb:hover {
+        transform: none;
+    }
+
+    .btn:active,
+    .bar-link:active,
+    .copy-chip:active,
+    .hero-ge6-badge:active,
+    .song-pill:active {
+        transform: scale(0.98);
     }
 }

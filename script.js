@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nav = document.querySelector('nav');
     const backToTopBtn = document.getElementById('back-to-top');
     const spySections = document.querySelectorAll('header#hero, main section[id]');
-    const desktopNavLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+    const spyNavLinks = document.querySelectorAll('.nav-links a[href^="#"], .mobile-nav-links a[href^="#"]');
 
     function handleScroll() {
         const y = window.scrollY;
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
             backToTopBtn.classList.toggle('visible', y > 420);
         }
 
-        if (spySections.length > 0 && desktopNavLinks.length > 0) {
+        if (spySections.length > 0 && spyNavLinks.length > 0) {
             let currentId = 'hero';
             spySections.forEach((sec) => {
                 const top = sec.offsetTop - 160;
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentId = sec.id;
                 }
             });
-            desktopNavLinks.forEach((link) => {
+            spyNavLinks.forEach((link) => {
                 const isMatch = link.getAttribute('href') === `#${currentId}`;
                 link.classList.toggle('active', isMatch);
             });
@@ -164,6 +164,46 @@ document.addEventListener('DOMContentLoaded', () => {
             age -= 1;
         }
         ageEl.textContent = String(age);
+    }
+
+    /* ============ MOBILE FACTS CAROUSEL DOTS ============ */
+    const factsGrid = document.querySelector('.facts-grid');
+    const factsDotsRoot = document.getElementById('facts-dots');
+    if (factsGrid && factsDotsRoot) {
+        const factCards = Array.from(factsGrid.querySelectorAll('.fact-card'));
+        const dots = factCards.map((_, idx) => {
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = idx === 0 ? 'fact-dot active' : 'fact-dot';
+            dot.setAttribute('aria-label', `Fact ${idx + 1}`);
+            dot.addEventListener('click', () => {
+                factCards[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+            });
+            factsDotsRoot.appendChild(dot);
+            return dot;
+        });
+
+        let dotRaf = null;
+        const updateActiveFactDot = () => {
+            dotRaf = null;
+            const gridRect = factsGrid.getBoundingClientRect();
+            let closestIdx = 0;
+            let closestDist = Infinity;
+            factCards.forEach((card, idx) => {
+                const dist = Math.abs(card.getBoundingClientRect().left - gridRect.left);
+                if (dist < closestDist) {
+                    closestDist = dist;
+                    closestIdx = idx;
+                }
+            });
+            dots.forEach((d, idx) => d.classList.toggle('active', idx === closestIdx));
+        };
+
+        factsGrid.addEventListener('scroll', () => {
+            if (!dotRaf) {
+                dotRaf = requestAnimationFrame(updateActiveFactDot);
+            }
+        }, { passive: true });
     }
 
     /* ============ HIGHLIGHTS VIDEO SWITCHER (WITH COMING SOON SUPPORT) ============ */

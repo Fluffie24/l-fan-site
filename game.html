@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Wataridori Dash · เกมบินฝ่าสายลม L BNK48</title>
     <meta name="description"
-        content="เล่นมินิเกมพิกเซล Wataridori Dash บินฝ่าสายลมไปกับน้องแอล L BNK48 และแมวดำคู่ใจ พร้อมตารางอันดับแฟนคลับแบบไม่ต้องล็อกอิน">
+        content="เล่นมินิเกมพิกเซล Wataridori Dash บินฝ่าสายลมไปกับแอล L BNK48 และแมวดำคู่ใจ พร้อมตารางอันดับแฟนคลับแบบไม่ต้องล็อกอิน">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="theme-color" content="#0B142C">
 
@@ -17,7 +17,7 @@
     <meta property="og:site_name" content="L's Fan Site">
     <meta property="og:title" content="Wataridori Dash · เกมบินฝ่าสายลม L BNK48">
     <meta property="og:description"
-        content="บินฝ่าสายลมไปกับน้องแอลและแมวดำคู่ใจ ในมินิเกม Wataridori Dash พร้อมตารางอันดับแฟนคลับ">
+        content="บินฝ่าสายลมไปกับแอลและแมวดำคู่ใจ ในมินิเกม Wataridori Dash พร้อมตารางอันดับแฟนคลับ">
     <meta property="og:image" content="https://lsfansite.vercel.app/assets/og.png">
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1200">
@@ -27,7 +27,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Wataridori Dash · เกมบินฝ่าสายลม L BNK48">
     <meta name="twitter:description"
-        content="บินฝ่าสายลมไปกับน้องแอลและแมวดำคู่ใจ ในมินิเกม Wataridori Dash พร้อมตารางอันดับแฟนคลับ">
+        content="บินฝ่าสายลมไปกับแอลและแมวดำคู่ใจ ในมินิเกม Wataridori Dash พร้อมตารางอันดับแฟนคลับ">
     <meta name="twitter:image" content="https://lsfansite.vercel.app/assets/og.png">
 
     <!-- Icons -->
@@ -68,7 +68,7 @@
             <li><a href="index.html#highlights">ผลงาน</a></li>
             <li><a href="index.html#l-channels">ช่องทางติดตาม</a></li>
             <li><a href="index.html#gallery">แกลเลอรี</a></li>
-            <li><a href="index.html#fanbase">ด้อมน้องแอล</a></li>
+            <li><a href="index.html#fanbase">ด้อมแอล</a></li>
             <li class="nav-divider" aria-hidden="true"></li>
             <li><a href="game.html" class="nav-page-link active">มินิเกม</a></li>
         </ul>
@@ -93,7 +93,7 @@
             <li><a href="index.html#highlights">ผลงาน</a></li>
             <li><a href="index.html#l-channels">ช่องทางติดตาม</a></li>
             <li><a href="index.html#gallery">แกลเลอรี</a></li>
-            <li><a href="index.html#fanbase">ด้อมน้องแอล</a></li>
+            <li><a href="index.html#fanbase">ด้อมแอล</a></li>
             <li class="mobile-nav-sep" aria-hidden="true"></li>
             <li><a href="game.html" class="active"><i class="fas fa-dove ui-icon icon-sky" aria-hidden="true"></i>
                     เกม Wataridori Dash</a></li>
@@ -104,42 +104,11 @@
     <main class="game-main">
         <div class="arcade-shell">
 
-            <!-- Compact Arcade Topbar -->
+            <!-- Slim Arcade Title Header -->
             <header class="arcade-topbar">
                 <div class="arcade-title-block">
                     <h1 class="game-title">WATARIDORI DASH</h1>
-                    <p class="game-subtitle">渡り鳥たちに空は見えない · เกมบินหลบ 3 เลนกับน้องแอล</p>
-                </div>
-
-                <div class="arcade-tools" role="toolbar" aria-label="ตั้งค่าเสียงและการเล่น">
-                    <div class="bgm-control-group">
-                        <button type="button" id="bgm-toggle" class="tool-btn" aria-pressed="false"
-                            aria-label="เปิดหรือปิดเพลงประกอบ">
-                            <i class="fas fa-music" aria-hidden="true"></i>
-                            <span class="tool-label">เพลง</span>
-                            <span class="eq-bars" aria-hidden="true">
-                                <span></span><span></span><span></span>
-                            </span>
-                        </button>
-                        <input type="range" id="bgm-volume" class="bgm-slider" min="0" max="100" value="20"
-                            aria-label="ระดับเสียงเพลงประกอบ">
-                    </div>
-
-                    <button type="button" id="sfx-toggle" class="tool-btn is-on" aria-pressed="true"
-                        aria-label="เปิดหรือปิดเสียงเอฟเฟกต์">
-                        <i class="fas fa-volume-high" aria-hidden="true"></i>
-                        <span class="tool-label">เอฟเฟกต์</span>
-                    </button>
-
-                    <button type="button" id="pause-btn" class="tool-btn" disabled aria-label="พักเกม">
-                        <i class="fas fa-pause" aria-hidden="true"></i>
-                        <span class="tool-label">พัก</span>
-                    </button>
-
-                    <button type="button" id="guide-open-btn" class="tool-btn" aria-label="เปิดวิธีเล่น">
-                        <i class="fas fa-circle-question" aria-hidden="true"></i>
-                        <span class="tool-label">วิธีเล่น</span>
-                    </button>
+                    <p class="game-subtitle">渡り鳥たちに空は見えない · เกมบินหลบ 3 เลนกับแอล</p>
                 </div>
             </header>
 
@@ -197,13 +166,12 @@
                             <div class="overlay-card overlay-start">
                                 <canvas id="hero-sprite-preview" class="hero-sprite-preview" width="160" height="72"
                                     aria-hidden="true"></canvas>
-                                <h2 class="overlay-heading">บินฝ่าสายลมไปกับน้องแอล</h2>
+                                <h2 class="overlay-heading">บินฝ่าสายลมไปกับแอล</h2>
                                 <p class="overlay-lyric">
                                     「心の羽根 もし傷ついても 羽ばたくこと 決してやめはしない」
                                 </p>
                                 <p class="overlay-brief">
-                                    บังคับน้องแอลกับแมวดำหลบสิ่งกีดขวาง 3 เลน เก็บแหวนแสงกับมันเกลียว
-                                    ยิ่งบินไกลเกมยิ่งเร็วและโหดขึ้น!
+                                    พาแอลกับแมวดำอพยพหลบสิ่งกีดขวางเพื่อไปให้ถึงฝัน!
                                 </p>
                                 <div class="overlay-actions">
                                     <button type="button" id="start-btn" class="arcade-btn arcade-btn-primary">
@@ -259,6 +227,40 @@
                             <span><kbd>P</kbd> พักเกม</span>
                         </p>
                     </div>
+
+                    <!-- Secondary Audio & Utility Bar (Spaced safely below lane controls) -->
+                    <div class="arcade-tools-bar">
+                        <div class="arcade-tools" role="toolbar" aria-label="ตั้งค่าเสียงและการเล่น">
+                            <div class="bgm-control-group">
+                                <button type="button" id="bgm-toggle" class="tool-btn" aria-pressed="false"
+                                    aria-label="เปิดหรือปิดเพลงประกอบ">
+                                    <i class="fas fa-music" aria-hidden="true"></i>
+                                    <span class="tool-label">เพลง</span>
+                                    <span class="eq-bars" aria-hidden="true">
+                                        <span></span><span></span><span></span>
+                                    </span>
+                                </button>
+                                <input type="range" id="bgm-volume" class="bgm-slider" min="0" max="100" value="20"
+                                    aria-label="ระดับเสียงเพลงประกอบ">
+                            </div>
+
+                            <button type="button" id="sfx-toggle" class="tool-btn is-on" aria-pressed="true"
+                                aria-label="เปิดหรือปิดเสียงเอฟเฟกต์">
+                                <i class="fas fa-volume-high" aria-hidden="true"></i>
+                                <span class="tool-label">เอฟเฟกต์</span>
+                            </button>
+
+                            <button type="button" id="pause-btn" class="tool-btn" disabled aria-label="พักเกม">
+                                <i class="fas fa-pause" aria-hidden="true"></i>
+                                <span class="tool-label">พัก</span>
+                            </button>
+
+                            <button type="button" id="guide-open-btn" class="tool-btn" aria-label="เปิดวิธีเล่น">
+                                <i class="fas fa-circle-question" aria-hidden="true"></i>
+                                <span class="tool-label">วิธีเล่น</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Live No-Login Leaderboard Panel -->
@@ -268,8 +270,7 @@
                             <h2 id="lb-heading">ตารางอันดับ</h2>
                             <span id="lb-mode-badge" class="lb-mode-badge">กำลังโหลด...</span>
                         </div>
-                        <button type="button" id="lb-refresh-btn" class="lb-icon-btn"
-                            aria-label="รีเฟรชตารางอันดับ">
+                        <button type="button" id="lb-refresh-btn" class="lb-icon-btn" aria-label="รีเฟรชตารางอันดับ">
                             <i class="fas fa-arrows-rotate" aria-hidden="true"></i>
                         </button>
                     </div>
@@ -290,7 +291,8 @@
 
                     <p id="lb-setup-note" class="lb-setup-note" hidden>
                         <i class="fas fa-database" aria-hidden="true"></i>
-                        <span>กำลังเก็บอันดับในเครื่องนี้ (เชื่อมต่อ Upstash Redis บน Vercel เพื่อแชร์อันดับออนไลน์)</span>
+                        <span>กำลังเก็บอันดับในเครื่องนี้ (เชื่อมต่อ Upstash Redis บน Vercel
+                            เพื่อแชร์อันดับออนไลน์)</span>
                     </p>
                 </aside>
             </section>
@@ -337,7 +339,8 @@
                                 <h3>รุ่งอรุณฤดูใบไม้ผลิ</h3>
                             </div>
                             <p class="chapter-jp">「僕たちは ずっと夢を見続ける」</p>
-                            <p class="chapter-desc">ฝ่าโค้งสุดท้ายสู่ทวีปใหม่ ผ่านครบรับโบนัสใหญ่แล้วยกระดับความเร็วต่อ!</p>
+                            <p class="chapter-desc">ฝ่าโค้งสุดท้ายสู่ทวีปใหม่ ผ่านครบรับโบนัสใหญ่แล้วยกระดับความเร็วต่อ!
+                            </p>
                         </article>
                     </div>
                 </div>
@@ -361,7 +364,7 @@
                                     <canvas class="guide-sprite-canvas" width="48" height="48" data-sprite="hero"
                                         aria-hidden="true"></canvas>
                                     <div>
-                                        <strong>น้องแอลจิบิ &amp; แมวดำคู่ใจ</strong>
+                                        <strong>แอลจิบิ &amp; แมวดำคู่ใจ</strong>
                                         <span>ติดกิ๊บขนนก GE6 ตอนติดฟีเวอร์แมวดำจะงอกหูแมวกระต่าย!</span>
                                     </div>
                                 </li>
@@ -370,7 +373,7 @@
                                         aria-hidden="true"></canvas>
                                     <div>
                                         <strong>แหวนแสงสีฟ้า-ม่วง</strong>
-                                        <span>สีแท่งไฟของน้องแอล (+100 คะแนน เพิ่มคอมโบและเกจฟีเวอร์)</span>
+                                        <span>สีแท่งไฟของแอล (+100 คะแนน เพิ่มคอมโบและเกจฟีเวอร์)</span>
                                     </div>
                                 </li>
                                 <li class="legend-item">
@@ -378,7 +381,7 @@
                                         aria-hidden="true"></canvas>
                                     <div>
                                         <strong>มันฝรั่งเกลียวทอด</strong>
-                                        <span>ของโปรดน้องแอล (+300 คะแนน และชาร์จฟีเวอร์ +10%)</span>
+                                        <span>ของโปรดของแอล (+300 คะแนน และชาร์จฟีเวอร์ +10%)</span>
                                     </div>
                                 </li>
                                 <li class="legend-item">
@@ -410,7 +413,8 @@
                                         aria-hidden="true"></canvas>
                                     <div>
                                         <strong>ลมต้านฉับพลัน (風に逆らい)</strong>
-                                        <span>ลมกระโชกความเร็วสูง เตือนด้วยป้าย &ldquo;!&rdquo; ด้านขวา ด่านหลังมาพร้อมกัน 2 เลน!</span>
+                                        <span>ลมกระโชกความเร็วสูง เตือนด้วยป้าย &ldquo;!&rdquo; ด้านขวา
+                                            ด่านหลังมาพร้อมกัน 2 เลน!</span>
                                     </div>
                                 </li>
                                 <li class="legend-item">
@@ -418,7 +422,7 @@
                                         aria-hidden="true"></canvas>
                                     <div>
                                         <strong>ค้างคาวกลางคืน &amp; ค้างคาวโฉบ</strong>
-                                        <span>สัตว์ที่น้องแอลกลัว ตัวสีม่วงเข้มจะโฉบสลับเลนกลางอากาศ ระวังลูกศรเตือน!</span>
+                                        <span>สัตว์ที่แอลกลัว ตัวสีม่วงเข้มจะโฉบสลับเลนกลางอากาศ ระวังลูกศรเตือน!</span>
                                     </div>
                                 </li>
                                 <li class="legend-item">
@@ -426,7 +430,7 @@
                                         aria-hidden="true"></canvas>
                                     <div>
                                         <strong>ปลาดุกกระโดด</strong>
-                                        <span>อีกหนึ่งสัตว์ที่น้องแอลกลัว กระโดดพุ่งขึ้นมาจากทะเลในเลนล่าง</span>
+                                        <span>อีกหนึ่งสัตว์ที่แอลกลัว กระโดดพุ่งขึ้นมาจากทะเลในเลนล่าง</span>
                                     </div>
                                 </li>
                                 <li class="legend-item">
@@ -434,7 +438,8 @@
                                         aria-hidden="true"></canvas>
                                     <div>
                                         <strong>สายฟ้าล็อกเป้า</strong>
-                                        <span>โผล่ตั้งแต่ด่าน 3 ขึ้นไป! ล็อกเลนที่คุณอยู่พร้อมสัญญาณสายฟ้า ต้องรีบโยกหลบ</span>
+                                        <span>โผล่ตั้งแต่ด่าน 3 ขึ้นไป! ล็อกเลนที่คุณอยู่พร้อมสัญญาณสายฟ้า
+                                            ต้องรีบโยกหลบ</span>
                                     </div>
                                 </li>
                             </ul>
@@ -521,23 +526,33 @@
             <div class="dialog-body">
                 <h3>การบังคับ</h3>
                 <ul>
-                    <li><strong>มือถือ / แท็บเล็ต:</strong> แตะหรือลากนิ้วขึ้นลงตรงเลนบนหน้าจอเกมได้เลย หรือกดปุ่ม <strong>บินขึ้น / บินลง</strong> ด้านล่าง</li>
-                    <li><strong>คอมพิวเตอร์:</strong> กด <kbd>↑</kbd>/<kbd>↓</kbd> หรือ <kbd>W</kbd>/<kbd>S</kbd> เปลี่ยนเลน, กด <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> ไปเลนบน/กลาง/ล่าง และกด <kbd>P</kbd> เพื่อพักเกม</li>
+                    <li><strong>มือถือ / แท็บเล็ต:</strong> แตะหรือลากนิ้วขึ้นลงตรงเลนบนหน้าจอเกมได้เลย หรือกดปุ่ม
+                        <strong>บินขึ้น / บินลง</strong> ด้านล่าง</li>
+                    <li><strong>คอมพิวเตอร์:</strong> กด <kbd>↑</kbd>/<kbd>↓</kbd> หรือ <kbd>W</kbd>/<kbd>S</kbd>
+                        เปลี่ยนเลน, กด <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> ไปเลนบน/กลาง/ล่าง และกด <kbd>P</kbd>
+                        เพื่อพักเกม</li>
                 </ul>
                 <h3>ทำคะแนน &amp; ทริคสายโหด</h3>
                 <ul>
-                    <li>เก็บ <strong>แหวนแสง</strong> และ <strong>มันเกลียว</strong> เพื่อสะสมคอมโบสูงสุด <code>x5</code> และเติมเกจ <strong>ดรีมฟีเวอร์</strong></li>
-                    <li><strong>หลบเฉียดฉิว:</strong> โยกหลบสิ่งกีดขวางในวินาทีสุดท้าย รับโบนัสคะแนนเพิ่ม + เติมเกจฟีเวอร์เร็วขึ้น!</li>
-                    <li>เมื่อเกจครบ <strong>100%</strong> จะเข้าสู่ <strong>ดรีมฟีเวอร์</strong> เป็นอมตะช่วงสั้น ๆ ทำลายสิ่งกีดขวางได้พร้อมคะแนน <code>x2</code> (แต่ยังต้องขยับเลนเก็บแหวนเองนะ!)</li>
-                    <li>ยิ่งบินผ่านด่านและขึ้นรอบใหม่ เกมจะเร็วขึ้นเรื่อย ๆ พร้อมอุปสรรคใหม่ทั้งค้างคาวโฉบ ลมต้านคู่ และสายฟ้าล็อกเป้า</li>
+                    <li>เก็บ <strong>แหวนแสง</strong> และ <strong>มันเกลียว</strong> เพื่อสะสมคอมโบสูงสุด
+                        <code>x5</code> และเติมเกจ <strong>ดรีมฟีเวอร์</strong></li>
+                    <li><strong>หลบเฉียดฉิว:</strong> โยกหลบสิ่งกีดขวางในวินาทีสุดท้าย รับโบนัสคะแนนเพิ่ม +
+                        เติมเกจฟีเวอร์เร็วขึ้น!</li>
+                    <li>เมื่อเกจครบ <strong>100%</strong> จะเข้าสู่ <strong>ดรีมฟีเวอร์</strong> เป็นอมตะช่วงสั้น ๆ
+                        ทำลายสิ่งกีดขวางได้พร้อมคะแนน <code>x2</code> (แต่ยังต้องขยับเลนเก็บแหวนเองนะ!)</li>
+                    <li>ยิ่งบินผ่านด่านและขึ้นรอบใหม่ เกมจะเร็วขึ้นเรื่อย ๆ พร้อมอุปสรรคใหม่ทั้งค้างคาวโฉบ ลมต้านคู่
+                        และสายฟ้าล็อกเป้า</li>
                 </ul>
                 <h3>เพลงประกอบ &amp; ตารางอันดับ</h3>
                 <p>
-                    ค่าเริ่มต้นจะเปิดเฉพาะเสียงเอฟเฟกต์ หากอยากฟังเพลง <em>Wataridoritachi ni Sora wa Mienai</em> ระหว่างบิน กดปุ่ม <strong>เพลง</strong> ด้านบนได้เลย เมื่อจบรอบสามารถกรอกชื่อ 1–18 ตัวอักษรเพื่อบันทึกคะแนนลงตารางอันดับโดยไม่ต้องล็อกอิน
+                    ค่าเริ่มต้นจะเปิดเฉพาะเสียงเอฟเฟกต์ หากอยากฟังเพลง <em>Wataridoritachi ni Sora wa Mienai</em>
+                    ระหว่างบิน กดปุ่ม <strong>เพลง</strong> ด้านล่างปุ่มบังคับได้เลย เมื่อจบรอบสามารถกรอกชื่อ 1–18
+                    ตัวอักษรเพื่อบันทึกคะแนนลงตารางอันดับโดยไม่ต้องล็อกอิน
                 </p>
             </div>
             <div class="dialog-foot">
-                <button type="button" id="guide-done-btn" class="arcade-btn arcade-btn-primary">เข้าใจแล้ว ลุยเลย!</button>
+                <button type="button" id="guide-done-btn" class="arcade-btn arcade-btn-primary">เข้าใจแล้ว
+                    ลุยเลย!</button>
             </div>
         </div>
     </dialog>
@@ -552,7 +567,7 @@
                 <a href="index.html#highlights">ผลงาน</a>
                 <a href="index.html#l-channels">ช่องทางติดตาม</a>
                 <a href="index.html#gallery">แกลเลอรี</a>
-                <a href="index.html#fanbase">ด้อมน้องแอล</a>
+                <a href="index.html#fanbase">ด้อมแอล</a>
                 <a href="game.html">มินิเกม</a>
             </div>
             <p class="footer-meta">

@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
         audio.addEventListener('play', () => syncAudioUI(true));
     }
 
-    /* ============ AUTO AGE CALCULATION ============ */
+    /* ============ AUTO AGE & YEARS ACTIVE (TEMPORAL + DURATION FORMAT) ============ */
     const ageEl = document.getElementById('l-age');
     if (ageEl) {
         const now = new Date();
@@ -186,6 +186,41 @@ document.addEventListener('DOMContentLoaded', () => {
             age -= 1;
         }
         ageEl.textContent = String(age);
+    }
+
+    const tenureEl = document.getElementById('l-tenure');
+    if (tenureEl) {
+        const renderTenure = () => {
+            if (typeof globalThis.Temporal === 'undefined') return;
+            const tz = 'Asia/Bangkok';
+            const now = globalThis.Temporal.Now.zonedDateTimeISO(tz);
+            const joined = globalThis.Temporal.PlainDate.from('2022-10-30').toZonedDateTime({
+                timeZone: tz,
+                plainTime: '00:00:00',
+            });
+            const duration = now.since(joined, { largestUnit: 'year', smallestUnit: 'day' });
+            if (duration.sign < 0) return;
+            if (typeof Intl !== 'undefined' && typeof Intl.DurationFormat === 'function') {
+                tenureEl.textContent = new Intl.DurationFormat('th', { style: 'long' }).format(duration);
+            } else {
+                tenureEl.textContent = duration.toLocaleString('th', { style: 'long' });
+            }
+        };
+
+        if (typeof globalThis.Temporal !== 'undefined') {
+            renderTenure();
+        } else {
+            import('https://esm.sh/temporal-polyfill')
+                .then((mod) => {
+                    if (mod && mod.Temporal) {
+                        globalThis.Temporal = mod.Temporal;
+                        renderTenure();
+                    }
+                })
+                .catch(() => {
+                    // Keep static fallback text if offline or polyfill cannot load
+                });
+        }
     }
 
     /* ============ MOBILE FACTS CAROUSEL DOTS ============ */

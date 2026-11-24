@@ -831,6 +831,38 @@ section {
     color: var(--body);
 }
 
+.bio-vitals {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem 1.4rem;
+    padding: 0.9rem 1.15rem;
+    background: var(--white);
+    border: 1.5px solid var(--border-sky);
+    border-radius: 18px;
+    box-shadow: 0 8px 20px rgba(14, 116, 198, 0.06);
+}
+
+.vital-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.08rem;
+}
+
+.vital-item dt {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--muted);
+    line-height: 1.3;
+}
+
+.vital-item dd {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.4;
+    font-variant-numeric: tabular-nums;
+}
+
 .bio-cards {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -901,6 +933,52 @@ section {
 .card-mint .mini-icon {
     background: linear-gradient(135deg, #D1FAE5, #A7F3D0);
     color: #059669;
+}
+
+.card-sun .mini-icon {
+    background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+    color: #B45309;
+}
+
+.mini-icon-gift {
+    width: 42px;
+    height: 42px;
+    padding: 3px;
+    background: linear-gradient(135deg, #FFF7ED, #FDE68A);
+    border: 1.5px solid rgba(245, 158, 11, 0.25);
+}
+
+.mini-icon-gift img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.card-sun .mini-value small {
+    color: #B45309;
+}
+
+.lightstick-value .ls-dot {
+    vertical-align: -1px;
+    margin-right: 0.25rem;
+}
+
+.ls-dot {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(15, 23, 42, 0.16);
+    flex-shrink: 0;
+}
+
+.ls-sky {
+    background: #38BDF8;
+}
+
+.ls-purple {
+    background: #9333EA;
 }
 
 .card-pink .mini-icon {
@@ -2524,8 +2602,118 @@ footer::before {
     color: #334155;
 }
 
+/* Team History & General Election Milestones Strip */
+.milestones-strip {
+    margin-top: 2.5rem;
+    background: var(--white);
+    border: 2px solid var(--border-sky);
+    border-radius: 24px;
+    padding: 1.5rem 1.85rem;
+    box-shadow: 0 14px 32px rgba(14, 116, 198, 0.08);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.75rem 2.25rem;
+}
+
+.milestone-col + .milestone-col {
+    padding-left: 2rem;
+    border-left: 1.5px solid #E2E8F0;
+}
+
+.milestone-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 0.75rem;
+    margin-bottom: 0.9rem;
+}
+
+.milestone-head .milestone-title {
+    margin-bottom: 0;
+}
+
+.tenure-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    background: #EDE9FE;
+    color: #5B21B6;
+    font-size: 0.76rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.milestone-title {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: 'Prompt', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.9rem;
+}
+
+.milestone-title i {
+    color: var(--sky-royal);
+    font-size: 0.95rem;
+}
+
+.milestone-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.milestone-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-size: 0.92rem;
+    color: var(--body);
+    line-height: 1.5;
+}
+
+.milestone-date,
+.milestone-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-family: 'Prompt', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+    background: var(--sky-light);
+    color: var(--sky-deep);
+}
+
+.milestone-badge {
+    min-width: 48px;
+}
+
+.milestone-badge.is-senbatsu {
+    background: #FCE7F3;
+    color: #9D174D;
+}
+
+.milestone-badge.is-center {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.milestone-desc strong {
+    color: var(--ink);
+    font-weight: 700;
+}
+
 .facts-block {
-    margin-top: 3.5rem;
+    margin-top: 3rem;
 }
 
 .facts-header {
@@ -2547,8 +2735,8 @@ footer::before {
 
 .facts-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.15rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
 }
 
 .fact-card {
@@ -3807,8 +3995,49 @@ button.song-pill.is-center.active {
         display: inline-block;
     }
 
+    .bio-vitals {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.65rem 0.85rem;
+        padding: 0.8rem 0.95rem;
+        border-radius: 16px;
+    }
+
+    .vital-item-wide {
+        grid-column: 1 / -1;
+        padding-top: 0.55rem;
+        border-top: 1px solid #E2E8F0;
+    }
+
+    .vital-item dt {
+        font-size: 0.68rem;
+    }
+
+    .vital-item dd {
+        font-size: 0.82rem;
+    }
+
     .catchphrase-grid {
         gap: 0.75rem;
+    }
+
+    .milestones-strip {
+        margin-top: 1.5rem;
+        grid-template-columns: 1fr;
+        gap: 1.15rem;
+        padding: 1.15rem 1.1rem;
+        border-radius: 20px;
+    }
+
+    .milestone-col + .milestone-col {
+        padding-left: 0;
+        padding-top: 1.1rem;
+        border-left: none;
+        border-top: 1.5px solid #E2E8F0;
+    }
+
+    .milestone-list li {
+        font-size: 0.84rem;
     }
 
     .quote-box {

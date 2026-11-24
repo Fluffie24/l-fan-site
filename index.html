@@ -110,6 +110,8 @@
             <li><a href="#l-channels">Socials</a></li>
             <li><a href="#gallery">Gallery</a></li>
             <li><a href="#fanbase">Sisasterteam</a></li>
+            <li class="nav-divider" aria-hidden="true"></li>
+            <li><a href="game.html" class="nav-page-link">Game</a></li>
         </ul>
 
         <button type="button" class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false"
@@ -133,6 +135,8 @@
             <li><a href="#l-channels">Socials</a></li>
             <li><a href="#gallery">Gallery</a></li>
             <li><a href="#fanbase">Sisasterteam</a></li>
+            <li class="mobile-nav-sep" aria-hidden="true"></li>
+            <li><a href="game.html"><i class="fas fa-dove ui-icon icon-sky" aria-hidden="true"></i> Wataridori Game</a></li>
         </ul>
     </aside>
     <div class="menu-overlay" id="menu-overlay"></div>
@@ -207,7 +211,7 @@
                     <div class="bio-info reveal">
                         <div class="bio-name-block">
                             <h3>Sirikorn Nilkasap</h3>
-                            <span class="nickname">L · แอล</span>
+                            <span class="nickname">L · แอล (エル)</span>
                         </div>
 
                         <p class="bio-text">
@@ -217,29 +221,60 @@
                             "น้องภัยพิบัติ" ที่เล่นใหญ่จนแฟนคลับคาดไม่ถึงอยู่บ่อย ๆ
                         </p>
 
-                        <div class="bio-cards">
-                            <div class="bio-mini-card card-sky">
-                                <span class="mini-icon" aria-hidden="true"><i class="fas fa-cake-candles"></i></span>
-                                <span class="mini-label">วันเกิด</span>
-                                <p class="mini-value">13 กุมภาพันธ์ 2003<br><small>(<span id="l-age">23</span>
-                                        ขวบ)</small></p>
+                        <dl class="bio-vitals" aria-label="ข้อมูลส่วนตัว">
+                            <div class="vital-item">
+                                <dt>วันเกิด</dt>
+                                <dd>13 ก.พ. 2003 (<span id="l-age">23</span> ปี)</dd>
                             </div>
+                            <div class="vital-item">
+                                <dt>ราศี</dt>
+                                <dd>กุมภ์</dd>
+                            </div>
+                            <div class="vital-item">
+                                <dt>กรุ๊ปเลือด</dt>
+                                <dd>B</dd>
+                            </div>
+                            <div class="vital-item">
+                                <dt>ส่วนสูง</dt>
+                                <dd>158 ซม.</dd>
+                            </div>
+                            <div class="vital-item vital-item-wide">
+                                <dt>ภูมิลำเนา</dt>
+                                <dd>เกิดที่กรุงเทพฯ · โตที่ จ.หนองบัวลำภู</dd>
+                            </div>
+                        </dl>
+
+                        <div class="bio-cards">
                             <div class="bio-mini-card card-violet">
                                 <span class="mini-icon" aria-hidden="true"><i class="fas fa-star"></i></span>
                                 <span class="mini-label">รุ่น / ทีม</span>
-                                <p class="mini-value">BNK48 4th Gen<br><small>Team NV</small></p>
+                                <p class="mini-value">BNK48 รุ่นที่ 4<br><small>Team NV</small></p>
                             </div>
                             <div class="bio-mini-card card-cat">
                                 <span class="mini-icon" aria-hidden="true"><i class="fas fa-cat"></i></span>
                                 <span class="mini-label">สัญลักษณ์</span>
-                                <p class="mini-value">แมวดำ<br><small></small></p>
+                                <p class="mini-value">แมวดำ</p>
                             </div>
                             <div class="bio-mini-card card-mint">
                                 <span class="mini-icon" aria-hidden="true"><i class="fas fa-tornado"></i></span>
                                 <span class="mini-label">ชื่อด้อม</span>
                                 <p class="mini-value">ผู้ประสบภัยพิบัติ<br><small>#ผู้ประสบภัยพิบัติครับจ้า</small></p>
                             </div>
-                            <div class="bio-mini-card card-pink bio-mini-wide">
+                            <div class="bio-mini-card card-sky">
+                                <span class="mini-icon" aria-hidden="true"><i class="fas fa-wand-sparkles"></i></span>
+                                <span class="mini-label">สีแท่งไฟ</span>
+                                <p class="mini-value lightstick-value"><span class="ls-dot ls-sky"
+                                        aria-hidden="true"></span><span class="ls-dot ls-purple"
+                                        aria-hidden="true"></span> ฟ้า – ม่วง<br><small>Sky Blue · Purple</small></p>
+                            </div>
+                            <div class="bio-mini-card card-sun">
+                                <span class="mini-icon mini-icon-gift" aria-hidden="true"><img
+                                        src="assets/gift-cat-bunny.png" alt="" width="36" height="36" loading="lazy"
+                                        decoding="async"></span>
+                                <span class="mini-label">ของขวัญประจำตัว</span>
+                                <p class="mini-value">แมวกระต่าย<br><small>iAM48 Gift</small></p>
+                            </div>
+                            <div class="bio-mini-card card-pink">
                                 <span class="mini-icon" aria-hidden="true"><i class="fas fa-heart"></i></span>
                                 <span class="mini-label">สิ่งที่ชอบ</span>
                                 <p class="mini-value">
@@ -272,6 +307,44 @@
                     </div>
                 </div>
 
+                <!-- Team History & General Election Milestones -->
+                <div class="milestones-strip reveal">
+                    <div class="milestone-col">
+                        <div class="milestone-head">
+                            <h3 class="milestone-title"><i class="fas fa-route" aria-hidden="true"></i> เส้นทางในวง</h3>
+                            <span class="tenure-pill"><span id="l-tenure">4 ปี และ 25 วัน</span></span>
+                        </div>
+                        <ul class="milestone-list">
+                            <li>
+                                <span class="milestone-date">30 ต.ค. 2022</span>
+                                <span class="milestone-desc">เข้าร่วม <strong>BNK48 รุ่นที่ 4</strong> (Trainee)</span>
+                            </li>
+                            <li>
+                                <span class="milestone-date">15 ก.ย. 2024</span>
+                                <span class="milestone-desc">เลื่อนขั้นเข้าสู่ <strong>Team NV</strong></span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="milestone-col">
+                        <h3 class="milestone-title"><i class="fas fa-trophy" aria-hidden="true"></i> ประวัติการเลือกตั้ง
+                            (GE)</h3>
+                        <ul class="milestone-list">
+                            <li>
+                                <span class="milestone-badge">GE4</span>
+                                <span class="milestone-desc"><strong>อันดับที่ 19</strong> · Undergirls</span>
+                            </li>
+                            <li>
+                                <span class="milestone-badge is-senbatsu">GE5</span>
+                                <span class="milestone-desc"><strong>อันดับที่ 9</strong> · Senbatsu</span>
+                            </li>
+                            <li>
+                                <span class="milestone-badge is-center">GE6</span>
+                                <span class="milestone-desc"><strong>อันดับที่ 13</strong> · Undergirls Center</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
                 <!-- Facts About Me (from L's own self-intro) -->
                 <div class="facts-block reveal">
                     <div class="facts-header">
@@ -286,7 +359,7 @@
                         </div>
                         <div class="fact-card fact-violet">
                             <span class="fact-emoji" aria-hidden="true"><i class="fas fa-tv"></i></span>
-                            <h4>อนิเมะที่รักมาก</h4>
+                            <h4>อนิเมะที่ชอบ</h4>
                             <p>ดู<strong>โคนัน</strong>มาตั้งแต่เด็ก (เมนอามุโร่ &amp; มัตสึดะ) และชอบเรื่อง
                                 <strong>IDOLiSH7</strong> (เมนพี่เท็น)
                             </p>
@@ -299,7 +372,7 @@
                         <div class="fact-card fact-sun">
                             <span class="fact-emoji" aria-hidden="true"><i class="fas fa-utensils"></i></span>
                             <h4>ของกินโปรด</h4>
-                            <p><strong>มันฝรั่งเกลียวทอด</strong> ของโปรดอันดับหนึ่งในใจ คิดถึงมันเกลียวตลอด!</p>
+                            <p><strong>มันฝรั่งเกลียวทอด</strong> ของโปรด</p>
                         </div>
                         <div class="fact-card fact-mint">
                             <span class="fact-emoji" aria-hidden="true"><i class="fas fa-paw"></i></span>
@@ -311,6 +384,17 @@
                             <h4>เพลงญี่ปุ่นโปรด</h4>
                             <p>ชอบฟังเพลงญี่ปุ่นมาก เพลงโปรดคือ <strong>"Be With You"</strong> จากอนิเมะ <em>Hotarubi no
                                     Mori e</em></p>
+                        </div>
+                        <div class="fact-card fact-violet">
+                            <span class="fact-emoji" aria-hidden="true"><i class="fas fa-hand"></i></span>
+                            <h4>ถนัดซ้าย</h4>
+                            <p>แอล<strong>ถนัดมือซ้าย</strong></p>
+                        </div>
+                        <div class="fact-card fact-pink">
+                            <span class="fact-emoji" aria-hidden="true"><i class="fas fa-fire"></i></span>
+                            <h4>เคยออดิชั่นรุ่นที่ 3</h4>
+                            <p>ก่อนจะติด BNK48 รุ่นที่ 4 แอล<strong>เคยออดิชั่น BNK48 รุ่นที่ 3</strong>
+                                มาก่อน ไม่ยอมแพ้จนได้เดบิวต์!</p>
                         </div>
                     </div>
                     <div class="facts-swipe-meta" aria-hidden="true">

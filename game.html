@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Wataridori Dash · L BNK48 Mini-Game</title>
+    <meta name="description"
+        content="เล่นมินิเกมพิกเซล Wataridori Dash แรงบันดาลใจจากเพลง 渡り鳥たちに空は見えない (GE6 #13 Center L BNK48) พร้อมบันทึกคะแนนบน Leaderboard ไม่ต้องล็อกอิน">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="theme-color" content="#0B142C">
+
+    <!-- Open Graph / Social Sharing -->
+    <link rel="canonical" href="https://lsfansite.vercel.app/game">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://lsfansite.vercel.app/game">
+    <meta property="og:site_name" content="L's Fan Site">
+    <meta property="og:title" content="Wataridori Dash · L BNK48 Mini-Game">
+    <meta property="og:description"
+        content="บินฝ่าสายลมไปกับ Pixel Chibi L และแมวดำคู่ใจ ในมินิเกม Wataridori Dash พร้อมตารางอันดับแฟนคลับ">
+    <meta property="og:image" content="https://lsfansite.vercel.app/assets/og.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Wataridori Dash · L BNK48 Mini-Game">
+    <meta name="twitter:description"
+        content="บินฝ่าสายลมไปกับ Pixel Chibi L และแมวดำคู่ใจ ในมินิเกม Wataridori Dash พร้อมตารางอันดับแฟนคลับ">
+    <meta name="twitter:image" content="https://lsfansite.vercel.app/assets/og.png">
+
+    <!-- Icons -->
+    <link rel="icon" href="/favicon.ico" sizes="48x48">
+    <link rel="icon" type="image/png" href="/assets/favicon-48.png" sizes="48x48">
+    <link rel="icon" type="image/png" href="/assets/favicon-192.png" sizes="192x192">
+    <link rel="apple-touch-icon" href="/assets/favicon-192.png">
+
+    <!-- Fonts & Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600&family=Outfit:wght@600;700;800&family=Press+Start+2P&family=Prompt:wght@300;400;500;600;700&family=Silkscreen:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="game.css">
+
+    <!-- Vercel Web Analytics -->
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+</head>
+
+<body class="game-body">
+
+    <nav class="scrolled" data-always-solid="true" aria-label="Main navigation">
+        <a href="index.html" class="logo">
+            <span class="logo-dot" aria-hidden="true"></span>
+            <span class="logo-main">L's Fan Site</span>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="index.html#hero">Home</a></li>
+            <li><a href="index.html#bio">Profile</a></li>
+            <li><a href="index.html#ge6">GE6</a></li>
+            <li><a href="index.html#highlights">Highlights</a></li>
+            <li><a href="index.html#l-channels">Socials</a></li>
+            <li><a href="index.html#gallery">Gallery</a></li>
+            <li><a href="index.html#fanbase">Sisasterteam</a></li>
+            <li class="nav-divider" aria-hidden="true"></li>
+            <li><a href="game.html" class="nav-page-link active">Game</a></li>
+        </ul>
+
+        <button type="button" class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false"
+            aria-controls="mobile-menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <aside class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation" aria-hidden="true">
+        <div class="mobile-menu-header">
+            <span class="mobile-logo">L's Fan Site</span>
+            <button type="button" class="close-menu" id="close-menu" aria-label="Close menu">&times;</button>
+        </div>
+        <ul class="mobile-nav-links">
+            <li><a href="index.html#hero">Home</a></li>
+            <li><a href="index.html#bio">Profile</a></li>
+            <li><a href="index.html#ge6">GE6</a></li>
+            <li><a href="index.html#highlights">Highlights</a></li>
+            <li><a href="index.html#l-channels">Socials</a></li>
+            <li><a href="index.html#gallery">Gallery</a></li>
+            <li><a href="index.html#fanbase">Sisasterteam</a></li>
+            <li class="mobile-nav-sep" aria-hidden="true"></li>
+            <li><a href="game.html" class="active"><i class="fas fa-dove ui-icon icon-sky" aria-hidden="true"></i>
+                    Wataridori Game</a></li>
+        </ul>
+    </aside>
+    <div class="menu-overlay" id="menu-overlay"></div>
+
+    <main class="game-main">
+        <div class="arcade-shell">
+
+            <!-- Compact Arcade Topbar -->
+            <header class="arcade-topbar">
+                <div class="arcade-title-block">
+                    <h1 class="game-title">WATARIDORI DASH</h1>
+                    <p class="game-subtitle">渡り鳥たちに空は見えない · Pixel Chibi L 3-Lane Sky Dodger</p>
+                </div>
+
+                <div class="arcade-tools" role="toolbar" aria-label="Game audio and controls">
+                    <div class="bgm-control-group">
+                        <button type="button" id="bgm-toggle" class="tool-btn" aria-pressed="false"
+                            aria-label="Toggle background music">
+                            <i class="fas fa-music" aria-hidden="true"></i>
+                            <span>BGM</span>
+                            <span class="eq-bars" aria-hidden="true">
+                                <span></span><span></span><span></span>
+                            </span>
+                        </button>
+                        <input type="range" id="bgm-volume" class="bgm-slider" min="0" max="100" value="35"
+                            aria-label="BGM volume">
+                    </div>
+
+                    <button type="button" id="sfx-toggle" class="tool-btn is-on" aria-pressed="true"
+                        aria-label="Toggle pixel sound effects">
+                        <i class="fas fa-volume-high" aria-hidden="true"></i>
+                        <span>SFX</span>
+                    </button>
+
+                    <button type="button" id="pause-btn" class="tool-btn" disabled aria-label="Pause game">
+                        <i class="fas fa-pause" aria-hidden="true"></i>
+                        <span>PAUSE</span>
+                    </button>
+
+                    <button type="button" id="guide-open-btn" class="tool-btn">
+                        <i class="fas fa-circle-question" aria-hidden="true"></i>
+                        <span>GUIDE</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Primary Split Arena: Game Stage + Live Leaderboard -->
+            <section class="arcade-layout" aria-label="Game stage and leaderboard">
+                <div class="stage-column">
+                    <!-- Live HUD Strip -->
+                    <div class="hud-bar" aria-label="Flight telemetry">
+                        <div class="hud-cell hud-hp">
+                            <span class="hud-label">WINGS HP</span>
+                            <div id="hud-hearts" class="hud-hearts" aria-label="3 of 3 wings remaining">
+                                <span class="heart-pip is-full" aria-hidden="true"><i class="fas fa-heart"></i></span>
+                                <span class="heart-pip is-full" aria-hidden="true"><i class="fas fa-heart"></i></span>
+                                <span class="heart-pip is-full" aria-hidden="true"><i class="fas fa-heart"></i></span>
+                            </div>
+                        </div>
+
+                        <div class="hud-cell hud-score-cell">
+                            <span class="hud-label">SCORE</span>
+                            <span id="hud-score" class="hud-value">0</span>
+                        </div>
+
+                        <div class="hud-cell hud-combo-cell">
+                            <span class="hud-label">COMBO</span>
+                            <span id="hud-combo" class="hud-value">x1</span>
+                        </div>
+
+                        <div class="hud-cell hud-fever-cell">
+                            <div class="fever-head">
+                                <span class="hud-label">DREAM FEVER</span>
+                                <span id="hud-fever-label" class="hud-fever-pct">0%</span>
+                            </div>
+                            <div id="hud-fever-bar" class="fever-track" role="progressbar" aria-valuemin="0"
+                                aria-valuemax="100" aria-valuenow="0" aria-label="Dream Fever charge">
+                                <div id="hud-fever-fill" class="fever-fill"></div>
+                            </div>
+                        </div>
+
+                        <div class="hud-cell hud-chapter-cell">
+                            <span class="hud-label">CHAPTER</span>
+                            <span id="hud-chapter" class="hud-chapter-pill">S1 · Midnight Station</span>
+                        </div>
+                    </div>
+
+                    <!-- Pixel Canvas Stage -->
+                    <div class="canvas-frame" id="canvas-frame">
+                        <canvas id="game-canvas" width="480" height="270" role="img"
+                            aria-label="Wataridori Dash 3-lane pixel sky dodger canvas"></canvas>
+
+                        <!-- Start Overlay -->
+                        <div id="start-overlay" class="stage-overlay">
+                            <div class="overlay-card overlay-start">
+                                <canvas id="hero-sprite-preview" class="hero-sprite-preview" width="144" height="72"
+                                    aria-hidden="true"></canvas>
+                                <h2 class="overlay-heading">DREAM FLOCK DASH</h2>
+                                <p class="overlay-lyric">
+                                    「心の羽根 もし傷ついても 羽ばたくこと 決してやめはしない」
+                                </p>
+                                <p class="overlay-brief">
+                                    Move across 3 sky lanes with Pixel Chibi L &amp; Black Cat. Chain Dream Rings &amp;
+                                    Tornado Potatoes to ignite Dream Fever!
+                                </p>
+                                <div class="overlay-actions">
+                                    <button type="button" id="start-btn" class="arcade-btn arcade-btn-primary">
+                                        <i class="fas fa-play" aria-hidden="true"></i>
+                                        <span>START FLIGHT</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pause Overlay -->
+                        <div id="pause-overlay" class="stage-overlay" hidden>
+                            <div class="overlay-card overlay-pause">
+                                <h2 class="overlay-heading">FLIGHT PAUSED</h2>
+                                <p class="overlay-brief">Catch your breath above the clouds. Your combo is safe.</p>
+                                <div class="overlay-actions">
+                                    <button type="button" id="resume-btn" class="arcade-btn arcade-btn-primary">
+                                        <i class="fas fa-play" aria-hidden="true"></i>
+                                        <span>RESUME</span>
+                                    </button>
+                                    <button type="button" id="pause-restart-btn" class="arcade-btn arcade-btn-secondary">
+                                        <i class="fas fa-rotate-right" aria-hidden="true"></i>
+                                        <span>RESTART</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Game Over & No-Login Leaderboard Submission Overlay -->
+                        <div id="gameover-overlay" class="stage-overlay" hidden>
+                            <div class="overlay-card overlay-gameover">
+                                <div class="gameover-head">
+                                    <h2 class="overlay-heading">FLIGHT COMPLETE</h2>
+                                    <span id="new-best-pill" class="new-best-pill" hidden>NEW BEST</span>
+                                </div>
+
+                                <div class="gameover-stats">
+                                    <div class="stat-box">
+                                        <span class="stat-label">SCORE</span>
+                                        <strong id="final-score" class="stat-val">0</strong>
+                                    </div>
+                                    <div class="stat-box">
+                                        <span class="stat-label">MAX COMBO</span>
+                                        <strong id="final-combo" class="stat-val">0</strong>
+                                    </div>
+                                    <div class="stat-box">
+                                        <span class="stat-label">CHAPTER</span>
+                                        <strong id="final-chapter" class="stat-val stat-chapter">Midnight Station</strong>
+                                    </div>
+                                </div>
+
+                                <p id="gameover-lyric" class="gameover-lyric">
+                                    「どこまで行けば 夜明けが見える？」
+                                </p>
+
+                                <form id="score-form" class="score-form" novalidate>
+                                    <div class="field">
+                                        <label for="player-name">Record Your Name on Leaderboard</label>
+                                        <span id="name-hint" class="field-hint">
+                                            1–18 characters (TH / EN / JP) · No login required
+                                        </span>
+                                        <input type="text" id="player-name" name="playerName" required minlength="1"
+                                            maxlength="18" autocomplete="nickname" aria-describedby="name-hint"
+                                            aria-invalid="false" data-error="name-error"
+                                            placeholder="e.g. Sisaster_01">
+                                        <div id="name-error" class="field-error">
+                                            <span role="img" aria-label="Error"><i class="fas fa-circle-exclamation"
+                                                    aria-hidden="true"></i></span>
+                                            Enter 1 to 18 characters (no &lt; or &gt;) to submit your score.
+                                        </div>
+                                    </div>
+
+                                    <div class="overlay-actions">
+                                        <button type="submit" id="submit-score-btn"
+                                            class="arcade-btn arcade-btn-primary">
+                                            <i class="fas fa-trophy" aria-hidden="true"></i>
+                                            <span>SAVE SCORE</span>
+                                        </button>
+                                        <button type="button" id="play-again-btn"
+                                            class="arcade-btn arcade-btn-secondary">
+                                            <i class="fas fa-rotate-right" aria-hidden="true"></i>
+                                            <span>FLY AGAIN</span>
+                                        </button>
+                                    </div>
+
+                                    <p id="submit-status" class="submit-status" role="status" aria-live="polite"></p>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tactile Lane Controls Dock -->
+                    <div class="controls-dock">
+                        <div class="lane-pad">
+                            <button type="button" id="lane-up-btn" class="lane-btn" aria-label="Move up one sky lane">
+                                <i class="fas fa-chevron-up" aria-hidden="true"></i>
+                                <span>LANE UP</span>
+                            </button>
+                            <button type="button" id="lane-down-btn" class="lane-btn"
+                                aria-label="Move down one sky lane">
+                                <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                                <span>LANE DOWN</span>
+                            </button>
+                        </div>
+
+                        <p class="controls-hint">
+                            <span><kbd>↑</kbd> <kbd>↓</kbd> or <kbd>W</kbd> <kbd>S</kbd></span>
+                            <span><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> direct lane</span>
+                            <span>Tap or swipe canvas</span>
+                            <span><kbd>P</kbd> pause</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Live No-Login Leaderboard Panel -->
+                <aside class="leaderboard-panel" aria-labelledby="lb-heading">
+                    <div class="lb-header">
+                        <div class="lb-title-wrap">
+                            <h2 id="lb-heading">TOP FLIGHTS</h2>
+                            <span id="lb-mode-badge" class="lb-mode-badge">LOADING...</span>
+                        </div>
+                        <button type="button" id="lb-refresh-btn" class="lb-icon-btn"
+                            aria-label="Refresh leaderboard">
+                            <i class="fas fa-arrows-rotate" aria-hidden="true"></i>
+                        </button>
+                    </div>
+
+                    <div class="lb-personal-best">
+                        <span>Your Personal Best</span>
+                        <strong id="personal-best-val" class="lb-pb-num">0</strong>
+                    </div>
+
+                    <ol id="leaderboard-list" class="lb-list" aria-busy="true"></ol>
+
+                    <div id="lb-status" class="lb-status" hidden>
+                        <p id="lb-status-msg">No flights recorded yet. Be the first to soar!</p>
+                        <button type="button" id="lb-retry-btn" class="arcade-btn arcade-btn-secondary" hidden>
+                            RETRY
+                        </button>
+                    </div>
+
+                    <p id="lb-setup-note" class="lb-setup-note" hidden>
+                        <i class="fas fa-database" aria-hidden="true"></i>
+                        <span>Local device leaderboard active. Connect Upstash Redis in Vercel Storage to share scores
+                            globally.</span>
+                    </p>
+                </aside>
+            </section>
+
+            <!-- Song Journey Timeline & Pixel Field Guide -->
+            <section class="journey-section" aria-label="Song chapters and pixel guide">
+                <div class="journey-block">
+                    <h2 class="section-pixel-heading">FOUR-SEASON SKY ROUTE</h2>
+                    <div class="chapter-timeline">
+                        <article class="chapter-stop chapter-station">
+                            <div class="chapter-head">
+                                <span class="chapter-tag">CHAPTER 1</span>
+                                <h3>Midnight Station</h3>
+                            </div>
+                            <p class="chapter-jp">「暗闇の中で汽車を待つステーション」</p>
+                            <p class="chapter-desc">Depart beneath starlight as the night train passes below.</p>
+                        </article>
+
+                        <article class="chapter-stop chapter-ocean">
+                            <div class="chapter-head">
+                                <span class="chapter-tag">CHAPTER 2</span>
+                                <h3>Rough Ocean</h3>
+                            </div>
+                            <p class="chapter-jp">「いくつもの海流 荒波を越えて」</p>
+                            <p class="chapter-desc">Ride against ocean gusts while leaping catfish splash upward.</p>
+                        </article>
+
+                        <article class="chapter-stop chapter-sunset">
+                            <div class="chapter-head">
+                                <span class="chapter-tag">CHAPTER 3</span>
+                                <h3>Golden Sunset</h3>
+                            </div>
+                            <p class="chapter-jp">「故郷を覚えている 夕焼けの美しさ」</p>
+                            <p class="chapter-desc">Soar across dusk embers beside distant migrating flocks.</p>
+                        </article>
+
+                        <article class="chapter-stop chapter-dawn">
+                            <div class="chapter-head">
+                                <span class="chapter-tag">CHAPTER 4</span>
+                                <h3>Spring Dawn</h3>
+                            </div>
+                            <p class="chapter-jp">「僕たちは ずっと夢を見続ける」</p>
+                            <p class="chapter-desc">Reach the continent at sunrise with drifting spring petals.</p>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="journey-block">
+                    <h2 class="section-pixel-heading">PIXEL FIELD GUIDE</h2>
+                    <div class="sprite-legend">
+                        <div class="legend-group">
+                            <h3 class="legend-group-title is-collect">
+                                <i class="fas fa-sparkles" aria-hidden="true"></i> FLY &amp; COLLECT
+                            </h3>
+                            <ul class="legend-list">
+                                <li class="legend-item">
+                                    <canvas class="guide-sprite-canvas" width="48" height="48" data-sprite="hero"
+                                        aria-hidden="true"></canvas>
+                                    <div>
+                                        <strong>Pixel Chibi L &amp; Black Cat</strong>
+                                        <span>Flaps with GE6 feather pin; Black Cat sprouts Cat-Bunny ears in Fever!</span>
+                                    </div>
+                                </li>
+                                <li class="legend-item">
+                                    <canvas class="guide-sprite-canvas" width="48" height="48" data-sprite="ring"
+                                        aria-hidden="true"></canvas>
+                                    <div>
+                                        <strong>Sky &amp; Purple Dream Rings</strong>
+                                        <span>L's lightstick colors (+100 pts, builds Combo &amp; Fever).</span>
+                                    </div>
+                                </li>
+                                <li class="legend-item">
+                                    <canvas class="guide-sprite-canvas" width="48" height="48" data-sprite="potato"
+                                        aria-hidden="true"></canvas>
+                                    <div>
+                                        <strong>Tornado Potato (มันฝรั่งเกลียว)</strong>
+                                        <span>L's favorite snack (+300 pts &amp; +22% Fever boost).</span>
+                                    </div>
+                                </li>
+                                <li class="legend-item">
+                                    <canvas class="guide-sprite-canvas" width="48" height="48" data-sprite="feather"
+                                        aria-hidden="true"></canvas>
+                                    <div>
+                                        <strong>Wing of the Heart (心の羽根)</strong>
+                                        <span>Restores 1 lost Wing HP (or +400 bonus at full HP).</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="legend-group">
+                            <h3 class="legend-group-title is-dodge">
+                                <i class="fas fa-triangle-exclamation" aria-hidden="true"></i> DODGE HAZARDS
+                            </h3>
+                            <ul class="legend-list">
+                                <li class="legend-item">
+                                    <canvas class="guide-sprite-canvas" width="48" height="48" data-sprite="cloud"
+                                        aria-hidden="true"></canvas>
+                                    <div>
+                                        <strong>Thunder Storm Cloud</strong>
+                                        <span>Heavy static cloud blocking a sky lane.</span>
+                                    </div>
+                                </li>
+                                <li class="legend-item">
+                                    <canvas class="guide-sprite-canvas" width="48" height="48" data-sprite="gust"
+                                        aria-hidden="true"></canvas>
+                                    <div>
+                                        <strong>Headwind Gale (風に逆らい)</strong>
+                                        <span>Fast gust telegraphed by a pulsing &ldquo;!&rdquo; edge marker.</span>
+                                    </div>
+                                </li>
+                                <li class="legend-item">
+                                    <canvas class="guide-sprite-canvas" width="48" height="48" data-sprite="bat"
+                                        aria-hidden="true"></canvas>
+                                    <div>
+                                        <strong>Night Bat (ค้างคาว)</strong>
+                                        <span>One of L's feared critters fluttering across the dark sky.</span>
+                                    </div>
+                                </li>
+                                <li class="legend-item">
+                                    <canvas class="guide-sprite-canvas" width="48" height="48" data-sprite="catfish"
+                                        aria-hidden="true"></canvas>
+                                    <div>
+                                        <strong>Leaping Catfish (ปลาดุก)</strong>
+                                        <span>Splashes up into the lower lane during ocean crossings!</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Accessible How-to-Play Dialog -->
+    <dialog id="guide-dialog" class="game-dialog" closedby="any" aria-labelledby="guide-dialog-title">
+        <div class="dialog-panel">
+            <div class="dialog-head">
+                <h2 id="guide-dialog-title">HOW TO PLAY · WATARIDORI DASH</h2>
+                <button type="button" id="guide-close-btn" class="dialog-close" aria-label="Close guide">
+                    <i class="fas fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="dialog-body">
+                <h3>Controls</h3>
+                <ul>
+                    <li><strong>Keyboard:</strong> Press <kbd>↑</kbd>/<kbd>↓</kbd> or <kbd>W</kbd>/<kbd>S</kbd> to switch sky lanes, <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> to jump straight to Top/Mid/Low lane, and <kbd>P</kbd> to pause.</li>
+                    <li><strong>Touch / Mouse:</strong> Tap any lane on the sky canvas, swipe up/down, or use the <strong>LANE UP / LANE DOWN</strong> arcade buttons below the screen.</li>
+                </ul>
+                <h3>Scoring &amp; Dream Fever</h3>
+                <ul>
+                    <li>Collecting <strong>Dream Rings</strong> &amp; <strong>Tornado Potatoes</strong> raises your Combo multiplier (up to <code>x5</code>) and fills the <strong>Dream Fever</strong> gauge.</li>
+                    <li>At <strong>100% Fever</strong>, Chibi L becomes invincible for 7 seconds with <code>2x</code> points, gentle ring magnetism, and Cat-Bunny ears on her Black Cat companion!</li>
+                    <li>Surviving all 4 lyric chapters completes a Season loop for a <strong>Continent Milestone Bonus</strong>.</li>
+                </ul>
+                <h3>Audio &amp; Leaderboard</h3>
+                <p>
+                    BGM plays <em>Wataridoritachi ni Sora wa Mienai</em> (<code>assets/Wataridoritachi.mp3</code>) when you start or toggle BGM. After any flight ends, enter any display name (1–18 characters) to record your score without logging in.
+                </p>
+            </div>
+            <div class="dialog-foot">
+                <button type="button" id="guide-done-btn" class="arcade-btn arcade-btn-primary">GOT IT</button>
+            </div>
+        </div>
+    </dialog>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-brand">L BNK48 Fan Website</div>
+            <div class="footer-nav" role="navigation" aria-label="Footer navigation">
+                <a href="index.html#hero">Home</a>
+                <a href="index.html#bio">Profile</a>
+                <a href="index.html#ge6">GE6</a>
+                <a href="index.html#highlights">Highlights</a>
+                <a href="index.html#l-channels">Socials</a>
+                <a href="index.html#gallery">Gallery</a>
+                <a href="index.html#fanbase">Sisasterteam</a>
+                <a href="game.html">Game</a>
+            </div>
+            <p class="footer-meta">
+                Fan-made website for Sirikorn Nilkasap (L BNK48) · Not affiliated with BNK48 or iAM
+            </p>
+            <p class="footer-credit">
+                Created by
+                <a href="https://x.com/Fluffff24" target="_blank" rel="noopener noreferrer" class="creator-link">
+                    <i class="fa-brands fa-x-twitter" aria-hidden="true"></i> Fluff
+                </a>
+            </p>
+        </div>
+    </footer>
+
+    <audio id="game-bgm" loop preload="metadata">
+        <source src="assets/Wataridoritachi.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="script.js"></script>
+    <script src="game.js" defer></script>
+</body>
+
+</html>

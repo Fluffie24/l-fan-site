@@ -1,13 +1,45 @@
 {
   "cleanUrls": false,
+  "redirects": [
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/events.html",
+      "destination": "/events",
+      "permanent": true
+    },
+    {
+      "source": "/watadoridash.html",
+      "destination": "/watadoridash",
+      "permanent": true
+    },
+    {
+      "source": "/game",
+      "destination": "/watadoridash",
+      "permanent": true
+    },
+    {
+      "source": "/game.html",
+      "destination": "/watadoridash",
+      "permanent": true
+    },
+    {
+      "source": "/wataridoridash",
+      "destination": "/watadoridash",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/events",
       "destination": "/events.html"
     },
     {
-      "source": "/game",
-      "destination": "/game.html"
+      "source": "/watadoridash",
+      "destination": "/watadoridash.html"
     }
   ]
 }

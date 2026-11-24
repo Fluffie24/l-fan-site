@@ -73,12 +73,14 @@ body.game-body :where(button, input:not([type="range"]), select, textarea, nav a
     min-inline-size: var(--target-size);
 }
 
-/* ============ COMPACT DARK ARCADE NAV ============ */
+/* ============ COMPACT DARK ARCADE NAV (STICKY — NEVER OVERLAPS GAME TITLE) ============ */
 body.game-body nav.scrolled {
+    position: sticky;
+    top: 0;
     background: rgba(8, 16, 36, 0.94);
     border-bottom: 1px solid rgba(56, 189, 248, 0.28);
     box-shadow: 0 8px 24px rgba(3, 7, 18, 0.48);
-    padding: calc(0.55rem + env(safe-area-inset-top, 0px)) max(4%, env(safe-area-inset-right, 0px)) 0.55rem max(4%, env(safe-area-inset-left, 0px));
+    padding: calc(0.45rem + env(safe-area-inset-top, 0px)) max(4%, env(safe-area-inset-right, 0px)) 0.45rem max(4%, env(safe-area-inset-left, 0px));
 }
 
 body.game-body nav.scrolled .logo-main {
@@ -177,7 +179,7 @@ body.game-body [tabindex]:focus-visible {
 /* ============ MAIN SHELL (MOBILE-FIRST) ============ */
 .game-main {
     padding:
-        calc(3.45rem + env(safe-area-inset-top, 0px))
+        0.55rem
         max(0.55rem, env(safe-area-inset-right, 0px))
         calc(2.25rem + env(safe-area-inset-bottom, 0px))
         max(0.55rem, env(safe-area-inset-left, 0px));
@@ -1580,7 +1582,7 @@ dialog.game-dialog::backdrop {
 @media (min-width: 720px) {
     .game-main {
         padding:
-            calc(4.4rem + env(safe-area-inset-top, 0px))
+            0.85rem
             max(1.25rem, env(safe-area-inset-right, 0px))
             calc(3rem + env(safe-area-inset-bottom, 0px))
             max(1.25rem, env(safe-area-inset-left, 0px));
@@ -1703,7 +1705,7 @@ dialog.game-dialog::backdrop {
 /* ============ LANDSCAPE PHONE OVERRIDE (MUST COME AFTER MIN-WIDTH 720PX) ============ */
 @media (max-height: 500px) and (orientation: landscape) {
     .game-main {
-        padding-top: calc(3.35rem + env(safe-area-inset-top, 0px));
+        padding-top: 0.35rem;
     }
 
     .arcade-shell {

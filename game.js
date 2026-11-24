@@ -1,13 +1,15 @@
 (() => {
     'use strict';
 
-    const VIRTUAL_W = 480;
-    const VIRTUAL_H = 270;
-    const LANE_Y = [74, 138, 202];
-    const PLAYER_X = 96;
+    /* ============ DYNAMIC VIEWPORT GEOMETRY (ZERO LETTERBOXING) ============ */
+    const VIRTUAL_H = 276;
+    const BASE_VIRTUAL_W = 480;
+    const BASE_PLAYER_X = 88;
+    const BASE_TRAVEL_DIST = BASE_VIRTUAL_W - BASE_PLAYER_X; // 392
+    const LANE_Y = [70, 140, 210];
+
     const CHAPTER_DURATION = 22;
-    const FEVER_DURATION = 7.0;
-    const INVULN_DURATION = 1.8;
+    const INVULN_DURATION = 1.25;
 
     const PB_STORAGE_KEY = 'wataridori_pb_v1';
     const LOCAL_LB_KEY = 'wataridori_local_lb_v1';
@@ -16,44 +18,63 @@
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    const view = {
+        w: BASE_VIRTUAL_W,
+        h: VIRTUAL_H,
+        playerX: BASE_PLAYER_X,
+        spriteScale: 1.35,
+        speedScale: 1,
+        isCompact: false,
+    };
+
     const CHAPTERS = [
         {
-            name: 'Midnight Station',
+            apiName: 'Midnight Station',
+            nameTh: 'สถานียามค่ำคืน',
             skyTop: [9, 17, 40],
             skyMid: [18, 35, 74],
             skyBot: [28, 52, 98],
-            lyric: '「暗闇の中で汽車を待つステーション」',
-            endLyric: '「どこまで行けば 夜明けが見える？」',
+            lyric: 'ด่าน 1 · สถานียามค่ำคืน',
+            endLyric: '「どこまで行けば 夜明けが見える？」 — อีกไกลแค่ไหนกว่าจะเห็นรุ่งอรุณ',
             accent: '#38BDF8',
         },
         {
-            name: 'Rough Ocean',
+            apiName: 'Rough Ocean',
+            nameTh: 'ฝ่าคลื่นทะเลคลั่ง',
             skyTop: [10, 31, 56],
             skyMid: [15, 62, 88],
             skyBot: [20, 94, 118],
-            lyric: '「いくつもの海流 荒波を越えて」',
-            endLyric: '「渡り鳥たちに地図なんてない」',
+            lyric: 'ด่าน 2 · ฝ่าคลื่นทะเลคลั่ง',
+            endLyric: '「渡り鳥たちに地図なんてない」 — นกอพยพไม่มีแผนที่นำทาง',
             accent: '#22D3EE',
         },
         {
-            name: 'Golden Sunset',
+            apiName: 'Golden Sunset',
+            nameTh: 'ตะวันลับขอบฟ้า',
             skyTop: [54, 26, 87],
             skyMid: [185, 58, 128],
             skyBot: [245, 158, 11],
-            lyric: '「故郷を覚えている 夕焼けの美しさ」',
-            endLyric: '「今になってわかることがある」',
+            lyric: 'ด่าน 3 · ตะวันลับขอบฟ้า',
+            endLyric: '「今になってわかることがある」 — สิ่งที่เพิ่งเข้าใจในตอนนี้',
             accent: '#F472B6',
         },
         {
-            name: 'Spring Dawn',
+            apiName: 'Spring Dawn',
+            nameTh: 'รุ่งอรุณฤดูใบไม้ผลิ',
             skyTop: [3, 105, 161],
             skyMid: [56, 189, 248],
             skyBot: [251, 207, 232],
-            lyric: '「僕たちは ずっと夢を見続ける」',
-            endLyric: '「心の羽根 決してやめはしない」',
+            lyric: 'ด่าน 4 · รุ่งอรุณฤดูใบไม้ผลิ',
+            endLyric: '「心の羽根 決してやめはしない」 — ปีกแห่งหัวใจจะไม่หยุดโบยบิน',
             accent: '#FBBF24',
         },
     ];
+
+    const CHAPTER_TH_BY_API = Object.fromEntries(CHAPTERS.map((ch) => [ch.apiName, ch.nameTh]));
+
+    function getThaiChapterName(apiName) {
+        return CHAPTER_TH_BY_API[apiName] || apiName || CHAPTERS[0].nameTh;
+    }
 
     /* ============ PIXEL SPRITE ATLAS ============ */
     function bakeSprite(rows, palette) {
@@ -79,47 +100,21 @@
 
     function createSpriteAtlas() {
         const pL = {
-            h: '#161522', // hair dark
-            d: '#2A2840', // hair highlight
-            f: '#F8FAFC', // feather / white collar
-            c: '#BAE6FD', // feather / sky tint
-            s: '#FDE1CE', // skin
-            b: '#FDA4AF', // blush
-            e: '#0F172A', // eyes
-            w: '#FFFFFF', // eye glint / dress
-            n: '#1E3A8A', // navy collar
-            g: '#FBBF24', // gold trim
-            k: '#38BDF8', // sky wing
-            p: '#A78BFA', // purple wing
-            v: '#7C3AED', // deep purple wing
-            r: '#F43F5E', // hurt tint
+            h: '#161522',
+            d: '#2A2840',
+            f: '#F8FAFC',
+            c: '#BAE6FD',
+            s: '#FDE1CE',
+            b: '#FDA4AF',
+            e: '#0F172A',
+            w: '#FFFFFF',
+            n: '#1E3A8A',
+            g: '#FBBF24',
+            k: '#38BDF8',
+            p: '#A78BFA',
+            v: '#7C3AED',
+            r: '#F43F5E',
         };
-
-        // 24x24 Chibi L with 4 wing frames (up, mid, down, mid)
-        const lHead = [
-            '........hhhhhh..........',
-            '......hhhhhhhhhh........',
-            '.....hhddhhhhddhh..f....',
-            '....hhhddhhhhddhh.fc....',
-            '....hhhhhhhhhhhhhff.....',
-            '....hhhhhhhhhhhhhh......',
-            '....hhsssehhsssehh......',
-            '....hhssswshssswsh......',
-            '....hhsbsssssssbsh......',
-            '....hhhssssssssshh......',
-            '....hhh.nnnnnnn.hh......',
-        ];
-
-        const lBodyMid = [
-            '...kww..nwwgwwn..hh.....',
-            '..kkww..nwwwwwm..hh.....',
-            '..ppww..wwwwwww..hh.....',
-            '...pp...nwwgwwn.........',
-            '........wwwwwww.........',
-            '........nwwwwwm.........',
-            '.........ss.ss..........',
-            '.........nn.nn..........',
-        ].map((r) => r.replace(/m/g, 'n'));
 
         const lUp = [
             '.kk.....................',
@@ -204,10 +199,6 @@
 
         const lHurt = lMid.map((row) => row.replace(/g/g, 'r').replace(/k/g, 'r'));
 
-        void lHead;
-        void lBodyMid;
-
-        // Tiny Black Cat (14x12) + Fever Cat-Bunny (14x16)
         const pCat = {
             b: '#0F172A',
             d: '#334155',
@@ -286,7 +277,6 @@
             '..............',
         ];
 
-        // Collectibles
         const ringSky = bakeSprite([
             '....cccccc....',
             '..ccwwwwwwcc..',
@@ -357,7 +347,6 @@
             '..............',
         ], { p: '#F472B6', w: '#FFF1F2', g: '#FDE047' });
 
-        // Hazards
         const cloud = bakeSprite([
             '.........ddddddddd..........',
             '.......ddbbbbbbbbbdd........',
@@ -398,7 +387,7 @@
             '............................',
         ], { c: '#38BDF8', w: '#E0F2FE' });
 
-        const bat0 = bakeSprite([
+        const bat0Rows = [
             '.dd..............dd.',
             'dddd............dddd',
             'ddddd..dddddd..ddddd',
@@ -413,9 +402,9 @@
             '....................',
             '....................',
             '....................',
-        ], { d: '#312E81', r: '#FB7185' });
+        ];
 
-        const bat1 = bakeSprite([
+        const bat1Rows = [
             '....................',
             '....................',
             '......dddddddd......',
@@ -430,7 +419,12 @@
             '....................',
             '....................',
             '....................',
-        ], { d: '#312E81', r: '#FB7185' });
+        ];
+
+        const bat0 = bakeSprite(bat0Rows, { d: '#312E81', r: '#FB7185' });
+        const bat1 = bakeSprite(bat1Rows, { d: '#312E81', r: '#FB7185' });
+        const batSwoop0 = bakeSprite(bat0Rows, { d: '#701A75', r: '#FDE047' });
+        const batSwoop1 = bakeSprite(bat1Rows, { d: '#701A75', r: '#FDE047' });
 
         const catfish0 = bakeSprite([
             '.......bbbbbb.........',
@@ -466,6 +460,22 @@
             '......................',
         ], { b: '#1E293B', s: '#64748B', y: '#FDE047', w: '#CBD5E1' });
 
+        // Fast Thunder Bolt Surge (28x12)
+        const bolt = bakeSprite([
+            '..............gggggg........',
+            '...........gggyyyyyyggg.....',
+            '......gggggyyywwwwwwyyyg....',
+            '..ggggyyyyywwwwwwwwwwyyyg...',
+            'ggyyyywwwwwwwwwwwwwwwwyygg..',
+            'yywwwwwwwwwwwwwwwwwwyyyyggg.',
+            '..ggggyyyywwwwwwwwyyyyygggg.',
+            '......ggggyyyyyyyygggg......',
+            '..........gggggggg..........',
+            '............................',
+            '............................',
+            '............................',
+        ], { g: '#F59E0B', y: '#FDE047', w: '#FEFCE8' });
+
         return {
             l: [bakeSprite(lUp, pL), bakeSprite(lMid, pL), bakeSprite(lDown, pL), bakeSprite(lMid, pL)],
             lHurt: bakeSprite(lHurt, pL),
@@ -478,7 +488,9 @@
             cloud,
             gust,
             bat: [bat0, bat1],
+            batSwoop: [batSwoop0, batSwoop1],
             catfish: [catfish0, catfish1],
+            bolt,
         };
     }
 
@@ -487,6 +499,8 @@
     /* ============ SYNTHESIZED CHIPTUNE SFX ============ */
     let audioCtx = null;
     let sfxEnabled = true;
+
+    const RING_PENTATONIC = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5];
 
     function ensureAudioCtx() {
         if (!sfxEnabled) return null;
@@ -520,20 +534,32 @@
         osc.stop(now + duration + 0.02);
     }
 
-    function playSfx(kind) {
+    function playSfx(kind, comboCount = 0) {
         if (!sfxEnabled) return;
         switch (kind) {
             case 'move':
-                playTone(420, 0.06, 'triangle', 0.05, 580);
+                playTone(420, 0.055, 'triangle', 0.048, 590);
                 break;
-            case 'ring':
-                playTone(660, 0.07, 'square', 0.055, null, 0);
-                playTone(880, 0.09, 'square', 0.055, null, 0.05);
+            case 'ring': {
+                const base = RING_PENTATONIC[Math.min(RING_PENTATONIC.length - 1, Math.floor(comboCount / 3))];
+                playTone(base, 0.065, 'square', 0.05, null, 0);
+                playTone(base * 1.25, 0.085, 'square', 0.05, null, 0.045);
                 break;
+            }
             case 'potato':
                 playTone(523, 0.07, 'square', 0.06, null, 0);
                 playTone(659, 0.07, 'square', 0.06, null, 0.05);
                 playTone(784, 0.11, 'square', 0.065, null, 0.1);
+                break;
+            case 'nearmiss':
+                playTone(740, 0.06, 'triangle', 0.065, 1180, 0);
+                playTone(1180, 0.08, 'triangle', 0.055, 1480, 0.04);
+                break;
+            case 'warn':
+                playTone(880, 0.045, 'square', 0.035, 660, 0);
+                break;
+            case 'bolt':
+                playTone(980, 0.12, 'sawtooth', 0.06, 260, 0);
                 break;
             case 'heal':
                 playTone(587, 0.08, 'triangle', 0.08, null, 0);
@@ -541,7 +567,7 @@
                 playTone(1046, 0.15, 'triangle', 0.08, null, 0.14);
                 break;
             case 'hit':
-                playTone(180, 0.18, 'sawtooth', 0.08, 70);
+                playTone(180, 0.18, 'sawtooth', 0.085, 65);
                 break;
             case 'fever':
                 playTone(523, 0.08, 'square', 0.07, null, 0);
@@ -565,14 +591,15 @@
     }
 
     /* ============ DOM REFERENCES ============ */
+    const canvasFrame = document.getElementById('canvas-frame');
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
-    ctx.imageSmoothingEnabled = false;
 
     const hudBar = document.querySelector('.hud-bar');
     const hudHearts = document.getElementById('hud-hearts');
     const hudScore = document.getElementById('hud-score');
     const hudCombo = document.getElementById('hud-combo');
+    const hudLevel = document.getElementById('hud-level');
     const hudFeverBar = document.getElementById('hud-fever-bar');
     const hudFeverFill = document.getElementById('hud-fever-fill');
     const hudFeverLabel = document.getElementById('hud-fever-label');
@@ -621,6 +648,66 @@
     const guideCloseBtn = document.getElementById('guide-close-btn');
     const guideDoneBtn = document.getElementById('guide-done-btn');
 
+    /* ============ COLLAPSE FIELD GUIDE BY DEFAULT ON COMPACT MOBILE ============ */
+    const fieldGuideDetails = document.querySelector('.field-guide-details');
+    if (fieldGuideDetails && window.innerWidth < 720) {
+        fieldGuideDetails.open = false;
+    }
+
+    /* ============ RESPONSIVE CANVAS SIZING (CRISP 2X BACKING + ZERO LETTERBOX) ============ */
+    function resizeCanvasStage() {
+        if (!canvasFrame || !canvas) return;
+        const rect = canvasFrame.getBoundingClientRect();
+        const cssW = Math.max(240, Math.round(rect.width));
+        const cssH = Math.max(200, Math.round(rect.height));
+        const dpr = Math.min(2, window.devicePixelRatio || 2);
+
+        const targetBackW = Math.round(cssW * dpr);
+        const targetBackH = Math.round(cssH * dpr);
+        if (canvas.width !== targetBackW || canvas.height !== targetBackH) {
+            canvas.width = targetBackW;
+            canvas.height = targetBackH;
+        }
+
+        const prevW = view.w;
+        const aspect = cssW / cssH;
+        view.h = VIRTUAL_H;
+        view.w = Math.round(Math.max(276, Math.min(BASE_VIRTUAL_W, view.h * aspect)));
+        view.isCompact = view.w < 380;
+        view.playerX = Math.round(view.w * (view.isCompact ? 0.21 : 0.185));
+        view.spriteScale = view.isCompact ? 1.52 : 1.36;
+        view.speedScale = (view.w - view.playerX) / BASE_TRAVEL_DIST;
+
+        // Remap active item x-positions and hitbox dimensions smoothly if viewport size changed
+        if (prevW > 0 && state && state.items) {
+            const ratio = prevW !== view.w ? view.w / prevW : 1;
+            const spriteMap = {
+                ring: SPRITES.ringSky,
+                potato: SPRITES.potato,
+                feather: SPRITES.feather,
+                cloud: SPRITES.cloud,
+                gust: SPRITES.gust,
+                bat: SPRITES.bat[0],
+                batSwoop: SPRITES.batSwoop[0],
+                catfish: SPRITES.catfish[0],
+                bolt: SPRITES.bolt,
+            };
+            for (const item of state.items) {
+                item.x *= ratio;
+                const sp = spriteMap[item.kind];
+                if (sp) {
+                    item.w = sp.width * view.spriteScale;
+                    item.h = sp.height * view.spriteScale;
+                }
+            }
+            if (ratio !== 1) {
+                for (const star of state.stars) {
+                    star.x = (star.x * ratio) % view.w;
+                }
+            }
+        }
+    }
+
     /* ============ RENDER SPRITE PREVIEWS ============ */
     function renderStaticPreviews() {
         const heroPreview = document.getElementById('hero-sprite-preview');
@@ -628,9 +715,9 @@
             const pctx = heroPreview.getContext('2d');
             pctx.imageSmoothingEnabled = false;
             pctx.clearRect(0, 0, heroPreview.width, heroPreview.height);
-            pctx.drawImage(SPRITES.l[1], 18, 6, 60, 60);
-            pctx.drawImage(SPRITES.cat[0], 82, 24, 36, 30);
-            pctx.drawImage(SPRITES.ringSky, 118, 12, 20, 20);
+            pctx.drawImage(SPRITES.l[1], 24, 4, 64, 64);
+            pctx.drawImage(SPRITES.cat[0], 92, 24, 38, 32);
+            pctx.drawImage(SPRITES.ringSky, 130, 12, 22, 22);
         }
 
         const spriteMap = {
@@ -640,8 +727,9 @@
             feather: SPRITES.feather,
             cloud: SPRITES.cloud,
             gust: SPRITES.gust,
-            bat: SPRITES.bat[0],
+            bat: SPRITES.batSwoop[0],
             catfish: SPRITES.catfish[0],
+            bolt: SPRITES.bolt,
         };
 
         document.querySelectorAll('.guide-sprite-canvas[data-sprite]').forEach((el) => {
@@ -773,19 +861,25 @@
         maxCombo: 0,
         fever: 0,
         feverTimer: 0,
+        feverDurationCurrent: 4.5,
         invulnTimer: 0,
+        hitFlashTimer: 0,
         shakeTimer: 0,
         season: 1,
         chapterIdx: 0,
         prevChapterIdx: 0,
         chapterLerp: 1,
+        diffLevel: 1,
         playerLane: 1,
         playerY: LANE_Y[1],
         playerTilt: 0,
-        catY: LANE_Y[1] + 8,
-        scrollSpeed: 148,
-        spawnTimer: 1.0,
-        lastFeatherAt: -20,
+        catY: LANE_Y[1] + 9,
+        lastLaneLeft: -1,
+        lastLaneSwitchAt: -10,
+        scrollSpeed: 182,
+        spawnTimer: 0.72,
+        lastFeatherAt: -30,
+        lastPattern: -1,
         bannerText: '',
         bannerTimer: 0,
         bannerColor: '#38BDF8',
@@ -794,24 +888,38 @@
         telegraphs: [],
         particles: [],
         popups: [],
-        stars: Array.from({ length: 44 }, (_, i) => ({
-            x: (i * 53) % VIRTUAL_W,
-            y: 12 + ((i * 29) % 140),
+        speedLines: Array.from({ length: 14 }, (_, i) => ({
+            x: (i * 43) % BASE_VIRTUAL_W,
+            y: 26 + ((i * 37) % 215),
+            len: 12 + (i % 4) * 7,
+            speed: 1.5 + (i % 3) * 0.35,
+        })),
+        stars: Array.from({ length: 42 }, (_, i) => ({
+            x: (i * 53) % BASE_VIRTUAL_W,
+            y: 12 + ((i * 29) % 165),
             size: i % 5 === 0 ? 2 : 1,
             phase: i * 0.7,
         })),
         petals: Array.from({ length: 18 }, (_, i) => ({
-            x: (i * 37) % VIRTUAL_W,
+            x: (i * 37) % BASE_VIRTUAL_W,
             y: (i * 19) % VIRTUAL_H,
-            vx: -28 - (i % 4) * 9,
-            vy: 14 + (i % 3) * 7,
+            vx: -34 - (i % 4) * 10,
+            vy: 15 + (i % 3) * 7,
         })),
-        trainX: VIRTUAL_W + 40,
+        trainX: BASE_VIRTUAL_W + 40,
         waveOffset: 0,
         lastSubmittedRun: false,
         personalBest: 0,
         lastSubmittedId: null,
     };
+
+    resizeCanvasStage();
+    if ('ResizeObserver' in window && canvasFrame) {
+        const ro = new ResizeObserver(() => resizeCanvasStage());
+        ro.observe(canvasFrame);
+    } else {
+        window.addEventListener('resize', resizeCanvasStage, { passive: true });
+    }
 
     try {
         const storedPb = Number.parseInt(localStorage.getItem(PB_STORAGE_KEY) || '0', 10);
@@ -826,25 +934,48 @@
         personalBestEl.textContent = state.personalBest.toLocaleString('en');
     }
 
-    /* ============ GAME HELPERS & SPAWNER ============ */
-    function setBanner(text, color = '#38BDF8', duration = 3.6) {
+    /* ============ PROGRESSIVE DIFFICULTY HELPERS ============ */
+    function getDifficultyTier() {
+        // 0..3 within Season 1, 4+ in Season 2+
+        return Math.min(6, Math.floor(state.elapsed / CHAPTER_DURATION) + 1);
+    }
+
+    function getFeverDuration() {
+        return state.season >= 2 ? 4.0 : 4.5;
+    }
+
+    function getBaseScrollSpeed() {
+        // Starts brisk at 182, ramps smoothly through 350 by end of S1, up to 440 in endless
+        const linear = 182 + state.elapsed * 2.15 + (state.season - 1) * 24;
+        if (linear <= 360) return linear;
+        return Math.min(445, 360 + (linear - 360) * 0.42);
+    }
+
+    function getTelegraphDuration() {
+        // Fair warning window that tightens as difficulty grows (0.50s -> 0.34s)
+        const tier = state.diffLevel;
+        return Math.max(0.34, 0.51 - (tier - 1) * 0.032);
+    }
+
+    /* ============ GAME HELPERS & PROGRESSIVE WAVE SPAWNER ============ */
+    function setBanner(text, color = '#38BDF8', duration = 3.2) {
         state.bannerText = text;
         state.bannerColor = color;
         state.bannerTimer = duration;
     }
 
-    function spawnParticles(x, y, color, count = 8, speed = 75) {
+    function spawnParticles(x, y, color, count = 8, speed = 82) {
         const total = prefersReducedMotion ? Math.min(4, count) : count;
         for (let i = 0; i < total; i += 1) {
-            const angle = (Math.PI * 2 * i) / total + (Math.random() - 0.5) * 0.4;
+            const angle = (Math.PI * 2 * i) / total + (Math.random() - 0.5) * 0.45;
             const mag = speed * (0.45 + Math.random() * 0.65);
             state.particles.push({
                 x,
                 y,
                 vx: Math.cos(angle) * mag,
                 vy: Math.sin(angle) * mag,
-                life: 0.42 + Math.random() * 0.25,
-                maxLife: 0.65,
+                life: 0.38 + Math.random() * 0.22,
+                maxLife: 0.6,
                 size: i % 2 === 0 ? 3 : 2,
                 color,
             });
@@ -862,112 +993,281 @@
         });
     }
 
-    function pushItem(kind, lane, offsetX = 0, extra = {}) {
-        const sizes = {
-            ring: { w: 14, h: 14 },
-            potato: { w: 16, h: 16 },
-            feather: { w: 14, h: 14 },
-            cloud: { w: 28, h: 20 },
-            gust: { w: 28, h: 14 },
-            bat: { w: 20, h: 14 },
-            catfish: { w: 22, h: 14 },
+    function pushItem(kind, lane, offsetBaseX = 0, extra = {}) {
+        const spriteMap = {
+            ring: SPRITES.ringSky,
+            potato: SPRITES.potato,
+            feather: SPRITES.feather,
+            cloud: SPRITES.cloud,
+            gust: SPRITES.gust,
+            bat: SPRITES.bat[0],
+            batSwoop: SPRITES.batSwoop[0],
+            catfish: SPRITES.catfish[0],
+            bolt: SPRITES.bolt,
         };
-        const box = sizes[kind] || { w: 16, h: 16 };
+        const sp = spriteMap[kind] || SPRITES.ringSky;
+        const scaledOffset = offsetBaseX * view.speedScale;
+
         state.items.push({
             kind,
             lane,
-            x: VIRTUAL_W + 24 + offsetX,
+            targetLane: extra.targetLane ?? lane,
+            x: view.w + 22 + scaledOffset,
             y: LANE_Y[lane],
-            w: box.w,
-            h: box.h,
+            w: sp.width * view.spriteScale,
+            h: sp.height * view.spriteScale,
             speedMul: extra.speedMul || 1,
-            colorVariant: extra.colorVariant || (lane % 2),
+            colorVariant: extra.colorVariant ?? (lane % 2),
             baseY: LANE_Y[lane],
             phase: Math.random() * Math.PI * 2,
-            collected: false,
             jumpTimer: extra.jumpTimer || 0,
+            swoopState: kind === 'batSwoop' ? 'armed' : 'none',
+            swoopWarnTimer: 0,
+            nearMissed: false,
         });
     }
 
-    function pickHazardForChapter(chIdx) {
-        if (chIdx === 0) return Math.random() < 0.55 ? 'bat' : 'cloud';
-        if (chIdx === 1) return Math.random() < 0.5 ? 'cloud' : 'bat';
-        if (chIdx === 2) return Math.random() < 0.6 ? 'cloud' : 'bat';
-        return Math.random() < 0.5 ? 'cloud' : 'bat';
+    function pickStandardHazard(chIdx, tier) {
+        if (tier >= 2 && Math.random() < Math.min(0.42, 0.18 + (tier - 2) * 0.07)) {
+            return 'bat';
+        }
+        if (chIdx === 0) return Math.random() < 0.5 ? 'bat' : 'cloud';
+        return Math.random() < 0.58 ? 'cloud' : 'bat';
+    }
+
+    function getSpawnCooldown(baseSec) {
+        // Compresses smoothly as speed rises while staying fair
+        const speedNorm = Math.min(1.3, (state.scrollSpeed - 182) / 210);
+        return Math.max(0.4, baseSec - speedNorm * 0.42);
+    }
+
+    function pickFairSafeLane() {
+        // Avoid picking a "safe" lane that already has a hazard entering the right half of the screen
+        const incomingHazardLanes = new Set();
+        const thresholdX = view.w * 0.58;
+        for (const item of state.items) {
+            const isHaz = item.kind !== 'ring' && item.kind !== 'potato' && item.kind !== 'feather';
+            if (isHaz && item.x >= thresholdX) {
+                incomingHazardLanes.add(item.targetLane ?? item.lane);
+            }
+        }
+        for (const tel of state.telegraphs) {
+            incomingHazardLanes.add(tel.lane);
+        }
+        const clearLanes = [0, 1, 2].filter((l) => !incomingHazardLanes.has(l));
+        const candidates = clearLanes.length > 0 ? clearLanes : [0, 1, 2];
+        return candidates[Math.floor(Math.random() * candidates.length)];
     }
 
     function spawnWave() {
         const ch = state.chapterIdx;
-        const speedRatio = (state.scrollSpeed - 148) / 140;
-        const roll = Math.random();
+        const tier = state.diffLevel;
+        const telDur = getTelegraphDuration();
 
-        // Occasional Heart-Wing Feather if damaged
-        const needsHeal = state.hp < state.maxHp && state.elapsed - state.lastFeatherAt >= 18;
+        // Rarer healing feather — requires longer wait and appears in trickier lanes
+        const featherCooldown = state.season >= 2 ? 34 : 28;
+        const needsHeal = state.hp < state.maxHp && state.elapsed - state.lastFeatherAt >= featherCooldown;
 
-        if (roll < 0.28) {
-            // Pattern A: 1 hazard lane + 4 guiding Dream Rings in a safe lane
+        // Build weighted pattern deck based on current progression tier
+        const pool = [];
+        // 0: Single hazard warm-up (fades out after LV.2 so late game is never dull)
+        if (tier <= 2) pool.push({ id: 0, w: tier === 1 ? 18 : 6 });
+        // 1: Double Gate (2 lanes blocked, 1 safe) — chained at LV.3+
+        pool.push({ id: 1, w: 26 });
+        // 2: Slalom Weave (3 -> 4 -> 5 beats!)
+        pool.push({ id: 2, w: 22 + Math.min(8, tier * 2) });
+        // 3: Headwind Gale (single early, DOUBLE gale from LV.3+)
+        pool.push({ id: 3, w: 18 + Math.min(10, tier * 2) });
+        // 4: Swooping Lane-Shift Bat (unlocks LV.2+)
+        if (tier >= 2) pool.push({ id: 4, w: 14 + Math.min(10, (tier - 1) * 3) });
+        // 5: Risk-Reward Potato Bait (unlocks LV.2+)
+        if (tier >= 2) pool.push({ id: 5, w: 14 });
+        // 6: Targeted Thunder Bolt Surge (unlocks LV.3+)
+        if (tier >= 3) pool.push({ id: 6, w: 16 + Math.min(10, (tier - 2) * 3) });
+        // 7: Leaping Catfish Ambush (Chapter 2 or Season 2+)
+        if (ch === 1 || state.season >= 2) pool.push({ id: 7, w: ch === 1 ? 22 : 12 });
+
+        // Avoid repeating the exact same pattern twice in a row
+        const filtered = pool.length > 1 ? pool.filter((p) => p.id !== state.lastPattern) : pool;
+        const totalW = filtered.reduce((acc, p) => acc + p.w, 0);
+        let r = Math.random() * totalW;
+        let chosen = filtered[0].id;
+        for (const p of filtered) {
+            r -= p.w;
+            if (r <= 0) {
+                chosen = p.id;
+                break;
+            }
+        }
+        state.lastPattern = chosen;
+
+        if (chosen === 0) {
+            // Pattern 0: Brisk warm-up gate (1 hazard + rings)
             const hazardLane = Math.floor(Math.random() * 3);
             const safeLanes = [0, 1, 2].filter((l) => l !== hazardLane);
             const ringLane = safeLanes[Math.floor(Math.random() * safeLanes.length)];
-
-            pushItem(pickHazardForChapter(ch), hazardLane, 0);
-            for (let i = 0; i < 4; i += 1) {
-                pushItem('ring', ringLane, i * 28, { colorVariant: i % 2 });
-            }
-            if (needsHeal) {
-                pushItem('feather', safeLanes[0], 112);
-                state.lastFeatherAt = state.elapsed;
-            }
-            state.spawnTimer = Math.max(0.85, 1.32 - speedRatio * 0.34);
-        } else if (roll < 0.56) {
-            // Pattern B: Double Gate (2 hazards, 1 guaranteed safe lane) + Tornado Potato reward
-            const safeLane = Math.floor(Math.random() * 3);
-            const blocked = [0, 1, 2].filter((l) => l !== safeLane);
-            pushItem(pickHazardForChapter(ch), blocked[0], 0);
-            pushItem(pickHazardForChapter(ch), blocked[1], 10);
-            pushItem('potato', safeLane, 12);
-            pushItem('ring', safeLane, 44);
-            if (needsHeal) {
-                pushItem('feather', safeLane, 76);
-                state.lastFeatherAt = state.elapsed;
-            }
-            state.spawnTimer = Math.max(0.95, 1.42 - speedRatio * 0.35);
-        } else if (roll < 0.78) {
-            // Pattern C: 3-Beat Slalom Wave across lanes
-            const dir = Math.random() < 0.5 ? 1 : -1;
-            const order = dir > 0 ? [0, 1, 2] : [2, 1, 0];
-            order.forEach((safe, step) => {
-                const off = step * 94;
-                const hazardLane = (safe + 1) % 3;
-                pushItem(pickHazardForChapter(ch), hazardLane, off);
-                pushItem('ring', safe, off + 6, { colorVariant: step % 2 });
-            });
-            pushItem('potato', order[2], 2 * 94 + 34);
-            state.spawnTimer = Math.max(1.25, 1.85 - speedRatio * 0.4);
-        } else if (roll < 0.9 || ch !== 1) {
-            // Pattern D: Fast Headwind Gust with fair 0.55s edge telegraph
-            const gustLane = Math.floor(Math.random() * 3);
-            const safeLane = (gustLane + 1 + Math.floor(Math.random() * 2)) % 3;
-            state.telegraphs.push({
-                lane: gustLane,
-                timer: 0.55,
-                kind: 'gust',
-            });
+            pushItem(pickStandardHazard(ch, tier), hazardLane, 0);
             for (let i = 0; i < 3; i += 1) {
-                pushItem('ring', safeLane, i * 30, { colorVariant: i % 2 });
+                pushItem('ring', ringLane, i * 32, { colorVariant: i % 2 });
             }
-            state.spawnTimer = Math.max(0.9, 1.38 - speedRatio * 0.32);
-        } else {
-            // Pattern E: Rough Ocean Leaping Catfish into Lower Lane (Ch.2)
+            if (needsHeal) {
+                pushItem('feather', safeLanes[0], 98);
+                state.lastFeatherAt = state.elapsed;
+            }
+            state.spawnTimer = getSpawnCooldown(0.95);
+        } else if (chosen === 1) {
+            // Pattern 1: Double Gate — chains into a 2nd shifted Double Gate at LV.3+!
+            const safe1 = pickFairSafeLane();
+            const blocked1 = [0, 1, 2].filter((l) => l !== safe1);
+            pushItem(pickStandardHazard(ch, tier), blocked1[0], 0);
+            pushItem(pickStandardHazard(ch, tier), blocked1[1], 10);
+            pushItem('ring', safe1, 14, { colorVariant: 0 });
+            pushItem('ring', safe1, 46, { colorVariant: 1 });
+
+            if (tier >= 3 && Math.random() < 0.68) {
+                // Chained 2nd gate in a different lane!
+                const otherLanes = [0, 1, 2].filter((l) => l !== safe1);
+                const safe2 = otherLanes[Math.floor(Math.random() * otherLanes.length)];
+                const blocked2 = [0, 1, 2].filter((l) => l !== safe2);
+                const gapX = Math.max(126, 152 - tier * 5);
+                pushItem(pickStandardHazard(ch, tier), blocked2[0], gapX);
+                pushItem(pickStandardHazard(ch, tier), blocked2[1], gapX + 10);
+                pushItem('potato', safe2, gapX + 16);
+                if (needsHeal) {
+                    pushItem('feather', safe2, gapX + 56);
+                    state.lastFeatherAt = state.elapsed;
+                }
+                state.spawnTimer = getSpawnCooldown(1.48);
+            } else {
+                if (Math.random() < 0.55) {
+                    pushItem('potato', safe1, 78);
+                }
+                if (needsHeal) {
+                    pushItem('feather', safe1, 108);
+                    state.lastFeatherAt = state.elapsed;
+                }
+                state.spawnTimer = getSpawnCooldown(1.02);
+            }
+        } else if (chosen === 2) {
+            // Pattern 2: Escalating Slalom Weave (3 beats -> 4 beats -> 5 beats)
+            const beats = tier >= 5 ? 5 : tier >= 3 ? 4 : 3;
+            const stepX = Math.max(82, 102 - tier * 4);
+            let safe = Math.random() < 0.5 ? 0 : 2;
+            let dir = safe === 0 ? 1 : -1;
+
+            for (let step = 0; step < beats; step += 1) {
+                const off = step * stepX;
+                const blockedA = (safe + 1) % 3;
+                const blockedB = (safe + 2) % 3;
+                pushItem(pickStandardHazard(ch, tier), blockedA, off);
+                // From LV.2+, block both non-safe lanes on alternate beats for tighter precision
+                if (tier >= 2 && step % 2 === 1) {
+                    pushItem(pickStandardHazard(ch, tier), blockedB, off + 8);
+                }
+                pushItem('ring', safe, off + 8, { colorVariant: step % 2 });
+
+                if (safe === 2) dir = -1;
+                else if (safe === 0) dir = 1;
+                safe += dir;
+            }
+            const lastSafe = Math.max(0, Math.min(2, safe - dir));
+            pushItem('potato', lastSafe, (beats - 1) * stepX + 38);
+            state.spawnTimer = getSpawnCooldown(1.15 + beats * 0.22);
+        } else if (chosen === 3) {
+            // Pattern 3: Fast Headwind Gale — SINGLE early, DOUBLE GALE from LV.3+!
+            const isDoubleGale = tier >= 3 && Math.random() < (tier >= 4 ? 0.78 : 0.55);
+            if (isDoubleGale) {
+                const safeLane = pickFairSafeLane();
+                const gustLanes = [0, 1, 2].filter((l) => l !== safeLane);
+                gustLanes.forEach((lane) => {
+                    state.telegraphs.push({ lane, timer: telDur, kind: 'gust', locked: true });
+                });
+                playSfx('warn');
+                pushItem('ring', safeLane, 20, { colorVariant: 0 });
+                pushItem('potato', safeLane, 56);
+                state.spawnTimer = getSpawnCooldown(1.08);
+            } else {
+                const gustLane = Math.floor(Math.random() * 3);
+                const otherLanes = [0, 1, 2].filter((l) => l !== gustLane);
+                const safeLane = otherLanes[Math.floor(Math.random() * otherLanes.length)];
+                const cloudLane = otherLanes.find((l) => l !== safeLane);
+
+                state.telegraphs.push({ lane: gustLane, timer: telDur, kind: 'gust', locked: true });
+                playSfx('warn');
+                // From LV.2+, pair the gust with a cloud in another lane so timing matters!
+                if (tier >= 2 && cloudLane !== undefined) {
+                    pushItem('cloud', cloudLane, 32);
+                }
+                for (let i = 0; i < 2; i += 1) {
+                    pushItem('ring', safeLane, i * 34, { colorVariant: i % 2 });
+                }
+                state.spawnTimer = getSpawnCooldown(1.0);
+            }
+        } else if (chosen === 4) {
+            // Pattern 4: Swooping Lane-Shift Bat + Guard Cloud (forces reading movement!)
+            const startLane = Math.random() < 0.5 ? 0 : 2;
+            const targetLane = 1;
+            const safeLane = startLane === 0 ? 2 : 0;
+
+            pushItem('batSwoop', startLane, 0, { targetLane, speedMul: 1.08 });
+            // Guard cloud arrives slightly after in startLane, leaving safeLane clean
+            pushItem('cloud', startLane, 92);
+            pushItem('ring', targetLane, 10, { colorVariant: 0 });
+            pushItem('potato', safeLane, 68);
+            if (needsHeal) {
+                pushItem('feather', safeLane, 106);
+                state.lastFeatherAt = state.elapsed;
+            }
+            state.spawnTimer = getSpawnCooldown(1.18);
+        } else if (chosen === 5) {
+            // Pattern 5: Risk-Reward Bait (easy outer ring vs daring Tornado Potato thread-the-needle)
+            const baitLane = 1;
+            const safeLane = Math.random() < 0.5 ? 0 : 2;
+            const guardLane = safeLane === 0 ? 2 : 0;
+
+            pushItem('cloud', baitLane, 0);
+            pushItem('cloud', guardLane, 28);
+            pushItem('potato', baitLane, 64); // Thread right behind the cloud!
+            pushItem('cloud', baitLane, 122);
+            pushItem('ring', safeLane, 30, { colorVariant: 0 });
+            pushItem('ring', safeLane, 64, { colorVariant: 1 });
+            state.spawnTimer = getSpawnCooldown(1.26);
+        } else if (chosen === 6) {
+            // Pattern 6: Targeted Thunder Bolt Surge (tracks current lane briefly, then locks!)
+            const trackedLane = state.playerLane;
+            const otherLanes = [0, 1, 2].filter((l) => l !== trackedLane);
+            const safeLane = otherLanes[Math.floor(Math.random() * otherLanes.length)];
+            const cloudLane = otherLanes.find((l) => l !== safeLane);
+
             state.telegraphs.push({
-                lane: 2,
-                timer: 0.55,
-                kind: 'catfish',
+                lane: trackedLane,
+                timer: telDur + 0.08,
+                trackTimer: 0.14,
+                kind: 'bolt',
+                locked: false,
             });
-            pushItem('ring', 0, 10, { colorVariant: 0 });
-            pushItem('ring', 1, 42, { colorVariant: 1 });
-            pushItem('potato', 1, 76);
-            state.spawnTimer = Math.max(0.95, 1.4 - speedRatio * 0.32);
+            playSfx('warn');
+            if (cloudLane !== undefined && tier >= 4) {
+                pushItem('cloud', cloudLane, 36);
+            }
+            pushItem('ring', safeLane, 18, { colorVariant: 0 });
+            pushItem('ring', safeLane, 50, { colorVariant: 1 });
+            if (needsHeal) {
+                pushItem('feather', safeLane, 86);
+                state.lastFeatherAt = state.elapsed;
+            }
+            state.spawnTimer = getSpawnCooldown(1.04);
+        } else {
+            // Pattern 7: Rough Ocean Leaping Catfish + Upper Cloud
+            state.telegraphs.push({ lane: 2, timer: telDur, kind: 'catfish', locked: true });
+            playSfx('warn');
+            const cloudLane = Math.random() < 0.55 ? 0 : 1;
+            const safeLane = cloudLane === 0 ? 1 : 0;
+            pushItem('cloud', cloudLane, 28);
+            pushItem('ring', safeLane, 12, { colorVariant: 0 });
+            pushItem('ring', safeLane, 44, { colorVariant: 1 });
+            pushItem('potato', safeLane, 78);
+            state.spawnTimer = getSpawnCooldown(1.08);
         }
     }
 
@@ -979,26 +1279,32 @@
             const mult = Math.min(5, 1 + Math.floor(state.combo / 5));
             hudCombo.textContent = state.combo > 0 ? `x${mult} (${state.combo})` : 'x1';
         }
+        if (hudLevel) {
+            const isMax = state.diffLevel >= 6;
+            hudLevel.textContent = isMax ? 'MAX' : `LV.${state.diffLevel}`;
+            hudLevel.classList.toggle('is-hot', state.diffLevel >= 3 && !isMax);
+            hudLevel.classList.toggle('is-max', isMax);
+        }
         if (hudHearts) {
             const pips = hudHearts.querySelectorAll('.heart-pip');
             pips.forEach((pip, idx) => {
                 pip.classList.toggle('is-full', idx < state.hp);
             });
-            hudHearts.setAttribute('aria-label', `${state.hp} of ${state.maxHp} wings remaining`);
+            hudHearts.setAttribute('aria-label', `พลังปีกคงเหลือ ${state.hp} จาก ${state.maxHp}`);
         }
 
         const isFever = state.feverTimer > 0;
         const pct = isFever
-            ? Math.ceil((state.feverTimer / FEVER_DURATION) * 100)
+            ? Math.ceil((state.feverTimer / state.feverDurationCurrent) * 100)
             : Math.min(100, Math.floor(state.fever));
 
         if (hudFeverFill) hudFeverFill.style.width = `${pct}%`;
-        if (hudFeverLabel) hudFeverLabel.textContent = isFever ? `FEVER ${state.feverTimer.toFixed(1)}s` : `${pct}%`;
+        if (hudFeverLabel) hudFeverLabel.textContent = isFever ? `ฟีเวอร์ ${state.feverTimer.toFixed(1)} วิ` : `${pct}%`;
         if (hudFeverBar) hudFeverBar.setAttribute('aria-valuenow', String(pct));
         if (hudBar) hudBar.classList.toggle('is-fever', isFever);
 
         if (hudChapter) {
-            hudChapter.textContent = `S${state.season} · ${CHAPTERS[state.chapterIdx].name}`;
+            hudChapter.textContent = `รอบ ${state.season} · ${CHAPTERS[state.chapterIdx].nameTh}`;
         }
     }
 
@@ -1011,19 +1317,25 @@
         state.maxCombo = 0;
         state.fever = 0;
         state.feverTimer = 0;
+        state.feverDurationCurrent = 4.5;
         state.invulnTimer = 0;
+        state.hitFlashTimer = 0;
         state.shakeTimer = 0;
         state.season = 1;
         state.chapterIdx = 0;
         state.prevChapterIdx = 0;
         state.chapterLerp = 1;
+        state.diffLevel = 1;
         state.playerLane = 1;
         state.playerY = LANE_Y[1];
         state.playerTilt = 0;
-        state.catY = LANE_Y[1] + 8;
-        state.scrollSpeed = 148;
-        state.spawnTimer = 0.75;
-        state.lastFeatherAt = -20;
+        state.catY = LANE_Y[1] + 9;
+        state.lastLaneLeft = -1;
+        state.lastLaneSwitchAt = -10;
+        state.scrollSpeed = 182;
+        state.spawnTimer = 0.65;
+        state.lastFeatherAt = -30;
+        state.lastPattern = -1;
         state.afterimages = [];
         state.items = [];
         state.telegraphs = [];
@@ -1031,7 +1343,7 @@
         state.popups = [];
         state.lastSubmittedRun = false;
 
-        setBanner(CHAPTERS[0].lyric, CHAPTERS[0].accent, 3.8);
+        setBanner(CHAPTERS[0].lyric, CHAPTERS[0].accent, 3.0);
         updateHud();
     }
 
@@ -1082,7 +1394,7 @@
 
         if (finalScoreEl) finalScoreEl.textContent = finalScore.toLocaleString('en');
         if (finalComboEl) finalComboEl.textContent = String(state.maxCombo);
-        if (finalChapterEl) finalChapterEl.textContent = CHAPTERS[state.chapterIdx].name;
+        if (finalChapterEl) finalChapterEl.textContent = `รอบ ${state.season} · ${CHAPTERS[state.chapterIdx].nameTh}`;
         if (newBestPill) newBestPill.hidden = !isNewBest;
         if (gameoverLyric) gameoverLyric.textContent = CHAPTERS[state.chapterIdx].endLyric;
 
@@ -1109,6 +1421,8 @@
         if (state.mode !== 'playing') return;
         const nextLane = Math.max(0, Math.min(2, state.playerLane + delta));
         if (nextLane !== state.playerLane) {
+            state.lastLaneLeft = state.playerLane;
+            state.lastLaneSwitchAt = state.elapsed;
             state.playerLane = nextLane;
             state.playerTilt = delta * 0.25;
             playSfx('move');
@@ -1119,6 +1433,8 @@
         if (state.mode !== 'playing') return;
         const clamped = Math.max(0, Math.min(2, targetLane));
         if (clamped !== state.playerLane) {
+            state.lastLaneLeft = state.playerLane;
+            state.lastLaneSwitchAt = state.elapsed;
             state.playerTilt = (clamped - state.playerLane) * 0.22;
             state.playerLane = clamped;
             playSfx('move');
@@ -1132,10 +1448,16 @@
         }
 
         state.elapsed += dt;
-        state.waveOffset += dt * 48;
+        state.waveOffset += dt * 52;
 
-        // Escalate scroll speed gently over time
-        state.scrollSpeed = Math.min(290, 148 + state.elapsed * 1.45 + (state.season - 1) * 18);
+        // Progressive speed & difficulty tier
+        state.scrollSpeed = getBaseScrollSpeed();
+        const nextTier = getDifficultyTier();
+        if (nextTier !== state.diffLevel) {
+            state.diffLevel = nextTier;
+            const lvTag = nextTier >= 6 ? 'MAX' : `LV.${nextTier}`;
+            spawnPopup(view.playerX + 22, state.playerY - 28, `สปีดอัป ${lvTag}!`, '#FDE047');
+        }
 
         // Chapter progression every 22s
         const totalChaptersPassed = Math.floor(state.elapsed / CHAPTER_DURATION);
@@ -1144,9 +1466,9 @@
 
         if (nextSeason !== state.season) {
             state.season = nextSeason;
-            const bonus = 500 * (state.season - 1);
+            const bonus = 600 * (state.season - 1);
             state.score += bonus;
-            spawnPopup(PLAYER_X + 20, state.playerY - 24, `CONTINENT +${bonus}`, '#FDE047');
+            spawnPopup(view.playerX + 24, state.playerY - 34, `ผ่านครบ 4 ด่าน! +${bonus}`, '#FDE047');
         }
 
         if (nextChapterIdx !== state.chapterIdx) {
@@ -1154,24 +1476,18 @@
             state.chapterIdx = nextChapterIdx;
             state.chapterLerp = 0;
             playSfx('chapter');
-            setBanner(CHAPTERS[nextChapterIdx].lyric, CHAPTERS[nextChapterIdx].accent, 3.8);
+            const chObj = CHAPTERS[nextChapterIdx];
+            setBanner(`รอบ ${state.season} · ${chObj.lyric}`, chObj.accent, 3.2);
         }
 
         if (state.chapterLerp < 1) {
-            state.chapterLerp = Math.min(1, state.chapterLerp + dt / 2.4);
+            state.chapterLerp = Math.min(1, state.chapterLerp + dt / 2.2);
         }
 
-        if (state.bannerTimer > 0) {
-            state.bannerTimer = Math.max(0, state.bannerTimer - dt);
-        }
-
-        if (state.invulnTimer > 0) {
-            state.invulnTimer = Math.max(0, state.invulnTimer - dt);
-        }
-
-        if (state.shakeTimer > 0) {
-            state.shakeTimer = Math.max(0, state.shakeTimer - dt);
-        }
+        if (state.bannerTimer > 0) state.bannerTimer = Math.max(0, state.bannerTimer - dt);
+        if (state.invulnTimer > 0) state.invulnTimer = Math.max(0, state.invulnTimer - dt);
+        if (state.hitFlashTimer > 0) state.hitFlashTimer = Math.max(0, state.hitFlashTimer - dt);
+        if (state.shakeTimer > 0) state.shakeTimer = Math.max(0, state.shakeTimer - dt);
 
         // Dream Fever countdown
         const isFever = state.feverTimer > 0;
@@ -1184,49 +1500,58 @@
 
         // Distance score
         const feverMult = isFever ? 2 : 1;
-        state.distanceScoreAcc += dt * (28 + state.season * 4) * feverMult;
+        state.distanceScoreAcc += dt * (28 + state.diffLevel * 5) * feverMult;
         if (state.distanceScoreAcc >= 1) {
             const pts = Math.floor(state.distanceScoreAcc);
             state.score += pts;
             state.distanceScoreAcc -= pts;
         }
 
-        // Smooth lane movement & Black Cat spring follow
+        // Snappy lane interpolation (feels ultra-responsive on mobile & fast waves!)
         const targetY = LANE_Y[state.playerLane];
-        const yDiff = targetY - state.playerY;
-        state.playerY += yDiff * Math.min(1, dt * 16);
-        state.playerTilt *= Math.pow(0.05, dt);
-        state.catY += (state.playerY + 8 - state.catY) * Math.min(1, dt * 8);
+        state.playerY += (targetY - state.playerY) * Math.min(1, dt * 20);
+        state.playerTilt *= Math.pow(0.03, dt);
+        state.catY += (state.playerY + 9 - state.catY) * Math.min(1, dt * 10);
 
-        // Afterimages during Dream Fever
+        // Speed lines movement
+        const worldSpeed = state.scrollSpeed * view.speedScale;
+        for (const sl of state.speedLines) {
+            sl.x -= worldSpeed * sl.speed * dt;
+            if (sl.x + sl.len < 0) {
+                sl.x = view.w + Math.random() * 40;
+                sl.y = 24 + Math.random() * 218;
+            }
+        }
+
+        // Fever afterimages
         if (isFever && !prefersReducedMotion && Math.random() < 0.45) {
             state.afterimages.push({
-                x: PLAYER_X,
+                x: view.playerX,
                 y: state.playerY,
-                life: 0.24,
+                life: 0.22,
             });
         }
         state.afterimages = state.afterimages.filter((a) => {
-            a.x -= state.scrollSpeed * 0.45 * dt;
+            a.x -= worldSpeed * 0.45 * dt;
             a.life -= dt;
             return a.life > 0;
         });
 
-        // Background train & sakura petals
-        state.trainX -= 46 * dt;
+        // Background train & petals
+        state.trainX -= 50 * view.speedScale * dt;
         if (state.trainX < -160) {
-            state.trainX = VIRTUAL_W + 60;
+            state.trainX = view.w + 50;
         }
         for (const petal of state.petals) {
-            petal.x += petal.vx * dt;
+            petal.x += petal.vx * view.speedScale * dt;
             petal.y += petal.vy * dt;
-            if (petal.x < -8 || petal.y > VIRTUAL_H + 8) {
-                petal.x = VIRTUAL_W + Math.random() * 40;
-                petal.y = Math.random() * 180;
+            if (petal.x < -8 || petal.y > view.h + 8) {
+                petal.x = view.w + Math.random() * 36;
+                petal.y = Math.random() * 190;
             }
         }
 
-        // Spawn waves & resolve telegraphs
+        // Wave spawner & telegraph resolution
         state.spawnTimer -= dt;
         if (state.spawnTimer <= 0) {
             spawnWave();
@@ -1234,12 +1559,22 @@
 
         const nextTelegraphs = [];
         for (const tel of state.telegraphs) {
+            if (tel.kind === 'bolt' && !tel.locked) {
+                tel.trackTimer -= dt;
+                tel.lane = state.playerLane;
+                if (tel.trackTimer <= 0) {
+                    tel.locked = true;
+                }
+            }
             tel.timer -= dt;
             if (tel.timer <= 0) {
                 if (tel.kind === 'gust') {
-                    pushItem('gust', tel.lane, 0, { speedMul: 1.48 });
+                    pushItem('gust', tel.lane, 0, { speedMul: 1.54 });
                 } else if (tel.kind === 'catfish') {
-                    pushItem('catfish', 2, 0, { speedMul: 1.12, jumpTimer: 0.1 });
+                    pushItem('catfish', 2, 0, { speedMul: 1.18, jumpTimer: 0.1 });
+                } else if (tel.kind === 'bolt') {
+                    pushItem('bolt', tel.lane, 0, { speedMul: 1.88 });
+                    playSfx('bolt');
                 }
             } else {
                 nextTelegraphs.push(tel);
@@ -1247,32 +1582,58 @@
         }
         state.telegraphs = nextTelegraphs;
 
-        // Move items & resolve collisions
-        const playerBox = { x: PLAYER_X - 9, y: state.playerY - 9, w: 18, h: 18 };
+        // Player hitbox (scales cleanly with spriteScale)
+        const pHalf = 9.5 * view.spriteScale;
+        const playerBox = {
+            x: view.playerX - pHalf,
+            y: state.playerY - pHalf,
+            w: pHalf * 2,
+            h: pHalf * 2,
+        };
+
         const surviving = [];
 
         for (const item of state.items) {
-            item.x -= state.scrollSpeed * item.speedMul * dt;
+            const prevX = item.x;
+            item.x -= worldSpeed * item.speedMul * dt;
 
             if (item.kind === 'bat') {
-                item.y = item.baseY + Math.sin(state.elapsed * 7 + item.phase) * 7;
+                item.y = item.baseY + Math.sin(state.elapsed * 7.5 + item.phase) * 7.5;
+            } else if (item.kind === 'batSwoop') {
+                // Swooping bat warns then switches to targetLane mid-flight!
+                const triggerX = view.playerX + (view.w - view.playerX) * 0.56;
+                if (item.swoopState === 'armed' && item.x <= triggerX) {
+                    item.swoopState = 'warning';
+                    item.swoopWarnTimer = 0.24;
+                    playSfx('warn');
+                } else if (item.swoopState === 'warning') {
+                    item.swoopWarnTimer -= dt;
+                    if (item.swoopWarnTimer <= 0) {
+                        item.swoopState = 'swooping';
+                        item.lane = item.targetLane;
+                        item.baseY = LANE_Y[item.targetLane];
+                    }
+                } else if (item.swoopState === 'swooping') {
+                    item.y += (item.baseY - item.y) * Math.min(1, dt * 13);
+                }
             } else if (item.kind === 'catfish') {
                 item.jumpTimer += dt;
-                const arc = Math.abs(Math.sin(item.jumpTimer * 4.2)) * 26;
+                const arc = Math.abs(Math.sin(item.jumpTimer * 4.5)) * 34;
                 item.y = LANE_Y[2] + 18 - arc;
             } else if (isFever && (item.kind === 'ring' || item.kind === 'potato')) {
-                const dx = PLAYER_X - item.x;
+                // Subtle close-range Fever magnetism ONLY (no screen-wide vacuum!)
+                const dx = view.playerX - item.x;
                 const dy = state.playerY - item.y;
-                if (Math.abs(dx) < 110 && Math.abs(dy) < 95) {
-                    item.x += dx * Math.min(1, dt * 6);
-                    item.y += dy * Math.min(1, dt * 6);
+                if (Math.abs(dx) < 48 * view.speedScale && Math.abs(dy) < 30) {
+                    item.x += dx * Math.min(1, dt * 4.2);
+                    item.y += dy * Math.min(1, dt * 4.2);
                 }
             }
 
-            if (item.x < -48) continue;
+            if (item.x < -56) continue;
 
             const isCollectible = item.kind === 'ring' || item.kind === 'potato' || item.kind === 'feather';
-            const pad = isCollectible ? 4 : -4;
+            const pad = isCollectible ? 3.5 : -3.5;
             const halfW = item.w / 2 + pad;
             const halfH = item.h / 2 + pad;
 
@@ -1283,6 +1644,30 @@
                 playerBox.y + playerBox.h > item.y - halfH;
 
             if (!hit) {
+                // Skillful Near-Miss ("หลบเฉียด!") bonus when dodging out of a hazard's lane at the last moment
+                if (
+                    !isCollectible &&
+                    !item.nearMissed &&
+                    !isFever &&
+                    state.invulnTimer <= 0 &&
+                    prevX >= view.playerX &&
+                    item.x < view.playerX &&
+                    item.lane === state.lastLaneLeft &&
+                    state.elapsed - state.lastLaneSwitchAt <= 0.55
+                ) {
+                    item.nearMissed = true;
+                    state.combo += 1;
+                    if (state.combo > state.maxCombo) state.maxCombo = state.combo;
+                    const comboMult = Math.min(5, 1 + Math.floor(state.combo / 5));
+                    const pts = 75 * comboMult;
+                    state.score += pts;
+                    state.fever = Math.min(100, state.fever + 5);
+                    spawnParticles(view.playerX, state.playerY, '#FDE047', 6, 70);
+                    spawnPopup(view.playerX + 18, state.playerY - 22, `เฉียดฉิว! +${pts}`, '#FDE047');
+                    playSfx('nearmiss');
+                    checkFeverTrigger();
+                }
+
                 surviving.push(item);
                 continue;
             }
@@ -1295,50 +1680,46 @@
                 if (item.kind === 'ring') {
                     const pts = 100 * comboMult * feverMult;
                     state.score += pts;
-                    if (!isFever) state.fever = Math.min(100, state.fever + 10);
+                    if (!isFever) state.fever = Math.min(100, state.fever + 4.5);
                     spawnParticles(item.x, item.y, item.colorVariant === 0 ? '#38BDF8' : '#A78BFA', 7);
-                    spawnPopup(item.x, item.y - 10, `+${pts}`, '#7DD3FC');
-                    playSfx('ring');
+                    spawnPopup(item.x, item.y - 12, `+${pts}`, '#7DD3FC');
+                    playSfx('ring', state.combo);
                 } else if (item.kind === 'potato') {
                     const pts = 300 * comboMult * feverMult;
                     state.score += pts;
-                    if (!isFever) state.fever = Math.min(100, state.fever + 22);
+                    if (!isFever) state.fever = Math.min(100, state.fever + 10);
                     spawnParticles(item.x, item.y, '#FBBF24', 10);
-                    spawnPopup(item.x, item.y - 12, `POTATO +${pts}`, '#FDE047');
+                    spawnPopup(item.x, item.y - 14, `มันเกลียว +${pts}`, '#FDE047');
                     playSfx('potato');
                 } else if (item.kind === 'feather') {
                     if (state.hp < state.maxHp) {
                         state.hp += 1;
-                        spawnPopup(item.x, item.y - 12, '+1 WING HP', '#F472B6');
+                        spawnPopup(item.x, item.y - 14, '+1 พลังปีก', '#F472B6');
                     } else {
                         const pts = 400 * feverMult;
                         state.score += pts;
-                        spawnPopup(item.x, item.y - 12, `+${pts}`, '#F472B6');
+                        spawnPopup(item.x, item.y - 14, `+${pts}`, '#F472B6');
                     }
                     spawnParticles(item.x, item.y, '#F472B6', 10);
                     playSfx('heal');
                 }
 
-                if (!isFever && state.fever >= 100) {
-                    state.fever = 100;
-                    state.feverTimer = FEVER_DURATION;
-                    playSfx('fever');
-                    setBanner('DREAM FEVER! CAT-BUNNY POWER x2', '#F472B6', 2.8);
-                    spawnParticles(PLAYER_X, state.playerY, '#FDE047', 16, 110);
-                }
+                checkFeverTrigger();
             } else if (isFever) {
-                const pts = 100;
+                const pts = 150;
                 state.score += pts;
                 spawnParticles(item.x, item.y, '#38BDF8', 10, 95);
-                spawnPopup(item.x, item.y - 10, `CLEAR +${pts}`, '#FDE047');
-                playSfx('ring');
+                spawnPopup(item.x, item.y - 12, `ทำลาย +${pts}`, '#FDE047');
+                playSfx('ring', state.combo);
             } else if (state.invulnTimer <= 0) {
                 state.hp -= 1;
                 state.combo = 0;
+                state.fever = Math.max(0, state.fever - 20);
                 state.invulnTimer = INVULN_DURATION;
-                state.shakeTimer = prefersReducedMotion ? 0 : 0.25;
-                spawnParticles(PLAYER_X, state.playerY, '#FB7185', 12, 95);
-                spawnPopup(PLAYER_X, state.playerY - 14, 'OUCH!', '#FB7185');
+                state.hitFlashTimer = 0.16;
+                state.shakeTimer = prefersReducedMotion ? 0 : 0.26;
+                spawnParticles(view.playerX, state.playerY, '#FB7185', 14, 100);
+                spawnPopup(view.playerX + 10, state.playerY - 18, 'โอ๊ย!', '#FB7185');
                 playSfx('hit');
                 if (state.hp <= 0) {
                     triggerGameOver();
@@ -1357,7 +1738,7 @@
         });
 
         state.popups = state.popups.filter((pop) => {
-            pop.y -= 24 * dt;
+            pop.y -= 28 * dt;
             pop.life -= dt;
             return pop.life > 0;
         });
@@ -1365,12 +1746,29 @@
         updateHud();
     }
 
-    /* ============ RENDERER ============ */
+    function checkFeverTrigger() {
+        if (state.feverTimer <= 0 && state.fever >= 100) {
+            state.fever = 100;
+            state.feverDurationCurrent = getFeverDuration();
+            state.feverTimer = state.feverDurationCurrent;
+            playSfx('fever');
+            setBanner('ดรีมฟีเวอร์! พลังแมวกระต่าย x2', '#F472B6', 2.6);
+            spawnParticles(view.playerX, state.playerY, '#FDE047', 16, 115);
+        }
+    }
+
+    /* ============ HIGH-DPI PIXEL RENDERER ============ */
     function lerpColor(a, b, t) {
         const r = Math.round(a[0] + (b[0] - a[0]) * t);
         const g = Math.round(a[1] + (b[1] - a[1]) * t);
         const bl = Math.round(a[2] + (b[2] - a[2]) * t);
         return `rgb(${r}, ${g}, ${bl})`;
+    }
+
+    function drawSpriteScaled(sprite, centerX, centerY, scale = view.spriteScale) {
+        const dw = Math.round(sprite.width * scale);
+        const dh = Math.round(sprite.height * scale);
+        ctx.drawImage(sprite, Math.round(centerX - dw / 2), Math.round(centerY - dh / 2), dw, dh);
     }
 
     function drawBackground() {
@@ -1382,95 +1780,118 @@
         const midCol = lerpColor(prevCh.skyMid, currCh.skyMid, t);
         const botCol = lerpColor(prevCh.skyBot, currCh.skyBot, t);
 
-        const grad = ctx.createLinearGradient(0, 0, 0, VIRTUAL_H);
+        const grad = ctx.createLinearGradient(0, 0, 0, view.h);
         grad.addColorStop(0, topCol);
         grad.addColorStop(0.58, midCol);
         grad.addColorStop(1, botCol);
         ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, VIRTUAL_W, VIRTUAL_H);
+        ctx.fillRect(0, 0, view.w, view.h);
 
-        // Stars (stronger in Midnight Station & Sunset)
+        // Twinkling Stars
         const starAlpha = state.chapterIdx === 0 ? 0.9 : state.chapterIdx === 2 ? 0.45 : 0.25;
         for (const s of state.stars) {
+            const sx = ((s.x % view.w) + view.w) % view.w;
             const twinkle = prefersReducedMotion ? 1 : 0.65 + 0.35 * Math.sin(state.elapsed * 3 + s.phase);
             ctx.fillStyle = `rgba(240, 249, 255, ${(starAlpha * twinkle).toFixed(2)})`;
-            ctx.fillRect(Math.floor(s.x), Math.floor(s.y), s.size, s.size);
+            ctx.fillRect(Math.floor(sx), Math.floor(s.y), s.size, s.size);
         }
 
         // Chapter-specific pixel scenery
         if (state.chapterIdx === 0) {
-            // Distant station platform & passing night train
             ctx.fillStyle = '#0A1228';
-            ctx.fillRect(0, 238, VIRTUAL_W, 32);
+            ctx.fillRect(0, view.h - 32, view.w, 32);
             ctx.fillStyle = '#1E293B';
-            ctx.fillRect(0, 236, VIRTUAL_W, 2);
+            ctx.fillRect(0, view.h - 34, view.w, 2);
 
             const tx = Math.floor(state.trainX);
             ctx.fillStyle = '#172554';
-            ctx.fillRect(tx, 242, 132, 18);
+            ctx.fillRect(tx, view.h - 28, 132, 18);
             ctx.fillStyle = '#38BDF8';
-            ctx.fillRect(tx, 244, 132, 2);
+            ctx.fillRect(tx, view.h - 26, 132, 2);
             ctx.fillStyle = '#FDE047';
             for (let wx = 8; wx < 120; wx += 14) {
-                ctx.fillRect(tx + wx, 248, 8, 6);
+                ctx.fillRect(tx + wx, view.h - 22, 8, 6);
             }
         } else if (state.chapterIdx === 1) {
-            // Rough Ocean waves + diagonal rain
-            ctx.fillStyle = 'rgba(186, 230, 253, 0.25)';
+            ctx.fillStyle = 'rgba(186, 230, 253, 0.24)';
             for (let i = 0; i < 14; i += 1) {
-                const rx = ((i * 41 - state.elapsed * 160) % VIRTUAL_W + VIRTUAL_W) % VIRTUAL_W;
-                const ry = ((i * 29 + state.elapsed * 180) % 210);
+                const rx = ((i * 41 - state.elapsed * 165) % view.w + view.w) % view.w;
+                const ry = (i * 29 + state.elapsed * 185) % (view.h - 46);
                 ctx.fillRect(Math.floor(rx), Math.floor(ry), 2, 7);
             }
             ctx.fillStyle = '#0C4A6E';
-            ctx.fillRect(0, 242, VIRTUAL_W, 28);
+            ctx.fillRect(0, view.h - 28, view.w, 28);
             ctx.fillStyle = '#38BDF8';
-            for (let wx = 0; wx < VIRTUAL_W; wx += 16) {
+            for (let wx = 0; wx < view.w; wx += 16) {
                 const crest = Math.round(Math.sin(wx * 0.08 + state.waveOffset * 0.14) * 3);
-                ctx.fillRect(wx, 240 + crest, 10, 3);
+                ctx.fillRect(wx, view.h - 30 + crest, 10, 3);
             }
         } else if (state.chapterIdx === 2) {
-            // Golden Sunset pixel disc + distant V-birds
+            const sunX = Math.round(view.w * 0.74);
             ctx.fillStyle = '#FCD34D';
-            ctx.fillRect(356, 152, 44, 44);
+            ctx.fillRect(sunX, 152, 44, 44);
             ctx.fillStyle = '#F97316';
-            ctx.fillRect(352, 174, 52, 12);
-            ctx.fillStyle = 'rgba(254, 240, 138, 0.28)';
-            ctx.fillRect(0, 232, VIRTUAL_W, 38);
+            ctx.fillRect(sunX - 4, 174, 52, 12);
+            ctx.fillStyle = 'rgba(254, 240, 138, 0.26)';
+            ctx.fillRect(0, view.h - 38, view.w, 38);
 
             ctx.fillStyle = '#1E1B4B';
             for (let b = 0; b < 4; b += 1) {
-                const bx = Math.floor(((340 + b * 24 - state.elapsed * 14) % VIRTUAL_W + VIRTUAL_W) % VIRTUAL_W);
+                const bx = Math.floor(((view.w * 0.7 + b * 24 - state.elapsed * 14) % view.w + view.w) % view.w);
                 const by = 56 + b * 11;
                 ctx.fillRect(bx, by, 3, 1);
                 ctx.fillRect(bx + 3, by + 1, 2, 1);
                 ctx.fillRect(bx + 5, by, 3, 1);
             }
         } else {
-            // Spring Dawn continent cliffs + drifting sakura petals
             ctx.fillStyle = '#1E3A8A';
-            ctx.fillRect(0, 246, VIRTUAL_W, 24);
+            ctx.fillRect(0, view.h - 24, view.w, 24);
             ctx.fillStyle = '#3B82F6';
-            ctx.fillRect(310, 234, 170, 16);
+            ctx.fillRect(Math.round(view.w * 0.62), view.h - 36, Math.round(view.w * 0.4), 16);
             ctx.fillStyle = '#FBCFE8';
             for (const p of state.petals) {
                 ctx.fillRect(Math.floor(p.x), Math.floor(p.y), 3, 2);
             }
         }
 
-        // Subtle 3-lane dotted flight paths
+        // High-speed wind streaks (intensifies from LV.2+)
+        if (state.mode === 'playing' && state.diffLevel >= 2 && !prefersReducedMotion) {
+            const lineAlpha = Math.min(0.28, 0.08 + (state.diffLevel - 1) * 0.045);
+            ctx.fillStyle = `rgba(224, 242, 254, ${lineAlpha.toFixed(2)})`;
+            for (const sl of state.speedLines) {
+                ctx.fillRect(Math.floor(sl.x), Math.floor(sl.y), sl.len, 1);
+            }
+        }
+
+        // 3 Touch-Friendly Sky Lane Bands & Dotted Flight Rails
         for (let lane = 0; lane < 3; lane += 1) {
             const ly = LANE_Y[lane];
             const isActive = state.mode === 'playing' && lane === state.playerLane;
-            ctx.fillStyle = isActive ? 'rgba(125, 211, 252, 0.34)' : 'rgba(224, 242, 254, 0.14)';
-            for (let dx = 12; dx < VIRTUAL_W; dx += 20) {
-                ctx.fillRect(dx, ly, isActive ? 8 : 5, 1);
+            const hasDanger = state.telegraphs.some((tel) => tel.lane === lane);
+
+            if (hasDanger) {
+                ctx.fillStyle = 'rgba(251, 113, 133, 0.12)';
+                ctx.fillRect(0, ly - 30, view.w, 60);
+            } else if (isActive) {
+                ctx.fillStyle = 'rgba(56, 189, 248, 0.09)';
+                ctx.fillRect(0, ly - 28, view.w, 56);
+            }
+
+            ctx.fillStyle = isActive ? 'rgba(125, 211, 252, 0.45)' : 'rgba(224, 242, 254, 0.16)';
+            for (let dx = 10; dx < view.w; dx += 18) {
+                ctx.fillRect(dx, ly, isActive ? 8 : 5, 1.5);
             }
         }
     }
 
     function drawGame() {
+        const scaleX = canvas.width / view.w;
+        const scaleY = canvas.height / view.h;
+
         ctx.save();
+        ctx.setTransform(scaleX, 0, 0, scaleY, 0, 0);
+        ctx.imageSmoothingEnabled = false;
+
         if (state.shakeTimer > 0 && !prefersReducedMotion) {
             const sx = Math.round((Math.random() - 0.5) * 6);
             const sy = Math.round((Math.random() - 0.5) * 6);
@@ -1485,24 +1906,38 @@
         // Fever afterimages
         for (const ghost of state.afterimages) {
             ctx.globalAlpha = Math.max(0.1, ghost.life * 2);
-            ctx.drawImage(SPRITES.l[1], Math.round(ghost.x - 12), Math.round(ghost.y - 12));
+            drawSpriteScaled(SPRITES.l[1], ghost.x, ghost.y);
         }
         ctx.globalAlpha = 1;
 
-        // Telegraphs (edge warning markers)
+        // Edge Telegraphs ("!" for gusts/catfish, "⚡" for targeted lightning bolt)
         for (const tel of state.telegraphs) {
-            const pulse = Math.floor(tel.timer * 8) % 2 === 0;
+            const pulse = Math.floor(tel.timer * 10) % 2 === 0;
             const ty = LANE_Y[tel.lane];
-            ctx.fillStyle = pulse ? '#FB7185' : '#FDE047';
-            ctx.fillRect(VIRTUAL_W - 22, ty - 9, 16, 18);
-            ctx.fillStyle = '#081024';
-            ctx.font = 'bold 12px Silkscreen, monospace';
+            const isBolt = tel.kind === 'bolt';
+
+            if (isBolt) {
+                // Horizontal laser sightline for incoming thunder bolt
+                ctx.fillStyle = pulse ? 'rgba(253, 224, 71, 0.32)' : 'rgba(245, 158, 11, 0.18)';
+                ctx.fillRect(0, ty - 2, view.w - 24, 4);
+            }
+
+            ctx.fillStyle = isBolt
+                ? (pulse ? '#FDE047' : '#F59E0B')
+                : (pulse ? '#FB7185' : '#FDE047');
+            ctx.fillRect(view.w - 26, ty - 12, 20, 24);
+            ctx.strokeStyle = '#071024';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(view.w - 26, ty - 12, 20, 24);
+
+            ctx.fillStyle = '#071024';
+            ctx.font = '700 13px Mitr, Prompt, sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText('!', VIRTUAL_W - 14, ty);
+            ctx.fillText(isBolt ? '⚡' : '!', view.w - 16, ty + 0.5);
         }
 
-        // Items & hazards
+        // Items & Hazards
         for (const item of state.items) {
             let sprite = SPRITES.ringSky;
             if (item.kind === 'ring') {
@@ -1517,37 +1952,62 @@
                 sprite = SPRITES.gust;
             } else if (item.kind === 'bat') {
                 sprite = SPRITES.bat[animTick % 2];
+            } else if (item.kind === 'batSwoop') {
+                sprite = SPRITES.batSwoop[animTick % 2];
             } else if (item.kind === 'catfish') {
                 sprite = SPRITES.catfish[animTick % 2];
+            } else if (item.kind === 'bolt') {
+                sprite = SPRITES.bolt;
             }
 
-            ctx.drawImage(sprite, Math.round(item.x - sprite.width / 2), Math.round(item.y - sprite.height / 2));
+            drawSpriteScaled(sprite, item.x, item.y);
+
+            // Swooping bat lane-change telegraph arrow!
+            if (item.kind === 'batSwoop' && item.swoopState === 'warning') {
+                const dirDown = item.targetLane > item.lane;
+                const arrowY = item.y + (dirDown ? 18 : -18);
+                ctx.fillStyle = '#FDE047';
+                ctx.font = '700 13px Mitr, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(dirDown ? '▼' : '▲', item.x, arrowY);
+            }
         }
 
-        // Tiny Black Cat Companion (wears Cat-Bunny ears in Fever!)
+        // Tiny Black Cat Companion (wears Cat-Bunny ears during Dream Fever!)
         const catSprite = isFever ? SPRITES.catBunny[animTick % 2] : SPRITES.cat[animTick % 2];
-        ctx.drawImage(catSprite, PLAYER_X - 30, Math.round(state.catY - catSprite.height / 2));
+        const catOffset = Math.round(24 * view.spriteScale);
+        drawSpriteScaled(catSprite, view.playerX - catOffset, state.catY);
 
         // Pixel Chibi L
-        const invulnFlash = state.invulnTimer > 0 && Math.floor(state.invulnTimer * 4) % 2 === 0;
+        const invulnFlash = state.invulnTimer > 0 && Math.floor(state.invulnTimer * 10) % 2 === 0;
+        const lW = Math.round(24 * view.spriteScale);
+        const lH = Math.round(24 * view.spriteScale);
+
         if (!invulnFlash) {
-            const lSprite = state.invulnTimer > INVULN_DURATION - 0.3
+            const lSprite = state.invulnTimer > INVULN_DURATION - 0.25
                 ? SPRITES.lHurt
                 : SPRITES.l[animTick % 4];
             ctx.save();
-            ctx.translate(PLAYER_X, Math.round(state.playerY));
+            ctx.translate(view.playerX, Math.round(state.playerY));
             ctx.rotate(state.playerTilt);
             if (isFever) {
-                ctx.strokeStyle = 'rgba(253, 224, 71, 0.75)';
-                ctx.lineWidth = 1.5;
-                ctx.strokeRect(-14, -14, 28, 28);
+                ctx.strokeStyle = 'rgba(253, 224, 71, 0.85)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-lW / 2 - 3, -lH / 2 - 3, lW + 6, lH + 6);
             }
-            ctx.drawImage(lSprite, -12, -12);
+            ctx.drawImage(lSprite, Math.round(-lW / 2), Math.round(-lH / 2), lW, lH);
             ctx.restore();
         } else {
             ctx.globalAlpha = 0.45;
-            ctx.drawImage(SPRITES.lHurt, PLAYER_X - 12, Math.round(state.playerY - 12));
+            drawSpriteScaled(SPRITES.lHurt, view.playerX, state.playerY);
             ctx.globalAlpha = 1;
+        }
+
+        // Hit Red Vignette Flash
+        if (state.hitFlashTimer > 0) {
+            ctx.fillStyle = `rgba(251, 113, 133, ${(state.hitFlashTimer * 1.4).toFixed(2)})`;
+            ctx.fillRect(0, 0, view.w, view.h);
         }
 
         // Particles
@@ -1558,33 +2018,37 @@
         }
         ctx.globalAlpha = 1;
 
-        // Floating Score Popups
-        ctx.font = 'bold 9px Silkscreen, monospace';
+        // Crisp Thai Floating Popups (high-DPI rendered!)
+        ctx.font = '600 11px Mitr, Prompt, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         for (const pop of state.popups) {
             ctx.globalAlpha = Math.max(0, pop.life / pop.maxLife);
-            ctx.fillStyle = '#081024';
-            ctx.fillText(pop.text, Math.round(pop.x) + 1, Math.round(pop.y) + 1);
+            const px = Math.max(36, Math.min(view.w - 36, Math.round(pop.x)));
+            const py = Math.max(16, Math.round(pop.y));
+            ctx.fillStyle = '#061024';
+            ctx.fillText(pop.text, px + 1, py + 1);
             ctx.fillStyle = pop.color;
-            ctx.fillText(pop.text, Math.round(pop.x), Math.round(pop.y));
+            ctx.fillText(pop.text, px, py);
         }
         ctx.globalAlpha = 1;
 
-        // Chapter Lyric Banner
+        // Crisp Thai Chapter / Fever Banner
         if (state.bannerTimer > 0 && state.bannerText) {
-            const alpha = Math.min(1, state.bannerTimer * 1.4);
+            const alpha = Math.min(1, state.bannerTimer * 1.5);
+            const padX = view.isCompact ? 14 : 44;
+            const bw = view.w - padX * 2;
             ctx.globalAlpha = alpha;
-            ctx.fillStyle = 'rgba(8, 16, 36, 0.78)';
-            ctx.fillRect(58, 10, VIRTUAL_W - 116, 22);
+            ctx.fillStyle = 'rgba(7, 16, 36, 0.86)';
+            ctx.fillRect(padX, 8, bw, 24);
             ctx.strokeStyle = state.bannerColor;
-            ctx.lineWidth = 1;
-            ctx.strokeRect(58.5, 10.5, VIRTUAL_W - 117, 21);
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(padX, 8, bw, 24);
             ctx.fillStyle = '#F0F9FF';
-            ctx.font = '600 10px Prompt, sans-serif';
+            ctx.font = '600 11px Mitr, Prompt, sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(state.bannerText, VIRTUAL_W / 2, 21);
+            ctx.fillText(state.bannerText, view.w / 2, 20.5);
             ctx.globalAlpha = 1;
         }
 
@@ -1599,8 +2063,8 @@
 
         if (state.mode === 'start') {
             state.elapsed += dt;
-            state.playerY = LANE_Y[1] + Math.sin(state.elapsed * 2.4) * 4;
-            state.catY = state.playerY + 8;
+            state.playerY = LANE_Y[1] + Math.sin(state.elapsed * 2.4) * 5;
+            state.catY = state.playerY + 9;
         } else {
             updateGame(dt);
         }
@@ -1610,7 +2074,7 @@
     }
     requestAnimationFrame(frameLoop);
 
-    /* ============ INPUT & CONTROLS ============ */
+    /* ============ INSTANT MOBILE TOUCH & KEYBOARD CONTROLS ============ */
     const mobileMenuEl = document.getElementById('mobile-menu');
 
     document.addEventListener('keydown', (event) => {
@@ -1655,48 +2119,44 @@
         }
     });
 
-    // Canvas pointer tap / swipe
-    let pointerStartY = null;
-    let swipedThisGesture = false;
+    // Zero-latency direct lane tap + continuous finger glide on canvas
+    let activePointerId = null;
+
+    function getLaneFromClientY(clientY) {
+        const rect = canvas.getBoundingClientRect();
+        const relY = (clientY - rect.top) / Math.max(1, rect.height);
+        if (relY < 0.35) return 0;
+        if (relY < 0.67) return 1;
+        return 2;
+    }
 
     canvas.addEventListener('pointerdown', (event) => {
         if (state.mode !== 'playing') return;
-        pointerStartY = event.clientY;
-        swipedThisGesture = false;
+        event.preventDefault();
+        activePointerId = event.pointerId;
+        if (canvas.setPointerCapture) {
+            try {
+                canvas.setPointerCapture(event.pointerId);
+            } catch {
+                // ignore
+            }
+        }
+        setLaneDirect(getLaneFromClientY(event.clientY));
     });
 
     canvas.addEventListener('pointermove', (event) => {
-        if (state.mode !== 'playing' || pointerStartY === null || swipedThisGesture) return;
-        const dy = event.clientY - pointerStartY;
-        if (Math.abs(dy) >= 20) {
-            swipedThisGesture = true;
-            moveLane(dy < 0 ? -1 : 1);
-        }
+        if (state.mode !== 'playing' || event.pointerId !== activePointerId) return;
+        setLaneDirect(getLaneFromClientY(event.clientY));
     });
 
-    canvas.addEventListener('pointerup', (event) => {
-        if (state.mode !== 'playing') {
-            pointerStartY = null;
-            return;
+    function clearCanvasPointer(event) {
+        if (event.pointerId === activePointerId) {
+            activePointerId = null;
         }
-        if (!swipedThisGesture) {
-            const rect = canvas.getBoundingClientRect();
-            const scale = Math.min(rect.width / VIRTUAL_W, rect.height / VIRTUAL_H);
-            const drawnH = VIRTUAL_H * scale;
-            const offsetY = (rect.height - drawnH) / 2;
-            const relY = (event.clientY - rect.top - offsetY) / Math.max(1, drawnH);
-            if (relY < 0.36) setLaneDirect(0);
-            else if (relY < 0.68) setLaneDirect(1);
-            else setLaneDirect(2);
-        }
-        pointerStartY = null;
-        swipedThisGesture = false;
-    });
+    }
 
-    canvas.addEventListener('pointercancel', () => {
-        pointerStartY = null;
-        swipedThisGesture = false;
-    });
+    canvas.addEventListener('pointerup', clearCanvasPointer);
+    canvas.addEventListener('pointercancel', clearCanvasPointer);
 
     function bindLaneButton(btn, delta) {
         if (!btn) return;
@@ -1770,7 +2230,7 @@
         }
     }
 
-    /* ============ FORM VALIDATION (VALIDATE-INPUT-AFTER-INTERACTION) ============ */
+    /* ============ FORM VALIDATION (THAI MESSAGES) ============ */
     function initFormValidation() {
         if (!scoreForm || !playerNameInput) return;
 
@@ -1817,11 +2277,11 @@
                 .replace(/\s+/g, ' ')
                 .trim();
             if (!cleaned) {
-                playerNameInput.setCustomValidity('Please enter a name (1–18 characters).');
+                playerNameInput.setCustomValidity('กรุณาใส่ชื่อ 1–18 ตัวอักษร');
             } else if (/[<>]/.test(playerNameInput.value)) {
-                playerNameInput.setCustomValidity('Name cannot contain < or >.');
+                playerNameInput.setCustomValidity('ชื่อห้ามมีเครื่องหมาย < หรือ >');
             } else if (Array.from(cleaned).length > 18) {
-                playerNameInput.setCustomValidity('Maximum 18 characters.');
+                playerNameInput.setCustomValidity('ชื่อยาวได้สูงสุด 18 ตัวอักษร');
             } else {
                 playerNameInput.setCustomValidity('');
             }
@@ -1948,11 +2408,11 @@
     function setLeaderboardMode(mode) {
         if (!lbModeBadge) return;
         if (mode === 'global') {
-            lbModeBadge.textContent = 'LIVE GLOBAL';
+            lbModeBadge.textContent = 'อันดับออนไลน์';
             lbModeBadge.className = 'lb-mode-badge is-global';
             if (lbSetupNote) lbSetupNote.hidden = true;
         } else {
-            lbModeBadge.textContent = 'LOCAL DEVICE';
+            lbModeBadge.textContent = 'ในเครื่องนี้';
             lbModeBadge.className = 'lb-mode-badge is-local';
             if (lbSetupNote) lbSetupNote.hidden = false;
         }
@@ -1965,7 +2425,7 @@
         if (!Array.isArray(entries) || entries.length === 0) {
             lbList.replaceChildren();
             if (lbStatus) lbStatus.hidden = false;
-            if (lbStatusMsg) lbStatusMsg.textContent = 'No flights recorded yet. Be the first to soar!';
+            if (lbStatusMsg) lbStatusMsg.textContent = 'ยังไม่มีสถิติการบิน มาเป็นคนแรกที่ขึ้นตารางกันเถอะ!';
             if (lbRetryBtn) lbRetryBtn.hidden = true;
             return;
         }
@@ -1990,13 +2450,13 @@
 
             const nameEl = document.createElement('span');
             nameEl.className = 'lb-name';
-            nameEl.textContent = entry.name || 'Pilot';
+            nameEl.textContent = entry.name || 'นักบินนิรนาม';
 
             const metaEl = document.createElement('span');
             metaEl.className = 'lb-meta';
-            const seasonTag = entry.season ? `S${entry.season}` : 'S1';
-            const chapterTag = entry.chapter || 'Midnight Station';
-            const comboTag = Number(entry.maxCombo) > 0 ? ` · ${entry.maxCombo} combo` : '';
+            const seasonTag = entry.season ? `รอบ ${entry.season}` : 'รอบ 1';
+            const chapterTag = getThaiChapterName(entry.chapter);
+            const comboTag = Number(entry.maxCombo) > 0 ? ` · คอมโบ ${entry.maxCombo}` : '';
             metaEl.textContent = `${seasonTag} ${chapterTag}${comboTag}`;
 
             pilotEl.append(nameEl, metaEl);
@@ -2071,7 +2531,7 @@
 
             if (submitScoreBtn) submitScoreBtn.disabled = true;
             if (submitStatus) {
-                submitStatus.textContent = 'Saving your flight...';
+                submitStatus.textContent = 'กำลังบันทึกคะแนน...';
                 submitStatus.className = 'submit-status';
             }
 
@@ -2080,7 +2540,7 @@
                 score: Math.max(1, Math.floor(state.score)),
                 maxCombo: state.maxCombo,
                 season: state.season,
-                chapter: CHAPTERS[state.chapterIdx].name,
+                chapter: CHAPTERS[state.chapterIdx].apiName, // Keeps API compatibility
                 durationSec: Math.max(2, Math.round(state.elapsed)),
             };
 
@@ -2102,8 +2562,8 @@
                     setLeaderboardMode('global');
                     renderLeaderboard(data.entries || []);
                     if (submitStatus) {
-                        const rankLabel = data.rank ? ` (Global Rank #${data.rank})` : '';
-                        submitStatus.textContent = `Score saved for ${cleanName}!${rankLabel}`;
+                        const rankLabel = data.rank ? ` (อันดับที่ #${data.rank} ออนไลน์)` : '';
+                        submitStatus.textContent = `บันทึกคะแนนของ ${cleanName} เรียบร้อยแล้ว!${rankLabel}`;
                         submitStatus.className = 'submit-status is-success';
                     }
                     return;
@@ -2112,13 +2572,14 @@
                 if (res.status === 400 || res.status === 429) {
                     if (submitScoreBtn) submitScoreBtn.disabled = false;
                     if (submitStatus) {
-                        submitStatus.textContent = data?.error || 'Could not save score. Please check your name.';
+                        submitStatus.textContent = res.status === 429
+                            ? 'ส่งคะแนนถี่เกินไป กรุณารอสักครู่แล้วลองใหม่'
+                            : 'ไม่สามารถบันทึกคะแนนได้ กรุณาตรวจสอบชื่ออีกครั้ง';
                         submitStatus.className = 'submit-status is-error';
                     }
                     return;
                 }
 
-                // Fallback to local device storage when API isn't configured or offline
                 const fallbackEntry = data?.entry || {
                     id: `loc-${Date.now().toString(36)}`,
                     ...payload,
@@ -2130,8 +2591,8 @@
                 setLeaderboardMode('local');
                 renderLeaderboard(savedLocal.entries);
                 if (submitStatus) {
-                    const rankText = savedLocal.rank ? ` (Device Rank #${savedLocal.rank})` : '';
-                    submitStatus.textContent = `Saved on this device for ${cleanName}!${rankText}`;
+                    const rankText = savedLocal.rank ? ` (อันดับ #${savedLocal.rank} ในเครื่องนี้)` : '';
+                    submitStatus.textContent = `บันทึกคะแนนของ ${cleanName} ในเครื่องนี้แล้ว!${rankText}`;
                     submitStatus.className = 'submit-status is-success';
                 }
             } catch {
@@ -2146,8 +2607,8 @@
                 setLeaderboardMode('local');
                 renderLeaderboard(savedLocal.entries);
                 if (submitStatus) {
-                    const rankText = savedLocal.rank ? ` (Device Rank #${savedLocal.rank})` : '';
-                    submitStatus.textContent = `Saved on this device for ${cleanName}!${rankText}`;
+                    const rankText = savedLocal.rank ? ` (อันดับ #${savedLocal.rank} ในเครื่องนี้)` : '';
+                    submitStatus.textContent = `บันทึกคะแนนของ ${cleanName} ในเครื่องนี้แล้ว!${rankText}`;
                     submitStatus.className = 'submit-status is-success';
                 }
             }

@@ -419,6 +419,302 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    /* ============ IAM48 NATIVE LIVE STATS & CATCH-UP WIDGET ============ */
+    const iam48Widget = document.getElementById('iam48-widget');
+    if (iam48Widget) {
+        const gridEl = document.getElementById('iam48-grid');
+        const statusEl = document.getElementById('iam48-status');
+        const statusMsgEl = document.getElementById('iam48-status-msg');
+        const retryBtn = document.getElementById('iam48-retry-btn');
+        const footerEl = document.getElementById('iam48-footer');
+        const moreBtn = document.getElementById('iam48-more-btn');
+        const metaEl = document.getElementById('iam48-catchup-meta');
+        const livePillEl = document.getElementById('iam48-live-pill');
+        const bannerBgEl = document.getElementById('iam48-banner-bg');
+        const avatarEl = document.getElementById('iam48-avatar');
+        const nameEl = document.getElementById('iam48-name');
+        const captionEl = document.getElementById('iam48-caption');
+
+        const PAGE_SIZE = 6;
+        let loadedCount = 0;
+        let hasMore = false;
+        let isLoading = false;
+        let initialized = false;
+
+        const compactFormatter = new Intl.NumberFormat('en', {
+            notation: 'compact',
+            maximumFractionDigits: 1,
+        });
+        const exactFormatter = new Intl.NumberFormat('en');
+        const dateFormatter = new Intl.DateTimeFormat('en-GB', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            timeZone: 'Asia/Bangkok',
+        });
+        const timeFormatter = new Intl.DateTimeFormat('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+            timeZone: 'Asia/Bangkok',
+        });
+
+        function formatReplayTimestamp(isoString) {
+            if (!isoString) return '';
+            const date = new Date(isoString);
+            if (Number.isNaN(date.getTime())) return '';
+            return `${dateFormatter.format(date)} · ${timeFormatter.format(date)}`;
+        }
+
+        function createReplayCard(video) {
+            const link = document.createElement('a');
+            link.className = 'iam48-replay-card';
+            link.href = video.url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+
+            const timestampLabel = formatReplayTimestamp(video.publishedAt);
+            const ariaTitle = video.title
+                ? `Watch "${video.title}" (${timestampLabel}) on iAM48`
+                : `Watch L BNK48 live replay (${timestampLabel}) on iAM48`;
+            link.setAttribute('aria-label', ariaTitle);
+
+            if (video.thumbnail) {
+                const img = document.createElement('img');
+                img.src = video.thumbnail;
+                img.alt = video.title || `L BNK48 iAM48 live ${timestampLabel}`;
+                img.width = 300;
+                img.height = 400;
+                img.loading = 'lazy';
+                img.decoding = 'async';
+                link.appendChild(img);
+            }
+
+            const scrim = document.createElement('div');
+            scrim.className = 'iam48-replay-scrim';
+            scrim.setAttribute('aria-hidden', 'true');
+            link.appendChild(scrim);
+
+            if (video.isLive) {
+                const liveBadge = document.createElement('span');
+                liveBadge.className = 'iam48-replay-badge is-live';
+                liveBadge.textContent = 'LIVE';
+                link.appendChild(liveBadge);
+            }
+
+            const playCircle = document.createElement('span');
+            playCircle.className = 'iam48-replay-play';
+            playCircle.setAttribute('aria-hidden', 'true');
+            const playIconEl = document.createElement('i');
+            playIconEl.className = 'fas fa-play';
+            playCircle.appendChild(playIconEl);
+            link.appendChild(playCircle);
+
+            const info = document.createElement('div');
+            info.className = 'iam48-replay-info';
+
+            if (video.title) {
+                const titleEl = document.createElement('span');
+                titleEl.className = 'iam48-replay-title';
+                titleEl.textContent = video.title;
+                info.appendChild(titleEl);
+            }
+
+            if (timestampLabel) {
+                const dateEl = document.createElement('span');
+                dateEl.className = 'iam48-replay-date';
+                dateEl.textContent = timestampLabel;
+                info.appendChild(dateEl);
+            }
+
+            link.appendChild(info);
+            return link;
+        }
+
+        function applyProfile(profile) {
+            if (!profile) return;
+            if (profile.displayName && nameEl) {
+                nameEl.textContent = `${profile.displayName} BNK48`;
+            }
+            if (profile.caption && captionEl) {
+                captionEl.textContent = profile.caption;
+                captionEl.title = profile.caption;
+            }
+            if (profile.avatar && avatarEl) {
+                avatarEl.src = profile.avatar;
+            }
+            if (profile.cover && bannerBgEl) {
+                bannerBgEl.style.backgroundImage = `url("${profile.cover}")`;
+            }
+            if (profile.stats) {
+                Object.entries(profile.stats).forEach(([key, value]) => {
+                    const dd = iam48Widget.querySelector(`[data-stat="${key}"]`);
+                    if (dd && typeof value === 'number' && Number.isFinite(value)) {
+                        dd.textContent = compactFormatter.format(value);
+                        dd.title = exactFormatter.format(value);
+                    }
+                });
+            }
+        }
+
+        function renderSkeletons(count) {
+            if (!gridEl) return;
+            const nodes = Array.from({ length: count }, () => {
+                const el = document.createElement('div');
+                el.className = 'iam48-skeleton';
+                el.setAttribute('aria-hidden', 'true');
+                return el;
+            });
+            gridEl.replaceChildren(...nodes);
+            gridEl.hidden = false;
+            gridEl.setAttribute('aria-busy', 'true');
+        }
+
+        async function fetchIam48Page(skip) {
+            const params = new URLSearchParams({
+                skip: String(skip),
+                take: String(PAGE_SIZE),
+            });
+            const fetchOptions = {
+                headers: { Accept: 'application/json' },
+            };
+            if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+                fetchOptions.signal = AbortSignal.timeout(9000);
+            }
+            const response = await fetch(`/api/iam48?${params.toString()}`, fetchOptions);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return response.json();
+        }
+
+        async function loadIam48(isLoadMore = false) {
+            if (isLoading) return;
+            isLoading = true;
+
+            if (!isLoadMore) {
+                loadedCount = 0;
+                if (statusEl) statusEl.hidden = true;
+                if (footerEl) footerEl.hidden = true;
+                renderSkeletons(PAGE_SIZE);
+                if (metaEl) metaEl.textContent = 'กำลังโหลดรายการไลฟ์...';
+            } else if (moreBtn) {
+                moreBtn.disabled = true;
+                moreBtn.textContent = 'กำลังโหลด...';
+            }
+
+            try {
+                const data = await fetchIam48Page(isLoadMore ? loadedCount : 0);
+                if (!isLoadMore && data.profile) {
+                    applyProfile(data.profile);
+                }
+
+                const videos = Array.isArray(data.videos) ? data.videos : [];
+                hasMore = Boolean(data.hasMore);
+
+                if (!isLoadMore) {
+                    const isCurrentlyLive = videos.some((v) => v.isLive);
+                    if (livePillEl) livePillEl.hidden = !isCurrentlyLive;
+                }
+
+                if (gridEl) {
+                    const cards = videos.map(createReplayCard);
+                    if (!isLoadMore) {
+                        if (cards.length > 0) {
+                            gridEl.replaceChildren(...cards);
+                            gridEl.hidden = false;
+                            if (statusEl) statusEl.hidden = true;
+                        } else {
+                            gridEl.replaceChildren();
+                            gridEl.hidden = true;
+                            if (statusMsgEl) {
+                                statusMsgEl.textContent = 'ยังไม่มีรายการไลฟ์ย้อนหลังบน iAM48';
+                            }
+                            if (statusEl) statusEl.hidden = false;
+                        }
+                    } else if (cards.length > 0) {
+                        const fragment = document.createDocumentFragment();
+                        cards.forEach((card) => fragment.appendChild(card));
+                        gridEl.appendChild(fragment);
+                    }
+                    gridEl.setAttribute('aria-busy', 'false');
+                }
+
+                loadedCount += videos.length;
+                if (metaEl) {
+                    metaEl.textContent = loadedCount > 0
+                        ? `แสดง ${loadedCount} ไลฟ์ล่าสุด (เวลาประเทศไทย)`
+                        : 'ไม่พบรายการไลฟ์';
+                }
+
+                if (footerEl) {
+                    footerEl.hidden = !hasMore;
+                }
+                if (moreBtn) {
+                    moreBtn.disabled = false;
+                    moreBtn.replaceChildren(
+                        document.createTextNode('โหลดย้อนหลังเพิ่มเติม '),
+                        Object.assign(document.createElement('i'), {
+                            className: 'fas fa-chevron-down',
+                        })
+                    );
+                    const icon = moreBtn.querySelector('i');
+                    if (icon) icon.setAttribute('aria-hidden', 'true');
+                }
+            } catch (err) {
+                const isTimeout = err instanceof DOMException && err.name === 'TimeoutError';
+                if (!isLoadMore) {
+                    if (gridEl) {
+                        gridEl.replaceChildren();
+                        gridEl.hidden = true;
+                        gridEl.setAttribute('aria-busy', 'false');
+                    }
+                    if (metaEl) metaEl.textContent = 'โหลดข้อมูลไม่สำเร็จ';
+                    if (statusMsgEl) {
+                        statusMsgEl.textContent = isTimeout
+                            ? 'เชื่อมต่อ iAM48 ช้าเกินกำหนด กรุณาลองอีกครั้งหรือเปิดหน้า iAM48 โดยตรง'
+                            : 'ไม่สามารถโหลดข้อมูลจาก iAM48 ได้ในขณะนี้ กรุณาลองอีกครั้งหรือเปิดหน้า iAM48 โดยตรง';
+                    }
+                    if (statusEl) statusEl.hidden = false;
+                    if (footerEl) footerEl.hidden = true;
+                } else if (moreBtn) {
+                    moreBtn.disabled = false;
+                    moreBtn.textContent = 'โหลดไม่สำเร็จ · ลองอีกครั้ง';
+                }
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        if (retryBtn) {
+            retryBtn.addEventListener('click', () => loadIam48(false));
+        }
+        if (moreBtn) {
+            moreBtn.addEventListener('click', () => loadIam48(true));
+        }
+
+        const startLoad = () => {
+            if (initialized) return;
+            initialized = true;
+            loadIam48(false);
+        };
+
+        if ('IntersectionObserver' in window) {
+            const widgetObserver = new IntersectionObserver(
+                (entries, obs) => {
+                    if (entries.some((entry) => entry.isIntersecting)) {
+                        obs.disconnect();
+                        startLoad();
+                    }
+                },
+                { rootMargin: '260px 0px' }
+            );
+            widgetObserver.observe(iam48Widget);
+        } else {
+            startLoad();
+        }
+    }
+
     /* ============ IMAGE LIGHTBOX MODAL (gallery.html) ============ */
     const modal = document.getElementById('image-modal');
     const modalImg = document.getElementById('full-image');

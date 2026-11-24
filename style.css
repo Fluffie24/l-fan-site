@@ -126,7 +126,9 @@ main {
     .sky-particle,
     .hero-hl,
     .btn-pop,
-    .vinyl-disc {
+    .vinyl-disc,
+    .iam48-live-dot,
+    .iam48-skeleton {
         animation: none !important;
     }
 }
@@ -1554,8 +1556,8 @@ section {
 
 .connect-split {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2.5rem;
+    grid-template-columns: 0.92fr 1.08fr;
+    gap: 2.25rem;
     align-items: start;
 }
 
@@ -2449,9 +2451,26 @@ button.song-pill.is-center.active {
     border-radius: 999px;
 }
 
-/* Instagram Feed Card inside #l-channels */
+/* Instagram & TikTok Half-and-Half Feeds Grid inside #l-channels */
+.feeds-split {
+    max-width: 1040px;
+    margin: 2rem auto 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.75rem;
+    align-items: stretch;
+}
+
+.feeds-split > .surface-card {
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    padding: 1.85rem;
+    display: flex;
+    flex-direction: column;
+}
+
 .surface-card-feed {
-    margin-top: 2rem;
     border: 2px solid #FBCFE8;
     box-shadow: 0 20px 48px rgba(225, 48, 108, 0.1);
 }
@@ -2466,58 +2485,94 @@ button.song-pill.is-center.active {
     background: linear-gradient(90deg, #F09433 0%, #DC2743 50%, #BC1888 100%);
 }
 
+.surface-card-tiktok {
+    border: 2px solid #CBD5E1;
+    box-shadow: 0 20px 48px rgba(15, 23, 42, 0.08);
+}
+
+.surface-card-tiktok::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #25F4EE 0%, #111827 50%, #FE2C55 100%);
+}
+
 .feed-header {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+    gap: 0.85rem;
+    margin-bottom: 1.3rem;
 }
 
 .feed-title {
     display: flex;
     align-items: center;
-    gap: 0.9rem;
+    gap: 0.85rem;
+    min-width: 0;
 }
 
 .feed-badge-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 16px;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
     background: linear-gradient(45deg, #F09433 0%, #DC2743 50%, #BC1888 100%);
     color: var(--white);
     display: grid;
     place-items: center;
-    font-size: 1.45rem;
+    font-size: 1.3rem;
+    flex-shrink: 0;
     box-shadow: 0 8px 20px rgba(220, 39, 67, 0.28);
+}
+
+.tiktok-badge-icon {
+    background: linear-gradient(135deg, #111827 0%, #1F2937 100%);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.24);
 }
 
 .feed-title h3 {
     font-family: 'Outfit', 'Mitr', sans-serif;
-    font-size: 1.4rem;
+    font-size: 1.32rem;
     font-weight: 800;
     color: var(--ink);
     line-height: 1.15;
 }
 
 .feed-title p {
-    font-size: 0.88rem;
+    font-size: 0.84rem;
     color: var(--muted);
     font-weight: 500;
 }
 
 .btn-follow-feed {
-    background: linear-gradient(45deg, #F09433 0%, #DC2743 50%, #BC1888 100%);
+    background: linear-gradient(45deg, #C81E68 0%, #BC1888 100%);
     color: var(--white);
-    padding: 0.68rem 1.35rem;
-    font-size: 0.88rem;
-    box-shadow: 0 8px 22px rgba(220, 39, 67, 0.28);
+    padding: 0.6rem 1.15rem;
+    font-size: 0.84rem;
+    box-shadow: 0 8px 22px rgba(220, 39, 67, 0.26);
 }
 
 .btn-follow-feed:hover {
     transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 12px 26px rgba(220, 39, 67, 0.38);
+    box-shadow: 0 12px 26px rgba(220, 39, 67, 0.36);
+}
+
+.btn-follow-tiktok {
+    background: #111827;
+    color: var(--white);
+    padding: 0.6rem 1.15rem;
+    font-size: 0.84rem;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.22);
+}
+
+.btn-follow-tiktok:hover {
+    background: #1F2937;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.3);
 }
 
 .feed-embed-wrap {
@@ -2525,6 +2580,485 @@ button.song-pill.is-center.active {
     min-width: 0;
     border-radius: 18px;
     overflow: hidden;
+    flex: 1;
+}
+
+.tiktok-embed-wrap {
+    background: transparent;
+}
+
+/* iAM48 Official Native Panel inside .connect-split */
+.iam48-panel {
+    min-width: 0;
+    padding-left: 2rem;
+    border-left: 1.5px solid #F3E8FF;
+    contain: layout style paint;
+    container-type: inline-size;
+    container-name: iam48;
+}
+
+.iam48-panel-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.iam48-panel-header .feed-title h3 {
+    font-size: 1.24rem;
+}
+
+.iam48-panel-header .feed-title p {
+    font-size: 0.8rem;
+}
+
+.iam48-badge-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    overflow: hidden;
+    background: #FFFDF0;
+    border: 1.5px solid #E9D5FF;
+    box-shadow: 0 8px 20px rgba(162, 28, 175, 0.16);
+}
+
+.iam48-badge-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.iam48-heading {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.iam48-live-pill[hidden],
+.iam48-grid[hidden],
+.iam48-status[hidden],
+.iam48-footer[hidden] {
+    display: none;
+}
+
+.iam48-live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.14rem 0.55rem;
+    border-radius: 999px;
+    background: #DC2626;
+    color: var(--white);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
+}
+
+.iam48-live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--white);
+    animation: iam48Pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes iam48Pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.45; transform: scale(0.8); }
+}
+
+.btn-iam48 {
+    background: linear-gradient(135deg, #A21CAF 0%, #BE185D 100%);
+    color: var(--white);
+    padding: 0.54rem 1rem;
+    font-size: 0.8rem;
+    box-shadow: 0 8px 20px rgba(162, 28, 175, 0.25);
+}
+
+.btn-iam48:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(162, 28, 175, 0.35);
+}
+
+.iam48-profile-banner {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #2E1065 0%, #701A75 55%, #1E3A8A 100%);
+    color: var(--white);
+    margin-bottom: 1.1rem;
+}
+
+.iam48-banner-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.32;
+    transform: scale(1.04);
+    transition: opacity 0.45s ease;
+}
+
+.iam48-profile-banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, rgba(22, 16, 54, 0.86) 0%, rgba(74, 20, 88, 0.72) 55%, rgba(20, 34, 70, 0.84) 100%);
+    pointer-events: none;
+}
+
+.iam48-banner-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: 1rem 1.15rem;
+}
+
+.iam48-member {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    min-width: 0;
+}
+
+.iam48-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.32);
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.iam48-identity {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.iam48-identity strong {
+    font-family: 'Outfit', 'Mitr', sans-serif;
+    font-size: 1.08rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--white);
+}
+
+.iam48-caption {
+    font-size: 0.8rem;
+    color: #F5D0FE;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 32ch;
+}
+
+.iam48-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.iam48-stat {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+.iam48-stat dt {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #F5D0FE;
+    white-space: nowrap;
+}
+
+.iam48-stat dt i {
+    font-size: 0.66rem;
+    color: var(--sun-bright);
+}
+
+.iam48-stat dd {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+}
+
+.iam48-catchup-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.35rem 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.iam48-catchup-head h4 {
+    font-family: 'Outfit', 'Mitr', sans-serif;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.iam48-catchup-meta {
+    font-size: 0.76rem;
+    color: var(--muted);
+    font-weight: 500;
+}
+
+.iam48-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+}
+
+/* Container-driven layout adaptation for iAM48 panel */
+@container iam48 (min-width: 390px) {
+    .iam48-stats {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.25rem;
+    }
+
+    .iam48-stat {
+        padding: 0 0.55rem;
+        border-left: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .iam48-stat:first-child {
+        padding-left: 0;
+        border-left: none;
+    }
+
+    .iam48-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@container iam48 (min-width: 660px) {
+    .iam48-banner-inner {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.25rem;
+    }
+
+    .iam48-stats {
+        padding-top: 0;
+        border-top: none;
+        min-width: 360px;
+    }
+
+    .iam48-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.8rem;
+    }
+}
+
+.iam48-replay-card {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 4;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #1E1B4B;
+    text-decoration: none;
+    color: var(--white);
+    box-shadow: 0 8px 20px rgba(22, 36, 61, 0.12);
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease;
+}
+
+.iam48-replay-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px rgba(124, 58, 237, 0.22);
+}
+
+.iam48-replay-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.iam48-replay-card:hover img {
+    transform: scale(1.05);
+}
+
+.iam48-replay-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.08) 0%, rgba(15, 23, 42, 0.15) 45%, rgba(15, 23, 42, 0.88) 100%);
+    pointer-events: none;
+}
+
+.iam48-replay-badge {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    padding: 0.16rem 0.48rem;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.72);
+    color: var(--white);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    backdrop-filter: blur(6px);
+}
+
+.iam48-replay-badge.is-live {
+    background: #DC2626;
+}
+
+.iam48-replay-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: #A21CAF;
+    display: grid;
+    place-items: center;
+    font-size: 0.84rem;
+    padding-left: 2px;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.32);
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.86);
+    transition: opacity 0.22s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.iam48-replay-card:hover .iam48-replay-play,
+.iam48-replay-card:focus-visible .iam48-replay-play {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.iam48-replay-info {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0.6rem 0.6rem 0.55rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.16rem;
+}
+
+.iam48-replay-title {
+    font-size: 0.76rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--white);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.iam48-replay-date {
+    font-size: 0.66rem;
+    color: #E2E8F0;
+    font-variant-numeric: tabular-nums;
+}
+
+.iam48-skeleton {
+    aspect-ratio: 3 / 4;
+    border-radius: 14px;
+    background: linear-gradient(110deg, #F3E8FF 20%, #FAF5FF 45%, #F3E8FF 70%);
+    background-size: 220% 100%;
+    animation: iam48Shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes iam48Shimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+}
+
+.iam48-status {
+    text-align: center;
+    padding: 1.45rem 1rem;
+    border-radius: 16px;
+    background: #FAF5FF;
+    border: 1.5px solid #E9D5FF;
+}
+
+.iam48-status p {
+    color: var(--body);
+    font-size: 0.86rem;
+    margin-bottom: 0.85rem;
+}
+
+.iam48-status-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.iam48-retry-btn {
+    background: var(--white);
+    color: #7E22CE;
+    border: 1.5px solid #D8B4FE;
+    padding: 0.52rem 1rem;
+    font-size: 0.82rem;
+}
+
+.iam48-retry-btn:hover {
+    background: #F3E8FF;
+}
+
+.iam48-fallback-link {
+    background: linear-gradient(135deg, #A21CAF 0%, #BE185D 100%);
+    color: var(--white);
+    padding: 0.52rem 1.05rem;
+    font-size: 0.82rem;
+}
+
+.iam48-footer {
+    margin-top: 0.9rem;
+    display: flex;
+    justify-content: center;
+}
+
+.iam48-more-btn {
+    background: #FAF5FF;
+    color: #86198F;
+    border: 1.5px solid #E9D5FF;
+    padding: 0.56rem 1.25rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.iam48-more-btn:hover:not(:disabled) {
+    background: #F3E8FF;
+    border-color: #D8B4FE;
+    transform: translateY(-2px);
+}
+
+.iam48-more-btn:disabled {
+    opacity: 0.65;
+    cursor: progress;
 }
 
 /* Redesigned Dedicated Sisasterteam Hub */
@@ -2665,6 +3199,22 @@ button.song-pill.is-center.active {
     }
 
     .surface-card {
+        padding: 1.65rem 1.35rem;
+    }
+
+    .iam48-panel {
+        padding-left: 0;
+        padding-top: 1.5rem;
+        border-left: none;
+        border-top: 1.5px solid #F3E8FF;
+    }
+
+    .feeds-split {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .feeds-split > .surface-card {
         padding: 1.65rem 1.35rem;
     }
 }
@@ -3371,8 +3921,13 @@ button.song-pill.is-center.active {
         font-size: 0.76rem;
     }
 
-    .surface-card-feed {
+    .feeds-split {
         margin-top: 1.35rem;
+        gap: 1.35rem;
+    }
+
+    .feeds-split > .surface-card {
+        padding: 1.35rem 1.15rem;
     }
 
     .feed-header {
@@ -3395,10 +3950,16 @@ button.song-pill.is-center.active {
         font-size: 0.8rem;
     }
 
-    .btn-follow-feed {
+    .btn-follow-feed,
+    .btn-follow-tiktok,
+    .btn-iam48 {
         width: 100%;
-        padding: 0.66rem 1rem;
+        padding: 0.62rem 1rem;
         font-size: 0.84rem;
+    }
+
+    .iam48-more-btn {
+        width: 100%;
     }
 
     .fanbase-grid {
@@ -3545,7 +4106,13 @@ button.song-pill.is-center.active {
     .rank-display:hover,
     .bar-link:hover,
     .event-card:hover,
-    .video-thumb:hover {
+    .video-thumb:hover,
+    .iam48-replay-card:hover,
+    .iam48-more-btn:hover {
+        transform: none;
+    }
+
+    .iam48-replay-card:hover img {
         transform: none;
     }
 

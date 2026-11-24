@@ -2606,11 +2606,74 @@
 
     initFormValidation();
 
-    /* ============ LEADERBOARD CLIENT & LOCAL FALLBACK ============ */
+    /* ============ LEADERBOARD CLIENT & DEDUPLICATED LOCAL FALLBACK ============ */
+    function normalizeLocalPlayerKey(name) {
+        return sanitizeClientName(name).normalize('NFC').toLowerCase();
+    }
+
+    function consolidateLocalEntries(rawList) {
+        const groups = new Map();
+        for (const item of rawList) {
+            if (!item || typeof item !== 'object') continue;
+            const cleanName = sanitizeClientName(item.name || 'นักบินนิรนาม');
+            const normKey = normalizeLocalPlayerKey(cleanName);
+            if (!normKey) continue;
+
+            const plays = Math.max(1, Number.parseInt(item.plays, 10) || 1);
+            const score = Number(item.score) || 0;
+            const maxCombo = Number(item.maxCombo) || 0;
+            const existing = groups.get(normKey);
+
+            if (!existing) {
+                groups.set(normKey, {
+                    ...item,
+                    id: `loc:${normKey}`,
+                    name: cleanName,
+                    score,
+                    maxCombo,
+                    plays,
+                });
+                continue;
+            }
+
+            const totalPlays = existing.plays + plays;
+            const itemIsBetter =
+                score > existing.score ||
+                (score === existing.score && maxCombo > existing.maxCombo);
+
+            if (itemIsBetter) {
+                groups.set(normKey, {
+                    ...item,
+                    id: `loc:${normKey}`,
+                    name: cleanName,
+                    score,
+                    maxCombo,
+                    plays: totalPlays,
+                });
+            } else {
+                existing.plays = totalPlays;
+                existing.name = cleanName;
+            }
+        }
+
+        return Array.from(groups.values())
+            .sort((a, b) => (b.score - a.score) || (b.maxCombo - a.maxCombo))
+            .slice(0, 25)
+            .map((item, idx) => ({
+                ...item,
+                rank: idx + 1,
+            }));
+    }
+
     function readLocalEntries() {
         try {
             const raw = JSON.parse(localStorage.getItem(LOCAL_LB_KEY) || '[]');
-            return Array.isArray(raw) ? raw : [];
+            if (!Array.isArray(raw)) return [];
+            const consolidated = consolidateLocalEntries(raw);
+            if (consolidated.length !== raw.length) {
+                writeLocalEntries(consolidated);
+            }
+            return consolidated;
         } catch {
             return [];
         }
@@ -2626,18 +2689,62 @@
 
     function saveLocalEntry(entry) {
         const list = readLocalEntries();
-        list.push(entry);
-        list.sort((a, b) => b.score - a.score);
-        const ranked = list.slice(0, 25).map((item, idx) => ({
+        const normKey = normalizeLocalPlayerKey(entry.name);
+        const canonicalId = `loc:${normKey}`;
+        const prev = list.find((item) => normalizeLocalPlayerKey(item.name) === normKey) || null;
+        const improved = !prev || entry.score > prev.score;
+
+        const merged = prev
+            ? (improved
+                ? {
+                    ...entry,
+                    id: canonicalId,
+                    plays: (Number(prev.plays) || 1) + 1,
+                }
+                : {
+                    ...prev,
+                    id: canonicalId,
+                    name: entry.name,
+                    plays: (Number(prev.plays) || 1) + 1,
+                    updatedAt: entry.createdAt,
+                })
+            : {
+                ...entry,
+                id: canonicalId,
+                plays: 1,
+            };
+
+        const nextList = list.filter((item) => normalizeLocalPlayerKey(item.name) !== normKey);
+        nextList.push(merged);
+        nextList.sort((a, b) => (b.score - a.score) || (b.maxCombo - a.maxCombo));
+
+        const ranked = nextList.slice(0, 25).map((item, idx) => ({
             ...item,
             rank: idx + 1,
         }));
         writeLocalEntries(ranked);
-        const found = ranked.find((item) => item.id === entry.id);
+        const found = ranked.find((item) => item.id === canonicalId);
         return {
             entries: ranked,
             rank: found ? found.rank : null,
+            entry: found || merged,
+            improved,
         };
+    }
+
+    function formatSaveSuccessThai(cleanName, rank, savedEntry, improved, isGlobal) {
+        const plays = Math.max(1, Number(savedEntry?.plays) || 1);
+        const bestScore = Number(savedEntry?.score || 0).toLocaleString('en');
+        const scope = isGlobal ? 'ออนไลน์' : 'ในเครื่องนี้';
+        const rankText = rank ? `อันดับ #${rank} ${scope}` : scope;
+
+        if (plays <= 1) {
+            return `บันทึกคะแนนของ ${cleanName} เรียบร้อยแล้ว! (${rankText})`;
+        }
+        if (improved) {
+            return `ทุบสถิติเดิมของ ${cleanName} แล้ว! (${rankText} · เล่นสะสม ${plays} ครั้ง)`;
+        }
+        return `อัปเดตจำนวนรอบของ ${cleanName} แล้ว (เล่นสะสม ${plays} ครั้ง · คงสถิติสูงสุด ${bestScore} · ${rankText})`;
     }
 
     function setLeaderboardMode(mode) {
@@ -2683,9 +2790,19 @@
             const pilotEl = document.createElement('div');
             pilotEl.className = 'lb-pilot';
 
+            const nameRowEl = document.createElement('div');
+            nameRowEl.className = 'lb-name-row';
+
             const nameEl = document.createElement('span');
             nameEl.className = 'lb-name';
             nameEl.textContent = entry.name || 'นักบินนิรนาม';
+
+            const playsCount = Math.max(1, Number(entry.plays) || 1);
+            const playsEl = document.createElement('span');
+            playsEl.className = 'lb-plays-pill';
+            playsEl.textContent = `เล่น ${playsCount} ครั้ง`;
+
+            nameRowEl.append(nameEl, playsEl);
 
             const metaEl = document.createElement('span');
             metaEl.className = 'lb-meta';
@@ -2694,7 +2811,7 @@
             const comboTag = Number(entry.maxCombo) > 0 ? ` · คอมโบ ${entry.maxCombo}` : '';
             metaEl.textContent = `${seasonTag} ${chapterTag}${comboTag}`;
 
-            pilotEl.append(nameEl, metaEl);
+            pilotEl.append(nameRowEl, metaEl);
 
             const scoreEl = document.createElement('span');
             scoreEl.className = 'lb-score';
@@ -2812,8 +2929,13 @@
                     setLeaderboardMode('global');
                     renderLeaderboard(data.entries || []);
                     if (submitStatus) {
-                        const rankLabel = data.rank ? ` (อันดับที่ #${data.rank} ออนไลน์)` : '';
-                        submitStatus.textContent = `บันทึกคะแนนของ ${cleanName} เรียบร้อยแล้ว!${rankLabel}`;
+                        submitStatus.textContent = formatSaveSuccessThai(
+                            cleanName,
+                            data.rank,
+                            data.entry,
+                            data.improved !== false,
+                            true
+                        );
                         submitStatus.className = 'submit-status is-success';
                     }
                     return;
@@ -2835,12 +2957,17 @@
                 };
                 const savedLocal = saveLocalEntry(fallbackEntry);
                 state.lastSubmittedRun = true;
-                state.lastSubmittedId = fallbackEntry.id;
+                state.lastSubmittedId = savedLocal.entry?.id || fallbackEntry.id;
                 setLeaderboardMode('local');
                 renderLeaderboard(savedLocal.entries);
                 if (submitStatus) {
-                    const rankText = savedLocal.rank ? ` (อันดับ #${savedLocal.rank} ในเครื่องนี้)` : '';
-                    submitStatus.textContent = `บันทึกคะแนนของ ${cleanName} ในเครื่องนี้แล้ว!${rankText}`;
+                    submitStatus.textContent = formatSaveSuccessThai(
+                        cleanName,
+                        savedLocal.rank,
+                        savedLocal.entry,
+                        savedLocal.improved,
+                        false
+                    );
                     submitStatus.className = 'submit-status is-success';
                 }
             } catch {
@@ -2851,12 +2978,17 @@
                 };
                 const savedLocal = saveLocalEntry(fallbackEntry);
                 state.lastSubmittedRun = true;
-                state.lastSubmittedId = fallbackEntry.id;
+                state.lastSubmittedId = savedLocal.entry?.id || fallbackEntry.id;
                 setLeaderboardMode('local');
                 renderLeaderboard(savedLocal.entries);
                 if (submitStatus) {
-                    const rankText = savedLocal.rank ? ` (อันดับ #${savedLocal.rank} ในเครื่องนี้)` : '';
-                    submitStatus.textContent = `บันทึกคะแนนของ ${cleanName} ในเครื่องนี้แล้ว!${rankText}`;
+                    submitStatus.textContent = formatSaveSuccessThai(
+                        cleanName,
+                        savedLocal.rank,
+                        savedLocal.entry,
+                        savedLocal.improved,
+                        false
+                    );
                     submitStatus.className = 'submit-status is-success';
                 }
             }

@@ -4,7 +4,7 @@ const ZSET_KEY = 'wataridori:lb:v1:zset';
 const META_KEY = 'wataridori:lb:v1:meta';
 const RL_PREFIX = 'wataridori:lb:v1:rl:';
 const TOP_LIMIT = 25;
-const MAX_STORED_ENTRIES = 100;
+const MAX_STORED_ENTRIES = 200;
 const RATE_LIMIT_PER_MIN = 15;
 const MAX_BODY_BYTES = 8192;
 const UPSTREAM_TIMEOUT_MS = 7000;
@@ -65,6 +65,20 @@ function sanitizeName(raw) {
     const len = Array.from(cleaned).length;
     if (len < 1 || len > 18) return null;
     return cleaned;
+}
+
+function normalizePlayerKey(name) {
+    return String(name || '')
+        .replace(/[\u0000-\u001F\u007F\u200B-\u200D\uFEFF]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .normalize('NFC')
+        .toLowerCase();
+}
+
+function makePlayerId(name) {
+    const norm = normalizePlayerKey(name);
+    return `p:${crypto.createHash('sha256').update(norm).digest('hex').slice(0, 20)}`;
 }
 
 function validateSubmission(body) {
@@ -133,6 +147,7 @@ function parseEntryMeta(raw) {
     try {
         const parsed = JSON.parse(raw);
         if (!parsed || typeof parsed !== 'object') return null;
+        const rawPlays = Number(parsed.plays);
         return {
             id: String(parsed.id || ''),
             name: String(parsed.name || 'Pilot'),
@@ -140,14 +155,80 @@ function parseEntryMeta(raw) {
             maxCombo: Number(parsed.maxCombo) || 0,
             season: Number(parsed.season) || 1,
             chapter: ALLOWED_CHAPTERS.has(parsed.chapter) ? parsed.chapter : 'Midnight Station',
+            plays: Number.isInteger(rawPlays) && rawPlays >= 1 ? rawPlays : 1,
             createdAt: typeof parsed.createdAt === 'string' ? parsed.createdAt : '',
+            updatedAt: typeof parsed.updatedAt === 'string' ? parsed.updatedAt : '',
         };
     } catch {
         return null;
     }
 }
 
-async function fetchTopEntries(config, ids) {
+function compareEntriesDesc(a, b) {
+    if (b.score !== a.score) return b.score - a.score;
+    if (b.maxCombo !== a.maxCombo) return b.maxCombo - a.maxCombo;
+    return String(a.createdAt || '').localeCompare(String(b.createdAt || ''));
+}
+
+// Groups entries by normalized player name, keeping the highest score and summing play counts.
+function consolidateEntries(rawEntries) {
+    const groups = new Map();
+    const legacyIds = [];
+
+    for (const item of rawEntries) {
+        if (!item) continue;
+        const normKey = normalizePlayerKey(item.name);
+        if (!normKey) continue;
+
+        const canonicalId = makePlayerId(item.name);
+        if (item.id && item.id !== canonicalId) {
+            legacyIds.push(item.id);
+        }
+
+        const existing = groups.get(normKey);
+        if (!existing) {
+            groups.set(normKey, {
+                ...item,
+                id: canonicalId,
+                plays: Math.max(1, Number(item.plays) || 1),
+            });
+            continue;
+        }
+
+        const totalPlays = existing.plays + Math.max(1, Number(item.plays) || 1);
+        const itemIsBetter =
+            item.score > existing.score ||
+            (item.score === existing.score && item.maxCombo > existing.maxCombo);
+
+        if (itemIsBetter) {
+            groups.set(normKey, {
+                ...item,
+                id: canonicalId,
+                plays: totalPlays,
+                updatedAt: item.updatedAt || existing.updatedAt || item.createdAt,
+            });
+        } else {
+            existing.plays = totalPlays;
+            if ((item.updatedAt || item.createdAt) > (existing.updatedAt || existing.createdAt)) {
+                existing.updatedAt = item.updatedAt || item.createdAt;
+            }
+        }
+    }
+
+    const sorted = Array.from(groups.values()).sort(compareEntriesDesc);
+    const ranked = sorted.map((item, idx) => ({
+        rank: idx + 1,
+        ...item,
+    }));
+
+    return {
+        entries: ranked,
+        legacyIds,
+    };
+}
+
+async function fetchAllStoredEntries(config) {
+    const [ids] = await redisPipeline(config, [['ZREVRANGE', ZSET_KEY, 0, -1]]);
     if (!Array.isArray(ids) || ids.length === 0) return [];
     const [rawMetas] = await redisPipeline(config, [['HMGET', META_KEY, ...ids]]);
     if (!Array.isArray(rawMetas)) return [];
@@ -156,12 +237,50 @@ async function fetchTopEntries(config, ids) {
     for (let i = 0; i < rawMetas.length; i += 1) {
         const meta = parseEntryMeta(rawMetas[i]);
         if (!meta) continue;
-        entries.push({
-            rank: entries.length + 1,
-            ...meta,
-        });
+        if (!meta.id) meta.id = String(ids[i] || '');
+        entries.push(meta);
     }
     return entries;
+}
+
+async function persistConsolidatedRedis(config, consolidated, legacyIds) {
+    const commands = [];
+
+    if (legacyIds.length > 0) {
+        commands.push(['ZREM', ZSET_KEY, ...legacyIds]);
+        commands.push(['HDEL', META_KEY, ...legacyIds]);
+    }
+
+    const kept = consolidated.slice(0, MAX_STORED_ENTRIES);
+    const overflow = consolidated.slice(MAX_STORED_ENTRIES);
+
+    for (const item of kept) {
+        const stored = {
+            id: item.id,
+            name: item.name,
+            score: item.score,
+            maxCombo: item.maxCombo,
+            season: item.season,
+            chapter: item.chapter,
+            plays: item.plays,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt || item.createdAt,
+        };
+        commands.push(['ZADD', ZSET_KEY, stored.score, stored.id]);
+        commands.push(['HSET', META_KEY, stored.id, JSON.stringify(stored)]);
+    }
+
+    if (overflow.length > 0) {
+        const overflowIds = overflow.map((e) => e.id).filter(Boolean);
+        if (overflowIds.length > 0) {
+            commands.push(['ZREM', ZSET_KEY, ...overflowIds]);
+            commands.push(['HDEL', META_KEY, ...overflowIds]);
+        }
+    }
+
+    if (commands.length > 0) {
+        await redisPipeline(config, commands);
+    }
 }
 
 async function readJsonBody(req) {
@@ -214,16 +333,23 @@ module.exports = async function handler(req, res) {
         }
 
         try {
-            const [ids, total] = await redisPipeline(config, [
-                ['ZREVRANGE', ZSET_KEY, 0, TOP_LIMIT - 1],
-                ['ZCARD', ZSET_KEY],
-            ]);
-            const entries = await fetchTopEntries(config, ids);
+            const rawEntries = await fetchAllStoredEntries(config);
+            const { entries, legacyIds } = consolidateEntries(rawEntries);
+
+            // Lazily migrate any legacy duplicate entries in Redis into canonical per-player records
+            if (legacyIds.length > 0) {
+                try {
+                    await persistConsolidatedRedis(config, entries, legacyIds);
+                } catch {
+                    // Non-fatal: still return consolidated view cleanly
+                }
+            }
+
             return res.status(200).json({
                 storageConfigured: true,
                 mode: 'global',
-                entries,
-                total: typeof total === 'number' ? total : entries.length,
+                entries: entries.slice(0, TOP_LIMIT),
+                total: entries.length,
             });
         } catch (err) {
             console.error(new Error('GET /api/leaderboard failed', { cause: err }));
@@ -248,14 +374,18 @@ module.exports = async function handler(req, res) {
             });
         }
 
-        const entry = {
-            id: `${Date.now().toString(36)}-${crypto.randomBytes(4).toString('hex')}`,
+        const nowIso = new Date().toISOString();
+        const playerId = makePlayerId(validated.data.name);
+        const incomingEntry = {
+            id: playerId,
             name: validated.data.name,
             score: validated.data.score,
             maxCombo: validated.data.maxCombo,
             season: validated.data.season,
             chapter: validated.data.chapter,
-            createdAt: new Date().toISOString(),
+            plays: 1,
+            createdAt: nowIso,
+            updatedAt: nowIso,
         };
 
         if (!config) {
@@ -263,7 +393,7 @@ module.exports = async function handler(req, res) {
                 storageConfigured: false,
                 mode: 'local',
                 saved: false,
-                entry,
+                entry: incomingEntry,
             });
         }
 
@@ -282,47 +412,93 @@ module.exports = async function handler(req, res) {
                 });
             }
 
-            const [, , rankRes, topIds, overflowIds] = await redisPipeline(config, [
-                ['ZADD', ZSET_KEY, entry.score, entry.id],
-                ['HSET', META_KEY, entry.id, JSON.stringify(entry)],
-                ['ZREVRANK', ZSET_KEY, entry.id],
-                ['ZREVRANGE', ZSET_KEY, 0, TOP_LIMIT - 1],
-                ['ZREVRANGE', ZSET_KEY, MAX_STORED_ENTRIES, -1],
-            ]);
+            const rawEntries = await fetchAllStoredEntries(config);
+            const before = consolidateEntries(rawEntries);
+            const prevPlayer = before.entries.find((e) => e.id === playerId) || null;
+            const improved = !prevPlayer || incomingEntry.score > prevPlayer.score;
 
-            const cleanupCommands = [];
-            if (Array.isArray(topIds) && topIds.length > 0) {
-                cleanupCommands.push(['HMGET', META_KEY, ...topIds]);
-            }
-            if (Array.isArray(overflowIds) && overflowIds.length > 0) {
-                cleanupCommands.push(['ZREM', ZSET_KEY, ...overflowIds]);
-                cleanupCommands.push(['HDEL', META_KEY, ...overflowIds]);
-            }
-
-            let entries = [];
-            if (cleanupCommands.length > 0) {
-                const postResults = await redisPipeline(config, cleanupCommands);
-                if (Array.isArray(topIds) && topIds.length > 0 && Array.isArray(postResults[0])) {
-                    for (const rawMeta of postResults[0]) {
-                        const meta = parseEntryMeta(rawMeta);
-                        if (!meta) continue;
-                        entries.push({
-                            rank: entries.length + 1,
-                            ...meta,
-                        });
+            // Merge incoming submission into existing records
+            const mergedEntry = prevPlayer
+                ? (improved
+                    ? {
+                        ...incomingEntry,
+                        plays: prevPlayer.plays + 1,
                     }
+                    : {
+                        ...prevPlayer,
+                        name: validated.data.name,
+                        plays: prevPlayer.plays + 1,
+                        updatedAt: nowIso,
+                    })
+                : incomingEntry;
+
+            const updatedList = before.entries.filter((e) => e.id !== playerId);
+            updatedList.push(mergedEntry);
+            updatedList.sort(compareEntriesDesc);
+
+            const ranked = updatedList.map((item, idx) => ({
+                ...item,
+                rank: idx + 1,
+            }));
+
+            // Persist compact deduplicated state back to Redis
+            const writeCommands = [];
+            if (before.legacyIds.length > 0) {
+                writeCommands.push(['ZREM', ZSET_KEY, ...before.legacyIds]);
+                writeCommands.push(['HDEL', META_KEY, ...before.legacyIds]);
+                // Ensure all consolidated non-legacy entries exist under canonical IDs too
+                for (const item of ranked.slice(0, MAX_STORED_ENTRIES)) {
+                    const stored = {
+                        id: item.id,
+                        name: item.name,
+                        score: item.score,
+                        maxCombo: item.maxCombo,
+                        season: item.season,
+                        chapter: item.chapter,
+                        plays: item.plays,
+                        createdAt: item.createdAt,
+                        updatedAt: item.updatedAt || item.createdAt,
+                    };
+                    writeCommands.push(['ZADD', ZSET_KEY, stored.score, stored.id]);
+                    writeCommands.push(['HSET', META_KEY, stored.id, JSON.stringify(stored)]);
+                }
+            } else {
+                const storedPlayer = {
+                    id: mergedEntry.id,
+                    name: mergedEntry.name,
+                    score: mergedEntry.score,
+                    maxCombo: mergedEntry.maxCombo,
+                    season: mergedEntry.season,
+                    chapter: mergedEntry.chapter,
+                    plays: mergedEntry.plays,
+                    createdAt: mergedEntry.createdAt,
+                    updatedAt: mergedEntry.updatedAt || mergedEntry.createdAt,
+                };
+                writeCommands.push(['ZADD', ZSET_KEY, storedPlayer.score, storedPlayer.id]);
+                writeCommands.push(['HSET', META_KEY, storedPlayer.id, JSON.stringify(storedPlayer)]);
+            }
+
+            if (ranked.length > MAX_STORED_ENTRIES) {
+                const overflowIds = ranked.slice(MAX_STORED_ENTRIES).map((e) => e.id).filter(Boolean);
+                if (overflowIds.length > 0) {
+                    writeCommands.push(['ZREM', ZSET_KEY, ...overflowIds]);
+                    writeCommands.push(['HDEL', META_KEY, ...overflowIds]);
                 }
             }
 
-            const rank = typeof rankRes === 'number' ? rankRes + 1 : null;
+            await redisPipeline(config, writeCommands);
+
+            const savedRanked = ranked.find((e) => e.id === playerId);
+            const rank = savedRanked ? savedRanked.rank : null;
 
             return res.status(201).json({
                 storageConfigured: true,
                 mode: 'global',
                 saved: true,
+                improved,
                 rank,
-                entry,
-                entries,
+                entry: savedRanked || mergedEntry,
+                entries: ranked.slice(0, TOP_LIMIT),
             });
         } catch (err) {
             console.error(new Error('POST /api/leaderboard failed', { cause: err }));

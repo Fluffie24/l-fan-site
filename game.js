@@ -1,7 +1,7 @@
 (() => {
     'use strict';
 
-    /* ============ DYNAMIC VIEWPORT GEOMETRY (ZERO LETTERBOXING) ============ */
+    /* ============ DYNAMIC VIEWPORT GEOMETRY (CROSS-BROWSER ZERO LETTERBOX) ============ */
     const VIRTUAL_H = 276;
     const BASE_VIRTUAL_W = 480;
     const BASE_PLAYER_X = 88;
@@ -9,11 +9,13 @@
     const LANE_Y = [70, 140, 210];
 
     const CHAPTER_DURATION = 22;
-    const INVULN_DURATION = 1.25;
+    const INVULN_DURATION = 1.35;
+    const DYING_DELAY_SEC = 0.85;
+    const GAMEOVER_GUARD_MS = 550;
 
     const PB_STORAGE_KEY = 'wataridori_pb_v1';
     const LOCAL_LB_KEY = 'wataridori_local_lb_v1';
-    const AUDIO_PREF_KEY = 'wataridori_audio_v1';
+    const AUDIO_PREF_KEY = 'wataridori_audio_v2'; // v2: BGM off by default & quieter volume
     const LAST_NAME_KEY = 'wataridori_name_v1';
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -22,9 +24,12 @@
         w: BASE_VIRTUAL_W,
         h: VIRTUAL_H,
         playerX: BASE_PLAYER_X,
-        spriteScale: 1.35,
+        spriteScale: 1.34,
         speedScale: 1,
         isCompact: false,
+        lastCssW: 0,
+        lastCssH: 0,
+        lastDpr: 0,
     };
 
     const CHAPTERS = [
@@ -460,7 +465,6 @@
             '......................',
         ], { b: '#1E293B', s: '#64748B', y: '#FDE047', w: '#CBD5E1' });
 
-        // Fast Thunder Bolt Surge (28x12)
         const bolt = bakeSprite([
             '..............gggggg........',
             '...........gggyyyyyyggg.....',
@@ -495,6 +499,18 @@
     }
 
     const SPRITES = createSpriteAtlas();
+
+    const ITEM_SPRITE_BASE = {
+        ring: SPRITES.ringSky,
+        potato: SPRITES.potato,
+        feather: SPRITES.feather,
+        cloud: SPRITES.cloud,
+        gust: SPRITES.gust,
+        bat: SPRITES.bat[0],
+        batSwoop: SPRITES.batSwoop[0],
+        catfish: SPRITES.catfish[0],
+        bolt: SPRITES.bolt,
+    };
 
     /* ============ SYNTHESIZED CHIPTUNE SFX ============ */
     let audioCtx = null;
@@ -556,10 +572,10 @@
                 playTone(1180, 0.08, 'triangle', 0.055, 1480, 0.04);
                 break;
             case 'warn':
-                playTone(880, 0.045, 'square', 0.035, 660, 0);
+                playTone(880, 0.045, 'square', 0.032, 660, 0);
                 break;
             case 'bolt':
-                playTone(980, 0.12, 'sawtooth', 0.06, 260, 0);
+                playTone(980, 0.12, 'sawtooth', 0.055, 260, 0);
                 break;
             case 'heal':
                 playTone(587, 0.08, 'triangle', 0.08, null, 0);
@@ -607,7 +623,8 @@
 
     const startOverlay = document.getElementById('start-overlay');
     const pauseOverlay = document.getElementById('pause-overlay');
-    const gameoverOverlay = document.getElementById('gameover-overlay');
+    const gameoverDialog = document.getElementById('gameover-dialog');
+    const gameoverCloseBtn = document.getElementById('gameover-close-btn');
 
     const startBtn = document.getElementById('start-btn');
     const resumeBtn = document.getElementById('resume-btn');
@@ -654,13 +671,25 @@
         fieldGuideDetails.open = false;
     }
 
-    /* ============ RESPONSIVE CANVAS SIZING (CRISP 2X BACKING + ZERO LETTERBOX) ============ */
+    /* ============ RESPONSIVE CANVAS SIZING (CONTENT-BOX SAFE FOR FIREFOX/SAFARI) ============ */
     function resizeCanvasStage() {
         if (!canvasFrame || !canvas) return;
-        const rect = canvasFrame.getBoundingClientRect();
-        const cssW = Math.max(240, Math.round(rect.width));
-        const cssH = Math.max(200, Math.round(rect.height));
+        // Measure inner content box (clientWidth/clientHeight) so border never creates ResizeObserver loops
+        const cssW = Math.max(240, Math.round(canvasFrame.clientWidth));
+        const cssH = Math.max(180, Math.round(canvasFrame.clientHeight));
         const dpr = Math.min(2, window.devicePixelRatio || 2);
+
+        if (
+            Math.abs(cssW - view.lastCssW) < 1 &&
+            Math.abs(cssH - view.lastCssH) < 1 &&
+            dpr === view.lastDpr
+        ) {
+            return;
+        }
+
+        view.lastCssW = cssW;
+        view.lastCssH = cssH;
+        view.lastDpr = dpr;
 
         const targetBackW = Math.round(cssW * dpr);
         const targetBackH = Math.round(cssH * dpr);
@@ -675,26 +704,14 @@
         view.w = Math.round(Math.max(276, Math.min(BASE_VIRTUAL_W, view.h * aspect)));
         view.isCompact = view.w < 380;
         view.playerX = Math.round(view.w * (view.isCompact ? 0.21 : 0.185));
-        view.spriteScale = view.isCompact ? 1.52 : 1.36;
+        view.spriteScale = view.isCompact ? 1.48 : 1.34;
         view.speedScale = (view.w - view.playerX) / BASE_TRAVEL_DIST;
 
-        // Remap active item x-positions and hitbox dimensions smoothly if viewport size changed
         if (prevW > 0 && state && state.items) {
             const ratio = prevW !== view.w ? view.w / prevW : 1;
-            const spriteMap = {
-                ring: SPRITES.ringSky,
-                potato: SPRITES.potato,
-                feather: SPRITES.feather,
-                cloud: SPRITES.cloud,
-                gust: SPRITES.gust,
-                bat: SPRITES.bat[0],
-                batSwoop: SPRITES.batSwoop[0],
-                catfish: SPRITES.catfish[0],
-                bolt: SPRITES.bolt,
-            };
             for (const item of state.items) {
                 item.x *= ratio;
-                const sp = spriteMap[item.kind];
+                const sp = ITEM_SPRITE_BASE[item.kind];
                 if (sp) {
                     item.w = sp.width * view.spriteScale;
                     item.h = sp.height * view.spriteScale;
@@ -749,10 +766,11 @@
 
     renderStaticPreviews();
 
-    /* ============ BGM & AUDIO PREFERENCES ============ */
+    /* ============ BGM & AUDIO PREFERENCES (SFX-ONLY DEFAULT, GENTLE BGM) ============ */
+    const BGM_MAX_GAIN = 0.55; // Keeps mastered idol track comfortable even if slider goes higher
     const audioState = {
-        bgmEnabled: true,
-        volume: 0.35,
+        bgmEnabled: false, // Off by default; player opts in manually
+        volume: 0.2, // 20% slider => ~0.11 actual output gain
     };
 
     try {
@@ -766,6 +784,11 @@
         }
     } catch {
         // ignore storage errors
+    }
+
+    function applyBgmVolume() {
+        if (!bgmAudio) return;
+        bgmAudio.volume = Math.max(0, Math.min(BGM_MAX_GAIN, audioState.volume * BGM_MAX_GAIN));
     }
 
     function persistAudioPrefs() {
@@ -799,14 +822,14 @@
     }
 
     if (bgmAudio) {
-        bgmAudio.volume = audioState.volume;
+        applyBgmVolume();
         bgmAudio.addEventListener('play', syncAudioControls);
         bgmAudio.addEventListener('pause', syncAudioControls);
     }
 
     function tryStartBgm() {
         if (!bgmAudio || !audioState.bgmEnabled) return;
-        bgmAudio.volume = audioState.volume;
+        applyBgmVolume();
         if (bgmAudio.paused) {
             bgmAudio.play().catch(() => {
                 syncAudioControls();
@@ -833,7 +856,7 @@
         bgmVolume.addEventListener('input', () => {
             const val = Number(bgmVolume.value) / 100;
             audioState.volume = Math.max(0, Math.min(1, val));
-            bgmAudio.volume = audioState.volume;
+            applyBgmVolume();
             persistAudioPrefs();
         });
     }
@@ -851,8 +874,10 @@
 
     /* ============ GAME STATE ============ */
     const state = {
-        mode: 'start', // 'start' | 'playing' | 'paused' | 'gameover'
+        mode: 'start', // 'start' | 'playing' | 'paused' | 'dying' | 'gameover'
         elapsed: 0,
+        dyingTimer: 0,
+        gameoverGuardUntil: 0,
         score: 0,
         distanceScoreAcc: 0,
         hp: 3,
@@ -876,8 +901,8 @@
         catY: LANE_Y[1] + 9,
         lastLaneLeft: -1,
         lastLaneSwitchAt: -10,
-        scrollSpeed: 182,
-        spawnTimer: 0.72,
+        scrollSpeed: 156,
+        spawnTimer: 0.78,
         lastFeatherAt: -30,
         lastPattern: -1,
         bannerText: '',
@@ -934,9 +959,8 @@
         personalBestEl.textContent = state.personalBest.toLocaleString('en');
     }
 
-    /* ============ PROGRESSIVE DIFFICULTY HELPERS ============ */
+    /* ============ FAIR PROGRESSIVE DIFFICULTY & TOA VALIDATION ============ */
     function getDifficultyTier() {
-        // 0..3 within Season 1, 4+ in Season 2+
         return Math.min(6, Math.floor(state.elapsed / CHAPTER_DURATION) + 1);
     }
 
@@ -945,20 +969,74 @@
     }
 
     function getBaseScrollSpeed() {
-        // Starts brisk at 182, ramps smoothly through 350 by end of S1, up to 440 in endless
-        const linear = 182 + state.elapsed * 2.15 + (state.season - 1) * 24;
-        if (linear <= 360) return linear;
-        return Math.min(445, 360 + (linear - 360) * 0.42);
+        // Gentle approachable opening (156) ramping smoothly across chapters up to 418
+        const linear = 156 + state.elapsed * 1.85 + (state.season - 1) * 20;
+        if (linear <= 336) return linear;
+        return Math.min(418, 336 + (linear - 336) * 0.38);
     }
 
     function getTelegraphDuration() {
-        // Fair warning window that tightens as difficulty grows (0.50s -> 0.34s)
         const tier = state.diffLevel;
-        return Math.max(0.34, 0.51 - (tier - 1) * 0.032);
+        return Math.max(0.4, 0.56 - (tier - 1) * 0.032);
     }
 
-    /* ============ GAME HELPERS & PROGRESSIVE WAVE SPAWNER ============ */
-    function setBanner(text, color = '#38BDF8', duration = 3.2) {
+    function getWorldSpeed() {
+        return state.scrollSpeed * view.speedScale;
+    }
+
+    function isHazardKind(kind) {
+        return kind !== 'ring' && kind !== 'potato' && kind !== 'feather';
+    }
+
+    // Estimates arrival time (in seconds from now) of a newly spawned hazard at playerX
+    function estimateArrivalSec(offsetBaseX, speedMul = 1, telegraphSec = 0) {
+        const worldSpeed = Math.max(60, getWorldSpeed() * speedMul);
+        const startX = view.w + 22 + offsetBaseX * view.speedScale;
+        const dist = Math.max(0, startX - view.playerX);
+        return telegraphSec + dist / worldSpeed;
+    }
+
+    // Returns set of lanes occupied by existing hazards/telegraphs within ±marginSec of arrivalSec
+    function getOccupiedLanesAt(arrivalSec, marginSec = 0.34) {
+        const blocked = new Set();
+        const baseWorldSpeed = Math.max(60, getWorldSpeed());
+
+        for (const item of state.items) {
+            if (!isHazardKind(item.kind)) continue;
+            const speed = baseWorldSpeed * (item.speedMul || 1);
+            const eta = (item.x - view.playerX) / speed;
+            if (Math.abs(eta - arrivalSec) <= marginSec) {
+                blocked.add(item.lane);
+                if (item.targetLane !== undefined) blocked.add(item.targetLane);
+            }
+        }
+
+        for (const tel of state.telegraphs) {
+            const mul = tel.kind === 'bolt' ? 1.72 : tel.kind === 'gust' ? 1.44 : 1.14;
+            const eta = estimateArrivalSec(0, mul, tel.timer);
+            if (Math.abs(eta - arrivalSec) <= marginSec) {
+                blocked.add(tel.lane);
+            }
+        }
+
+        return blocked;
+    }
+
+    function getClearLanesAt(arrivalSec, marginSec = 0.34) {
+        const blocked = getOccupiedLanesAt(arrivalSec, marginSec);
+        return [0, 1, 2].filter((l) => !blocked.has(l));
+    }
+
+    // Guarantees Wave N+1 waits until Wave N's tail finishes spawning PLUS reaction breathing room!
+    function setWaveCooldown(maxOffsetBaseX, baseGapSec) {
+        const tailSec = Math.max(0, maxOffsetBaseX) / Math.max(120, state.scrollSpeed);
+        const speedNorm = Math.min(1.2, (state.scrollSpeed - 156) / 210);
+        const gapSec = Math.max(0.46, baseGapSec - speedNorm * 0.36);
+        state.spawnTimer = tailSec + gapSec;
+    }
+
+    /* ============ GAME HELPERS & FAIR WAVE SPAWNER ============ */
+    function setBanner(text, color = '#38BDF8', duration = 3.0) {
         state.bannerText = text;
         state.bannerColor = color;
         state.bannerTimer = duration;
@@ -994,18 +1072,7 @@
     }
 
     function pushItem(kind, lane, offsetBaseX = 0, extra = {}) {
-        const spriteMap = {
-            ring: SPRITES.ringSky,
-            potato: SPRITES.potato,
-            feather: SPRITES.feather,
-            cloud: SPRITES.cloud,
-            gust: SPRITES.gust,
-            bat: SPRITES.bat[0],
-            batSwoop: SPRITES.batSwoop[0],
-            catfish: SPRITES.catfish[0],
-            bolt: SPRITES.bolt,
-        };
-        const sp = spriteMap[kind] || SPRITES.ringSky;
+        const sp = ITEM_SPRITE_BASE[kind] || SPRITES.ringSky;
         const scaledOffset = offsetBaseX * view.speedScale;
 
         state.items.push({
@@ -1028,35 +1095,11 @@
     }
 
     function pickStandardHazard(chIdx, tier) {
-        if (tier >= 2 && Math.random() < Math.min(0.42, 0.18 + (tier - 2) * 0.07)) {
+        if (tier >= 2 && Math.random() < Math.min(0.4, 0.16 + (tier - 2) * 0.06)) {
             return 'bat';
         }
-        if (chIdx === 0) return Math.random() < 0.5 ? 'bat' : 'cloud';
-        return Math.random() < 0.58 ? 'cloud' : 'bat';
-    }
-
-    function getSpawnCooldown(baseSec) {
-        // Compresses smoothly as speed rises while staying fair
-        const speedNorm = Math.min(1.3, (state.scrollSpeed - 182) / 210);
-        return Math.max(0.4, baseSec - speedNorm * 0.42);
-    }
-
-    function pickFairSafeLane() {
-        // Avoid picking a "safe" lane that already has a hazard entering the right half of the screen
-        const incomingHazardLanes = new Set();
-        const thresholdX = view.w * 0.58;
-        for (const item of state.items) {
-            const isHaz = item.kind !== 'ring' && item.kind !== 'potato' && item.kind !== 'feather';
-            if (isHaz && item.x >= thresholdX) {
-                incomingHazardLanes.add(item.targetLane ?? item.lane);
-            }
-        }
-        for (const tel of state.telegraphs) {
-            incomingHazardLanes.add(tel.lane);
-        }
-        const clearLanes = [0, 1, 2].filter((l) => !incomingHazardLanes.has(l));
-        const candidates = clearLanes.length > 0 ? clearLanes : [0, 1, 2];
-        return candidates[Math.floor(Math.random() * candidates.length)];
+        if (chIdx === 0) return Math.random() < 0.45 ? 'bat' : 'cloud';
+        return Math.random() < 0.6 ? 'cloud' : 'bat';
     }
 
     function spawnWave() {
@@ -1064,30 +1107,38 @@
         const tier = state.diffLevel;
         const telDur = getTelegraphDuration();
 
-        // Rarer healing feather — requires longer wait and appears in trickier lanes
-        const featherCooldown = state.season >= 2 ? 34 : 28;
+        const featherCooldown = state.season >= 2 ? 32 : 26;
         const needsHeal = state.hp < state.maxHp && state.elapsed - state.lastFeatherAt >= featherCooldown;
 
-        // Build weighted pattern deck based on current progression tier
+        // Smooth tier-by-tier unlock deck (easy warm-up -> rich fair challenge)
         const pool = [];
-        // 0: Single hazard warm-up (fades out after LV.2 so late game is never dull)
-        if (tier <= 2) pool.push({ id: 0, w: tier === 1 ? 18 : 6 });
-        // 1: Double Gate (2 lanes blocked, 1 safe) — chained at LV.3+
-        pool.push({ id: 1, w: 26 });
-        // 2: Slalom Weave (3 -> 4 -> 5 beats!)
-        pool.push({ id: 2, w: 22 + Math.min(8, tier * 2) });
-        // 3: Headwind Gale (single early, DOUBLE gale from LV.3+)
-        pool.push({ id: 3, w: 18 + Math.min(10, tier * 2) });
-        // 4: Swooping Lane-Shift Bat (unlocks LV.2+)
-        if (tier >= 2) pool.push({ id: 4, w: 14 + Math.min(10, (tier - 1) * 3) });
-        // 5: Risk-Reward Potato Bait (unlocks LV.2+)
-        if (tier >= 2) pool.push({ id: 5, w: 14 });
-        // 6: Targeted Thunder Bolt Surge (unlocks LV.3+)
-        if (tier >= 3) pool.push({ id: 6, w: 16 + Math.min(10, (tier - 2) * 3) });
-        // 7: Leaping Catfish Ambush (Chapter 2 or Season 2+)
-        if (ch === 1 || state.season >= 2) pool.push({ id: 7, w: ch === 1 ? 22 : 12 });
+        if (tier === 1) {
+            pool.push({ id: 0, w: 54 }); // Single hazard + guiding rings
+            pool.push({ id: 1, w: 30 }); // Clean single Double Gate
+            pool.push({ id: 3, w: 16 }); // Single Headwind Gale (wide telegraph)
+        } else if (tier === 2) {
+            pool.push({ id: 0, w: 22 });
+            pool.push({ id: 1, w: 28 }); // Double Gate
+            pool.push({ id: 2, w: 22 }); // 3-beat Slalom
+            pool.push({ id: 3, w: 14 }); // Single Gale
+            pool.push({ id: 7, w: ch === 1 ? 24 : 10 }); // Ocean Catfish (strictly Lane 2)
+        } else if (tier === 3) {
+            pool.push({ id: 1, w: 26 }); // Double Gate (+ occasional chained gate)
+            pool.push({ id: 2, w: 24 }); // 3-4 Beat Slalom
+            pool.push({ id: 3, w: 18 }); // Gale (+ occasional Double Gale)
+            pool.push({ id: 4, w: 18 }); // Swooping Bat (early clear warning)
+            pool.push({ id: 5, w: 14 }); // Risk-Reward Potato Bait
+        } else {
+            // LV.4+ & Endless Seasons: Full thrilling deck (all TOA-verified fair!)
+            pool.push({ id: 1, w: 22 }); // Chained Double Gates
+            pool.push({ id: 2, w: 22 }); // 4-5 Beat Rapid Slalom
+            pool.push({ id: 3, w: 20 }); // Double Gale
+            pool.push({ id: 4, w: 16 }); // Swooping Bat
+            pool.push({ id: 5, w: 12 }); // Risk-Reward Bait
+            pool.push({ id: 6, w: 20 }); // Targeted Thunder Bolt
+            if (ch === 1 || state.season >= 2) pool.push({ id: 7, w: 12 });
+        }
 
-        // Avoid repeating the exact same pattern twice in a row
         const filtered = pool.length > 1 ? pool.filter((p) => p.id !== state.lastPattern) : pool;
         const totalW = filtered.reduce((acc, p) => acc + p.w, 0);
         let r = Math.random() * totalW;
@@ -1102,56 +1153,65 @@
         state.lastPattern = chosen;
 
         if (chosen === 0) {
-            // Pattern 0: Brisk warm-up gate (1 hazard + rings)
-            const hazardLane = Math.floor(Math.random() * 3);
-            const safeLanes = [0, 1, 2].filter((l) => l !== hazardLane);
-            const ringLane = safeLanes[Math.floor(Math.random() * safeLanes.length)];
+            // Pattern 0: Friendly single hazard + 3 guiding rings
+            const eta = estimateArrivalSec(0, 1);
+            const clear = getClearLanesAt(eta);
+            const safePool = clear.length > 0 ? clear : [0, 1, 2];
+            const ringLane = safePool[Math.floor(Math.random() * safePool.length)];
+            const hazardChoices = [0, 1, 2].filter((l) => l !== ringLane);
+            const hazardLane = hazardChoices[Math.floor(Math.random() * hazardChoices.length)];
+
             pushItem(pickStandardHazard(ch, tier), hazardLane, 0);
             for (let i = 0; i < 3; i += 1) {
                 pushItem('ring', ringLane, i * 32, { colorVariant: i % 2 });
             }
             if (needsHeal) {
-                pushItem('feather', safeLanes[0], 98);
+                pushItem('feather', ringLane, 96);
                 state.lastFeatherAt = state.elapsed;
             }
-            state.spawnTimer = getSpawnCooldown(0.95);
+            setWaveCooldown(96, 0.96);
         } else if (chosen === 1) {
-            // Pattern 1: Double Gate — chains into a 2nd shifted Double Gate at LV.3+!
-            const safe1 = pickFairSafeLane();
+            // Pattern 1: Fair Double Gate (TOA-verified safe lane; chained only from LV.3+ with fair switch gap)
+            const eta1 = estimateArrivalSec(0, 1);
+            const clear1 = getClearLanesAt(eta1);
+            const safe1 = clear1.length > 0
+                ? clear1[Math.floor(Math.random() * clear1.length)]
+                : Math.floor(Math.random() * 3);
             const blocked1 = [0, 1, 2].filter((l) => l !== safe1);
+
             pushItem(pickStandardHazard(ch, tier), blocked1[0], 0);
-            pushItem(pickStandardHazard(ch, tier), blocked1[1], 10);
+            pushItem(pickStandardHazard(ch, tier), blocked1[1], 8);
             pushItem('ring', safe1, 14, { colorVariant: 0 });
             pushItem('ring', safe1, 46, { colorVariant: 1 });
 
-            if (tier >= 3 && Math.random() < 0.68) {
-                // Chained 2nd gate in a different lane!
-                const otherLanes = [0, 1, 2].filter((l) => l !== safe1);
-                const safe2 = otherLanes[Math.floor(Math.random() * otherLanes.length)];
+            if (tier >= 3 && Math.random() < (tier >= 4 ? 0.65 : 0.42)) {
+                // Only jump 1 adjacent lane (or wide gap if 2 lanes) so switching is always fair & readable!
+                const adjLanes = [0, 1, 2].filter((l) => Math.abs(l - safe1) === 1);
+                const safe2 = adjLanes[Math.floor(Math.random() * adjLanes.length)];
                 const blocked2 = [0, 1, 2].filter((l) => l !== safe2);
-                const gapX = Math.max(126, 152 - tier * 5);
+                const gapX = Math.max(146, 174 - tier * 5);
                 pushItem(pickStandardHazard(ch, tier), blocked2[0], gapX);
-                pushItem(pickStandardHazard(ch, tier), blocked2[1], gapX + 10);
+                pushItem(pickStandardHazard(ch, tier), blocked2[1], gapX + 8);
                 pushItem('potato', safe2, gapX + 16);
                 if (needsHeal) {
-                    pushItem('feather', safe2, gapX + 56);
+                    pushItem('feather', safe2, gapX + 54);
                     state.lastFeatherAt = state.elapsed;
                 }
-                state.spawnTimer = getSpawnCooldown(1.48);
+                setWaveCooldown(gapX + 54, 0.92);
             } else {
-                if (Math.random() < 0.55) {
+                if (Math.random() < 0.5) {
                     pushItem('potato', safe1, 78);
                 }
                 if (needsHeal) {
                     pushItem('feather', safe1, 108);
                     state.lastFeatherAt = state.elapsed;
                 }
-                state.spawnTimer = getSpawnCooldown(1.02);
+                setWaveCooldown(82, tier === 1 ? 1.0 : 0.86);
             }
         } else if (chosen === 2) {
-            // Pattern 2: Escalating Slalom Weave (3 beats -> 4 beats -> 5 beats)
-            const beats = tier >= 5 ? 5 : tier >= 3 ? 4 : 3;
-            const stepX = Math.max(82, 102 - tier * 4);
+            // Pattern 2: Fair Escalating Slalom Weave (strictly 1-lane step per beat, full wave-tail cooldown!)
+            const beats = tier >= 5 ? 5 : tier >= 4 ? 4 : 3;
+            const stepX = Math.max(96, 118 - tier * 4);
             let safe = Math.random() < 0.5 ? 0 : 2;
             let dir = safe === 0 ? 1 : -1;
 
@@ -1160,9 +1220,8 @@
                 const blockedA = (safe + 1) % 3;
                 const blockedB = (safe + 2) % 3;
                 pushItem(pickStandardHazard(ch, tier), blockedA, off);
-                // From LV.2+, block both non-safe lanes on alternate beats for tighter precision
-                if (tier >= 2 && step % 2 === 1) {
-                    pushItem(pickStandardHazard(ch, tier), blockedB, off + 8);
+                if (tier >= 3 && step % 2 === 1) {
+                    pushItem(pickStandardHazard(ch, tier), blockedB, off + 6);
                 }
                 pushItem('ring', safe, off + 8, { colorVariant: step % 2 });
 
@@ -1171,103 +1230,129 @@
                 safe += dir;
             }
             const lastSafe = Math.max(0, Math.min(2, safe - dir));
-            pushItem('potato', lastSafe, (beats - 1) * stepX + 38);
-            state.spawnTimer = getSpawnCooldown(1.15 + beats * 0.22);
+            const tailX = (beats - 1) * stepX + 36;
+            pushItem('potato', lastSafe, tailX);
+            setWaveCooldown(tailX, 0.95);
         } else if (chosen === 3) {
-            // Pattern 3: Fast Headwind Gale — SINGLE early, DOUBLE GALE from LV.3+!
-            const isDoubleGale = tier >= 3 && Math.random() < (tier >= 4 ? 0.78 : 0.55);
-            if (isDoubleGale) {
-                const safeLane = pickFairSafeLane();
+            // Pattern 3: Fast Headwind Gale — TOA-verified so 1 escape lane is ALWAYS 100% open!
+            const gustEta = estimateArrivalSec(0, 1.44, telDur);
+            const clearAtGust = getClearLanesAt(gustEta, 0.38);
+
+            if (clearAtGust.length === 0) {
+                // Rare overlap guard: pause briefly and spawn a safe ring line instead of an unfair pinch
+                pushItem('ring', state.playerLane, 10, { colorVariant: 0 });
+                setWaveCooldown(20, 0.55);
+                return;
+            }
+
+            const wantDouble = tier >= 3 && clearAtGust.length >= 2 && Math.random() < (tier >= 4 ? 0.68 : 0.4);
+            const safeLane = clearAtGust[Math.floor(Math.random() * clearAtGust.length)];
+
+            if (wantDouble) {
                 const gustLanes = [0, 1, 2].filter((l) => l !== safeLane);
                 gustLanes.forEach((lane) => {
                     state.telegraphs.push({ lane, timer: telDur, kind: 'gust', locked: true });
                 });
                 playSfx('warn');
-                pushItem('ring', safeLane, 20, { colorVariant: 0 });
-                pushItem('potato', safeLane, 56);
-                state.spawnTimer = getSpawnCooldown(1.08);
+                pushItem('ring', safeLane, 18, { colorVariant: 0 });
+                pushItem('potato', safeLane, 54);
+                setWaveCooldown(60, 0.96);
             } else {
-                const gustLane = Math.floor(Math.random() * 3);
-                const otherLanes = [0, 1, 2].filter((l) => l !== gustLane);
-                const safeLane = otherLanes[Math.floor(Math.random() * otherLanes.length)];
-                const cloudLane = otherLanes.find((l) => l !== safeLane);
-
+                const otherLanes = [0, 1, 2].filter((l) => l !== safeLane);
+                const gustLane = otherLanes[Math.floor(Math.random() * otherLanes.length)];
                 state.telegraphs.push({ lane: gustLane, timer: telDur, kind: 'gust', locked: true });
                 playSfx('warn');
-                // From LV.2+, pair the gust with a cloud in another lane so timing matters!
-                if (tier >= 2 && cloudLane !== undefined) {
-                    pushItem('cloud', cloudLane, 32);
+
+                // Only add a companion cloud in the 3rd lane at LV.3+ when safeLane is confirmed clear
+                if (tier >= 3) {
+                    const cloudLane = otherLanes.find((l) => l !== gustLane);
+                    const cloudEta = estimateArrivalSec(26, 1);
+                    if (cloudLane !== undefined && getClearLanesAt(cloudEta, 0.34).includes(safeLane)) {
+                        pushItem('cloud', cloudLane, 26);
+                    }
                 }
                 for (let i = 0; i < 2; i += 1) {
-                    pushItem('ring', safeLane, i * 34, { colorVariant: i % 2 });
+                    pushItem('ring', safeLane, i * 32, { colorVariant: i % 2 });
                 }
-                state.spawnTimer = getSpawnCooldown(1.0);
+                setWaveCooldown(56, tier === 1 ? 1.05 : 0.88);
             }
         } else if (chosen === 4) {
-            // Pattern 4: Swooping Lane-Shift Bat + Guard Cloud (forces reading movement!)
+            // Pattern 4: Swooping Bat (early clear telegraph, leaves outer lane cleanly open!)
             const startLane = Math.random() < 0.5 ? 0 : 2;
             const targetLane = 1;
             const safeLane = startLane === 0 ? 2 : 0;
 
-            pushItem('batSwoop', startLane, 0, { targetLane, speedMul: 1.08 });
-            // Guard cloud arrives slightly after in startLane, leaving safeLane clean
-            pushItem('cloud', startLane, 92);
-            pushItem('ring', targetLane, 10, { colorVariant: 0 });
-            pushItem('potato', safeLane, 68);
+            pushItem('batSwoop', startLane, 0, { targetLane, speedMul: 1.02 });
+            pushItem('ring', safeLane, 18, { colorVariant: 0 });
+            pushItem('potato', safeLane, 58);
             if (needsHeal) {
-                pushItem('feather', safeLane, 106);
+                pushItem('feather', safeLane, 96);
                 state.lastFeatherAt = state.elapsed;
             }
-            state.spawnTimer = getSpawnCooldown(1.18);
+            setWaveCooldown(96, 0.96);
         } else if (chosen === 5) {
-            // Pattern 5: Risk-Reward Bait (easy outer ring vs daring Tornado Potato thread-the-needle)
+            // Pattern 5: Risk-Reward Potato Bait (wide, fair gap between staggered clouds + safe outer lane)
             const baitLane = 1;
             const safeLane = Math.random() < 0.5 ? 0 : 2;
             const guardLane = safeLane === 0 ? 2 : 0;
 
             pushItem('cloud', baitLane, 0);
-            pushItem('cloud', guardLane, 28);
-            pushItem('potato', baitLane, 64); // Thread right behind the cloud!
-            pushItem('cloud', baitLane, 122);
-            pushItem('ring', safeLane, 30, { colorVariant: 0 });
-            pushItem('ring', safeLane, 64, { colorVariant: 1 });
-            state.spawnTimer = getSpawnCooldown(1.26);
+            pushItem('cloud', guardLane, 24);
+            pushItem('potato', baitLane, 76); // Generous opening right behind cloud!
+            pushItem('cloud', baitLane, 152);
+            pushItem('ring', safeLane, 32, { colorVariant: 0 });
+            pushItem('ring', safeLane, 72, { colorVariant: 1 });
+            setWaveCooldown(156, 0.92);
         } else if (chosen === 6) {
-            // Pattern 6: Targeted Thunder Bolt Surge (tracks current lane briefly, then locks!)
-            const trackedLane = state.playerLane;
-            const otherLanes = [0, 1, 2].filter((l) => l !== trackedLane);
-            const safeLane = otherLanes[Math.floor(Math.random() * otherLanes.length)];
-            const cloudLane = otherLanes.find((l) => l !== safeLane);
+            // Pattern 6: Targeted Thunder Bolt Surge (tracks briefly, locks with clear laser warning, TOA-fair!)
+            const boltTel = telDur + 0.08;
+            const boltEta = estimateArrivalSec(0, 1.72, boltTel);
+            const clearAtBolt = getClearLanesAt(boltEta, 0.38);
 
+            // Must leave at least 1 other lane free for the player to dodge into!
+            const escapeLanes = clearAtBolt.filter((l) => l !== state.playerLane);
+            if (escapeLanes.length === 0) {
+                // Fallback to single fair cloud if screen is busy
+                const safeFallback = clearAtBolt[0] ?? 1;
+                const haz = (safeFallback + 1) % 3;
+                pushItem('cloud', haz, 0);
+                pushItem('ring', safeFallback, 16, { colorVariant: 0 });
+                setWaveCooldown(40, 0.78);
+                return;
+            }
+
+            const safeLane = escapeLanes[Math.floor(Math.random() * escapeLanes.length)];
             state.telegraphs.push({
-                lane: trackedLane,
-                timer: telDur + 0.08,
-                trackTimer: 0.14,
+                lane: state.playerLane,
+                timer: boltTel,
+                trackTimer: 0.12,
                 kind: 'bolt',
                 locked: false,
             });
             playSfx('warn');
-            if (cloudLane !== undefined && tier >= 4) {
-                pushItem('cloud', cloudLane, 36);
-            }
             pushItem('ring', safeLane, 18, { colorVariant: 0 });
             pushItem('ring', safeLane, 50, { colorVariant: 1 });
             if (needsHeal) {
                 pushItem('feather', safeLane, 86);
                 state.lastFeatherAt = state.elapsed;
             }
-            state.spawnTimer = getSpawnCooldown(1.04);
+            setWaveCooldown(80, 0.94);
         } else {
-            // Pattern 7: Rough Ocean Leaping Catfish + Upper Cloud
+            // Pattern 7: Ocean Catfish (strictly Lane 2!) + optional upper cloud (leaving ≥1 upper lane open)
+            const catEta = estimateArrivalSec(0, 1.14, telDur);
+            const clearAtCat = getClearLanesAt(catEta, 0.36).filter((l) => l !== 2);
+            const safeLane = clearAtCat.length > 0 ? clearAtCat[0] : 1;
+            const cloudLane = safeLane === 0 ? 1 : 0;
+
             state.telegraphs.push({ lane: 2, timer: telDur, kind: 'catfish', locked: true });
             playSfx('warn');
-            const cloudLane = Math.random() < 0.55 ? 0 : 1;
-            const safeLane = cloudLane === 0 ? 1 : 0;
-            pushItem('cloud', cloudLane, 28);
-            pushItem('ring', safeLane, 12, { colorVariant: 0 });
-            pushItem('ring', safeLane, 44, { colorVariant: 1 });
-            pushItem('potato', safeLane, 78);
-            state.spawnTimer = getSpawnCooldown(1.08);
+            if (tier >= 2) {
+                pushItem('cloud', cloudLane, 24);
+            }
+            pushItem('ring', safeLane, 14, { colorVariant: 0 });
+            pushItem('ring', safeLane, 46, { colorVariant: 1 });
+            pushItem('potato', safeLane, 80);
+            setWaveCooldown(84, 0.94);
         }
     }
 
@@ -1310,6 +1395,7 @@
 
     function resetGameState() {
         state.elapsed = 0;
+        state.dyingTimer = 0;
         state.score = 0;
         state.distanceScoreAcc = 0;
         state.hp = 3;
@@ -1332,8 +1418,8 @@
         state.catY = LANE_Y[1] + 9;
         state.lastLaneLeft = -1;
         state.lastLaneSwitchAt = -10;
-        state.scrollSpeed = 182;
-        state.spawnTimer = 0.65;
+        state.scrollSpeed = 156;
+        state.spawnTimer = 0.78;
         state.lastFeatherAt = -30;
         state.lastPattern = -1;
         state.afterimages = [];
@@ -1343,19 +1429,21 @@
         state.popups = [];
         state.lastSubmittedRun = false;
 
-        setBanner(CHAPTERS[0].lyric, CHAPTERS[0].accent, 3.0);
+        setBanner(CHAPTERS[0].lyric, CHAPTERS[0].accent, 2.8);
         updateHud();
     }
 
     function startGame() {
+        if (gameoverDialog && gameoverDialog.open) {
+            gameoverDialog.close();
+        }
         resetGameState();
         state.mode = 'playing';
         startOverlay.hidden = true;
         pauseOverlay.hidden = true;
-        gameoverOverlay.hidden = true;
         if (pauseBtn) pauseBtn.disabled = false;
         ensureAudioCtx();
-        tryStartBgm();
+        tryStartBgm(); // Only starts if user explicitly enabled BGM
         playSfx('chapter');
     }
 
@@ -1371,10 +1459,21 @@
         pauseOverlay.hidden = true;
     }
 
-    function triggerGameOver() {
-        state.mode = 'gameover';
+    function beginDyingSequence() {
+        state.mode = 'dying';
+        state.dyingTimer = DYING_DELAY_SEC;
+        state.hitFlashTimer = 0.3;
+        state.shakeTimer = prefersReducedMotion ? 0 : 0.35;
         if (pauseBtn) pauseBtn.disabled = true;
         playSfx('gameover');
+        setBanner('พลังปีกหมดแล้ว!', '#FB7185', 1.2);
+        spawnParticles(view.playerX, state.playerY, '#FB7185', 16, 110);
+        spawnParticles(view.playerX, state.playerY, '#F0F9FF', 10, 75);
+        updateHud();
+    }
+
+    function openGameOverDialog() {
+        state.mode = 'gameover';
 
         const finalScore = Math.max(1, Math.floor(state.score));
         state.score = finalScore;
@@ -1404,17 +1503,49 @@
             submitStatus.className = 'submit-status';
         }
 
-        try {
-            const savedName = localStorage.getItem(LAST_NAME_KEY);
-            if (savedName && playerNameInput && !playerNameInput.value) {
-                playerNameInput.value = savedName;
+        if (playerNameInput) {
+            playerNameInput.classList.remove('user-invalid-fallback', 'user-valid-fallback');
+            playerNameInput.setAttribute('aria-invalid', 'false');
+            try {
+                const savedName = localStorage.getItem(LAST_NAME_KEY);
+                if (savedName && !playerNameInput.value) {
+                    playerNameInput.value = savedName;
+                }
+            } catch {
+                // ignore
             }
-        } catch {
-            // ignore
         }
 
-        gameoverOverlay.hidden = false;
+        // Guard buttons briefly so rapid taps right at death never trigger accidental restart/close
+        state.gameoverGuardUntil = performance.now() + GAMEOVER_GUARD_MS;
+        if (gameoverDialog) {
+            gameoverDialog.classList.add('is-guarded');
+            if (!gameoverDialog.open) {
+                gameoverDialog.showModal();
+            }
+            setTimeout(() => {
+                gameoverDialog.classList.remove('is-guarded');
+            }, GAMEOVER_GUARD_MS);
+        }
+
         updateHud();
+    }
+
+    function closeGameOverToIdle() {
+        if (gameoverDialog && gameoverDialog.open) {
+            gameoverDialog.close();
+        }
+        resetGameState();
+        state.mode = 'start';
+        state.bannerText = '';
+        state.bannerTimer = 0;
+        startOverlay.hidden = false;
+        pauseOverlay.hidden = true;
+        if (pauseBtn) pauseBtn.disabled = true;
+    }
+
+    function isGameOverGuarded() {
+        return performance.now() < state.gameoverGuardUntil;
     }
 
     function moveLane(delta) {
@@ -1442,7 +1573,43 @@
     }
 
     /* ============ SIMULATION STEP ============ */
+    function updateDying(dt) {
+        state.dyingTimer = Math.max(0, state.dyingTimer - dt);
+        if (state.hitFlashTimer > 0) state.hitFlashTimer = Math.max(0, state.hitFlashTimer - dt);
+        if (state.shakeTimer > 0) state.shakeTimer = Math.max(0, state.shakeTimer - dt);
+
+        // Gentle slow-mo drift during the 0.85s defeat beat
+        const slowDt = dt * 0.22;
+        const worldSpeed = getWorldSpeed();
+        for (const item of state.items) {
+            item.x -= worldSpeed * item.speedMul * slowDt;
+        }
+        state.playerY = Math.min(view.h - 24, state.playerY + 26 * dt);
+        state.playerTilt = Math.min(0.45, state.playerTilt + 0.65 * dt);
+
+        state.particles = state.particles.filter((p) => {
+            p.x += p.vx * dt * 0.7;
+            p.y += p.vy * dt * 0.7;
+            p.life -= dt;
+            return p.life > 0;
+        });
+
+        state.popups = state.popups.filter((pop) => {
+            pop.y -= 20 * dt;
+            pop.life -= dt;
+            return pop.life > 0;
+        });
+
+        if (state.dyingTimer <= 0) {
+            openGameOverDialog();
+        }
+    }
+
     function updateGame(dt) {
+        if (state.mode === 'dying') {
+            updateDying(dt);
+            return;
+        }
         if (state.mode !== 'playing') {
             return;
         }
@@ -1477,13 +1644,10 @@
             state.chapterLerp = 0;
             playSfx('chapter');
             const chObj = CHAPTERS[nextChapterIdx];
-            setBanner(`รอบ ${state.season} · ${chObj.lyric}`, chObj.accent, 3.2);
+            setBanner(`รอบ ${state.season} · ${chObj.lyric}`, chObj.accent, 3.0);
         }
 
-        if (state.chapterLerp < 1) {
-            state.chapterLerp = Math.min(1, state.chapterLerp + dt / 2.2);
-        }
-
+        if (state.chapterLerp < 1) state.chapterLerp = Math.min(1, state.chapterLerp + dt / 2.2);
         if (state.bannerTimer > 0) state.bannerTimer = Math.max(0, state.bannerTimer - dt);
         if (state.invulnTimer > 0) state.invulnTimer = Math.max(0, state.invulnTimer - dt);
         if (state.hitFlashTimer > 0) state.hitFlashTimer = Math.max(0, state.hitFlashTimer - dt);
@@ -1507,14 +1671,13 @@
             state.distanceScoreAcc -= pts;
         }
 
-        // Snappy lane interpolation (feels ultra-responsive on mobile & fast waves!)
+        // Snappy lane interpolation
         const targetY = LANE_Y[state.playerLane];
         state.playerY += (targetY - state.playerY) * Math.min(1, dt * 20);
         state.playerTilt *= Math.pow(0.03, dt);
         state.catY += (state.playerY + 9 - state.catY) * Math.min(1, dt * 10);
 
-        // Speed lines movement
-        const worldSpeed = state.scrollSpeed * view.speedScale;
+        const worldSpeed = getWorldSpeed();
         for (const sl of state.speedLines) {
             sl.x -= worldSpeed * sl.speed * dt;
             if (sl.x + sl.len < 0) {
@@ -1569,11 +1732,11 @@
             tel.timer -= dt;
             if (tel.timer <= 0) {
                 if (tel.kind === 'gust') {
-                    pushItem('gust', tel.lane, 0, { speedMul: 1.54 });
+                    pushItem('gust', tel.lane, 0, { speedMul: 1.44 });
                 } else if (tel.kind === 'catfish') {
-                    pushItem('catfish', 2, 0, { speedMul: 1.18, jumpTimer: 0.1 });
+                    pushItem('catfish', 2, 0, { speedMul: 1.14, jumpTimer: 0.1 });
                 } else if (tel.kind === 'bolt') {
-                    pushItem('bolt', tel.lane, 0, { speedMul: 1.88 });
+                    pushItem('bolt', tel.lane, 0, { speedMul: 1.72 });
                     playSfx('bolt');
                 }
             } else {
@@ -1582,13 +1745,20 @@
         }
         state.telegraphs = nextTelegraphs;
 
-        // Player hitbox (scales cleanly with spriteScale)
-        const pHalf = 9.5 * view.spriteScale;
-        const playerBox = {
-            x: view.playerX - pHalf,
-            y: state.playerY - pHalf,
-            w: pHalf * 2,
-            h: pHalf * 2,
+        // Honest forgiving hurtbox for hazards + generous pickup box for collectibles
+        const hurtHalf = 7.2 * view.spriteScale;
+        const pickHalf = 10 * view.spriteScale;
+        const hurtBox = {
+            x: view.playerX - hurtHalf,
+            y: state.playerY - hurtHalf,
+            w: hurtHalf * 2,
+            h: hurtHalf * 2,
+        };
+        const pickBox = {
+            x: view.playerX - pickHalf,
+            y: state.playerY - pickHalf,
+            w: pickHalf * 2,
+            h: pickHalf * 2,
         };
 
         const surviving = [];
@@ -1598,13 +1768,13 @@
             item.x -= worldSpeed * item.speedMul * dt;
 
             if (item.kind === 'bat') {
-                item.y = item.baseY + Math.sin(state.elapsed * 7.5 + item.phase) * 7.5;
+                item.y = item.baseY + Math.sin(state.elapsed * 7 + item.phase) * 6;
             } else if (item.kind === 'batSwoop') {
-                // Swooping bat warns then switches to targetLane mid-flight!
-                const triggerX = view.playerX + (view.w - view.playerX) * 0.56;
+                // Early, clear swoop telegraph at 68% travel distance with 0.38s warning
+                const triggerX = view.playerX + (view.w - view.playerX) * 0.68;
                 if (item.swoopState === 'armed' && item.x <= triggerX) {
                     item.swoopState = 'warning';
-                    item.swoopWarnTimer = 0.24;
+                    item.swoopWarnTimer = 0.38;
                     playSfx('warn');
                 } else if (item.swoopState === 'warning') {
                     item.swoopWarnTimer -= dt;
@@ -1614,17 +1784,18 @@
                         item.baseY = LANE_Y[item.targetLane];
                     }
                 } else if (item.swoopState === 'swooping') {
-                    item.y += (item.baseY - item.y) * Math.min(1, dt * 13);
+                    item.y += (item.baseY - item.y) * Math.min(1, dt * 11);
                 }
             } else if (item.kind === 'catfish') {
+                // Strictly bounded within lower lane (Lane 2) so Lane 1 stays 100% safe!
                 item.jumpTimer += dt;
-                const arc = Math.abs(Math.sin(item.jumpTimer * 4.5)) * 34;
-                item.y = LANE_Y[2] + 18 - arc;
+                const arc = Math.abs(Math.sin(item.jumpTimer * 4.2)) * 16;
+                item.y = LANE_Y[2] + 8 - arc;
             } else if (isFever && (item.kind === 'ring' || item.kind === 'potato')) {
-                // Subtle close-range Fever magnetism ONLY (no screen-wide vacuum!)
+                // Subtle close-range Fever magnetism ONLY (no screen-wide vacuum)
                 const dx = view.playerX - item.x;
                 const dy = state.playerY - item.y;
-                if (Math.abs(dx) < 48 * view.speedScale && Math.abs(dy) < 30) {
+                if (Math.abs(dx) < 46 * view.speedScale && Math.abs(dy) < 28) {
                     item.x += dx * Math.min(1, dt * 4.2);
                     item.y += dy * Math.min(1, dt * 4.2);
                 }
@@ -1632,19 +1803,20 @@
 
             if (item.x < -56) continue;
 
-            const isCollectible = item.kind === 'ring' || item.kind === 'potato' || item.kind === 'feather';
-            const pad = isCollectible ? 3.5 : -3.5;
-            const halfW = item.w / 2 + pad;
-            const halfH = item.h / 2 + pad;
+            const isCollectible = !isHazardKind(item.kind);
+            const pad = isCollectible ? 4 : -4.5;
+            const halfW = Math.max(4, item.w / 2 + pad);
+            const halfH = Math.max(4, item.h / 2 + pad);
+            const pBox = isCollectible ? pickBox : hurtBox;
 
             const hit =
-                playerBox.x < item.x + halfW &&
-                playerBox.x + playerBox.w > item.x - halfW &&
-                playerBox.y < item.y + halfH &&
-                playerBox.y + playerBox.h > item.y - halfH;
+                pBox.x < item.x + halfW &&
+                pBox.x + pBox.w > item.x - halfW &&
+                pBox.y < item.y + halfH &&
+                pBox.y + pBox.h > item.y - halfH;
 
             if (!hit) {
-                // Skillful Near-Miss ("หลบเฉียด!") bonus when dodging out of a hazard's lane at the last moment
+                // Skillful Near-Miss bonus when dodging out of a hazard's lane right before impact
                 if (
                     !isCollectible &&
                     !item.nearMissed &&
@@ -1717,19 +1889,18 @@
                 state.fever = Math.max(0, state.fever - 20);
                 state.invulnTimer = INVULN_DURATION;
                 state.hitFlashTimer = 0.16;
-                state.shakeTimer = prefersReducedMotion ? 0 : 0.26;
+                state.shakeTimer = prefersReducedMotion ? 0 : 0.24;
                 spawnParticles(view.playerX, state.playerY, '#FB7185', 14, 100);
                 spawnPopup(view.playerX + 10, state.playerY - 18, 'โอ๊ย!', '#FB7185');
                 playSfx('hit');
                 if (state.hp <= 0) {
-                    triggerGameOver();
+                    beginDyingSequence();
                     return;
                 }
             }
         }
         state.items = surviving;
 
-        // Particles & floating score popups
         state.particles = state.particles.filter((p) => {
             p.x += p.vx * dt;
             p.y += p.vy * dt;
@@ -1769,6 +1940,20 @@
         const dw = Math.round(sprite.width * scale);
         const dh = Math.round(sprite.height * scale);
         ctx.drawImage(sprite, Math.round(centerX - dw / 2), Math.round(centerY - dh / 2), dw, dh);
+    }
+
+    function drawPixelBoltGlyph(cx, cy) {
+        // Cross-browser crisp vector lightning icon (avoids inconsistent emoji glyphs)
+        ctx.fillStyle = '#071024';
+        ctx.beginPath();
+        ctx.moveTo(cx + 2, cy - 7);
+        ctx.lineTo(cx - 4, cy + 1);
+        ctx.lineTo(cx, cy + 1);
+        ctx.lineTo(cx - 2, cy + 7);
+        ctx.lineTo(cx + 4, cy - 1);
+        ctx.lineTo(cx, cy - 1);
+        ctx.closePath();
+        ctx.fill();
     }
 
     function drawBackground() {
@@ -1870,7 +2055,7 @@
             const hasDanger = state.telegraphs.some((tel) => tel.lane === lane);
 
             if (hasDanger) {
-                ctx.fillStyle = 'rgba(251, 113, 133, 0.12)';
+                ctx.fillStyle = 'rgba(251, 113, 133, 0.13)';
                 ctx.fillRect(0, ly - 30, view.w, 60);
             } else if (isActive) {
                 ctx.fillStyle = 'rgba(56, 189, 248, 0.09)';
@@ -1910,16 +2095,15 @@
         }
         ctx.globalAlpha = 1;
 
-        // Edge Telegraphs ("!" for gusts/catfish, "⚡" for targeted lightning bolt)
+        // Edge Telegraphs
         for (const tel of state.telegraphs) {
             const pulse = Math.floor(tel.timer * 10) % 2 === 0;
             const ty = LANE_Y[tel.lane];
             const isBolt = tel.kind === 'bolt';
 
             if (isBolt) {
-                // Horizontal laser sightline for incoming thunder bolt
-                ctx.fillStyle = pulse ? 'rgba(253, 224, 71, 0.32)' : 'rgba(245, 158, 11, 0.18)';
-                ctx.fillRect(0, ty - 2, view.w - 24, 4);
+                ctx.fillStyle = pulse ? 'rgba(253, 224, 71, 0.34)' : 'rgba(245, 158, 11, 0.18)';
+                ctx.fillRect(0, ty - 2, view.w - 26, 4);
             }
 
             ctx.fillStyle = isBolt
@@ -1930,11 +2114,15 @@
             ctx.lineWidth = 1.5;
             ctx.strokeRect(view.w - 26, ty - 12, 20, 24);
 
-            ctx.fillStyle = '#071024';
-            ctx.font = '700 13px Mitr, Prompt, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(isBolt ? '⚡' : '!', view.w - 16, ty + 0.5);
+            if (isBolt) {
+                drawPixelBoltGlyph(view.w - 16, ty);
+            } else {
+                ctx.fillStyle = '#071024';
+                ctx.font = '700 13px Mitr, Prompt, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('!', view.w - 16, ty + 0.5);
+            }
         }
 
         // Items & Hazards
@@ -1962,33 +2150,37 @@
 
             drawSpriteScaled(sprite, item.x, item.y);
 
-            // Swooping bat lane-change telegraph arrow!
+            // Swooping bat lane-change warning arrow + subtle target band
             if (item.kind === 'batSwoop' && item.swoopState === 'warning') {
                 const dirDown = item.targetLane > item.lane;
-                const arrowY = item.y + (dirDown ? 18 : -18);
+                const arrowY = item.y + (dirDown ? 20 : -20);
                 ctx.fillStyle = '#FDE047';
-                ctx.font = '700 13px Mitr, sans-serif';
+                ctx.font = '700 14px Mitr, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(dirDown ? '▼' : '▲', item.x, arrowY);
             }
         }
 
-        // Tiny Black Cat Companion (wears Cat-Bunny ears during Dream Fever!)
+        // Tiny Black Cat Companion
         const catSprite = isFever ? SPRITES.catBunny[animTick % 2] : SPRITES.cat[animTick % 2];
         const catOffset = Math.round(24 * view.spriteScale);
         drawSpriteScaled(catSprite, view.playerX - catOffset, state.catY);
 
         // Pixel Chibi L
-        const invulnFlash = state.invulnTimer > 0 && Math.floor(state.invulnTimer * 10) % 2 === 0;
+        const isDying = state.mode === 'dying';
+        const invulnFlash = !isDying && state.invulnTimer > 0 && Math.floor(state.invulnTimer * 10) % 2 === 0;
         const lW = Math.round(24 * view.spriteScale);
         const lH = Math.round(24 * view.spriteScale);
 
         if (!invulnFlash) {
-            const lSprite = state.invulnTimer > INVULN_DURATION - 0.25
+            const lSprite = isDying || state.invulnTimer > INVULN_DURATION - 0.25
                 ? SPRITES.lHurt
                 : SPRITES.l[animTick % 4];
             ctx.save();
+            if (isDying) {
+                ctx.globalAlpha = Math.max(0.25, state.dyingTimer / DYING_DELAY_SEC);
+            }
             ctx.translate(view.playerX, Math.round(state.playerY));
             ctx.rotate(state.playerTilt);
             if (isFever) {
@@ -2006,7 +2198,7 @@
 
         // Hit Red Vignette Flash
         if (state.hitFlashTimer > 0) {
-            ctx.fillStyle = `rgba(251, 113, 133, ${(state.hitFlashTimer * 1.4).toFixed(2)})`;
+            ctx.fillStyle = `rgba(251, 113, 133, ${(state.hitFlashTimer * 1.2).toFixed(2)})`;
             ctx.fillRect(0, 0, view.w, view.h);
         }
 
@@ -2018,7 +2210,7 @@
         }
         ctx.globalAlpha = 1;
 
-        // Crisp Thai Floating Popups (high-DPI rendered!)
+        // Crisp Thai Floating Popups
         ctx.font = '600 11px Mitr, Prompt, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -2033,13 +2225,13 @@
         }
         ctx.globalAlpha = 1;
 
-        // Crisp Thai Chapter / Fever Banner
+        // Crisp Thai Chapter / Fever / Defeat Banner
         if (state.bannerTimer > 0 && state.bannerText) {
             const alpha = Math.min(1, state.bannerTimer * 1.5);
             const padX = view.isCompact ? 14 : 44;
             const bw = view.w - padX * 2;
             ctx.globalAlpha = alpha;
-            ctx.fillStyle = 'rgba(7, 16, 36, 0.86)';
+            ctx.fillStyle = 'rgba(7, 16, 36, 0.88)';
             ctx.fillRect(padX, 8, bw, 24);
             ctx.strokeStyle = state.bannerColor;
             ctx.lineWidth = 1.5;
@@ -2082,7 +2274,7 @@
         if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
             return;
         }
-        if (guideDialog && guideDialog.open) {
+        if ((guideDialog && guideDialog.open) || (gameoverDialog && gameoverDialog.open)) {
             return;
         }
         if (mobileMenuEl && mobileMenuEl.classList.contains('active')) {
@@ -2149,6 +2341,13 @@
         setLaneDirect(getLaneFromClientY(event.clientY));
     });
 
+    // Prevent rubber-band scroll on iOS Safari while dragging across canvas lanes
+    canvas.addEventListener('touchmove', (event) => {
+        if (state.mode === 'playing') {
+            event.preventDefault();
+        }
+    }, { passive: false });
+
     function clearCanvasPointer(event) {
         if (event.pointerId === activePointerId) {
             activePointerId = null;
@@ -2185,7 +2384,39 @@
     if (startBtn) startBtn.addEventListener('click', startGame);
     if (resumeBtn) resumeBtn.addEventListener('click', resumeGame);
     if (pauseRestartBtn) pauseRestartBtn.addEventListener('click', startGame);
-    if (playAgainBtn) playAgainBtn.addEventListener('click', startGame);
+    if (playAgainBtn) {
+        playAgainBtn.addEventListener('click', () => {
+            if (isGameOverGuarded()) return;
+            startGame();
+        });
+    }
+    if (gameoverCloseBtn) {
+        gameoverCloseBtn.addEventListener('click', () => {
+            if (isGameOverGuarded()) return;
+            closeGameOverToIdle();
+        });
+    }
+    if (gameoverDialog) {
+        gameoverDialog.addEventListener('cancel', (event) => {
+            event.preventDefault();
+            if (isGameOverGuarded()) return;
+            closeGameOverToIdle();
+        });
+        // Light-dismiss backdrop click after safety guard expires
+        gameoverDialog.addEventListener('click', (event) => {
+            if (event.target !== gameoverDialog || isGameOverGuarded()) return;
+            const rect = gameoverDialog.getBoundingClientRect();
+            const inside =
+                rect.top <= event.clientY &&
+                event.clientY <= rect.top + rect.height &&
+                rect.left <= event.clientX &&
+                event.clientX <= rect.left + rect.width;
+            if (!inside) {
+                closeGameOverToIdle();
+            }
+        });
+    }
+
     if (pauseBtn) {
         pauseBtn.addEventListener('click', () => {
             if (state.mode === 'playing') pauseGame();
@@ -2230,7 +2461,14 @@
         }
     }
 
-    /* ============ FORM VALIDATION (THAI MESSAGES) ============ */
+    /* ============ FORM VALIDATION (THAI MESSAGES + SYNCED SANITIZER) ============ */
+    function sanitizeClientName(raw) {
+        return String(raw || '')
+            .replace(/[\u0000-\u001F\u007F\u200B-\u200D\uFEFF]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
     function initFormValidation() {
         if (!scoreForm || !playerNameInput) return;
 
@@ -2272,10 +2510,7 @@
         };
 
         const syncCustomValidity = () => {
-            const cleaned = playerNameInput.value
-                .replace(/[\u0000-\u001F\u007F]/g, '')
-                .replace(/\s+/g, ' ')
-                .trim();
+            const cleaned = sanitizeClientName(playerNameInput.value);
             if (!cleaned) {
                 playerNameInput.setCustomValidity('กรุณาใส่ชื่อ 1–18 ตัวอักษร');
             } else if (/[<>]/.test(playerNameInput.value)) {
@@ -2472,6 +2707,25 @@
         lbList.replaceChildren(...nodes);
     }
 
+    function formatServerErrorThai(status, data) {
+        const code = data?.errorCode || '';
+        const msg = String(data?.error || '');
+
+        if (status === 429 || code === 'RATE_LIMITED') {
+            return 'ส่งคะแนนถี่เกินไป กรุณารอสักครู่แล้วลองใหม่';
+        }
+        if (code === 'INVALID_NAME' || /name/i.test(msg)) {
+            return 'ชื่อไม่ถูกต้อง กรุณาใส่ 1–18 ตัวอักษร และห้ามใช้เครื่องหมาย < หรือ >';
+        }
+        if (code === 'SCORE_RATE_LIMIT' || code === 'INVALID_SCORE' || /score|rate/i.test(msg)) {
+            return 'คะแนนรอบนี้ไม่ผ่านเงื่อนไขการตรวจสอบของระบบ กรุณาลองเล่นรอบใหม่';
+        }
+        if (code === 'INVALID_DURATION' || /duration/i.test(msg)) {
+            return 'ระยะเวลาการบินสั้นเกินไป กรุณาลองเล่นอีกครั้ง';
+        }
+        return 'ไม่สามารถบันทึกคะแนนได้ในขณะนี้ กรุณาลองกดบันทึกอีกครั้ง';
+    }
+
     async function loadLeaderboard() {
         if (lbList) lbList.setAttribute('aria-busy', 'true');
         if (lbStatus) lbStatus.hidden = true;
@@ -2506,7 +2760,7 @@
     if (scoreForm && playerNameInput) {
         scoreForm.addEventListener('submit', async (event) => {
             event.preventDefault();
-            if (state.lastSubmittedRun) return;
+            if (isGameOverGuarded() || state.lastSubmittedRun) return;
 
             if (typeof scoreForm.syncValidityAndAria === 'function') {
                 scoreForm.syncValidityAndAria();
@@ -2517,11 +2771,7 @@
                 return;
             }
 
-            const cleanName = playerNameInput.value
-                .replace(/[\u0000-\u001F\u007F]/g, '')
-                .replace(/[<>]/g, '')
-                .replace(/\s+/g, ' ')
-                .trim();
+            const cleanName = sanitizeClientName(playerNameInput.value).replace(/[<>]/g, '');
 
             try {
                 localStorage.setItem(LAST_NAME_KEY, cleanName);
@@ -2540,7 +2790,7 @@
                 score: Math.max(1, Math.floor(state.score)),
                 maxCombo: state.maxCombo,
                 season: state.season,
-                chapter: CHAPTERS[state.chapterIdx].apiName, // Keeps API compatibility
+                chapter: CHAPTERS[state.chapterIdx].apiName,
                 durationSec: Math.max(2, Math.round(state.elapsed)),
             };
 
@@ -2572,9 +2822,7 @@
                 if (res.status === 400 || res.status === 429) {
                     if (submitScoreBtn) submitScoreBtn.disabled = false;
                     if (submitStatus) {
-                        submitStatus.textContent = res.status === 429
-                            ? 'ส่งคะแนนถี่เกินไป กรุณารอสักครู่แล้วลองใหม่'
-                            : 'ไม่สามารถบันทึกคะแนนได้ กรุณาตรวจสอบชื่ออีกครั้ง';
+                        submitStatus.textContent = formatServerErrorThai(res.status, data);
                         submitStatus.className = 'submit-status is-error';
                     }
                     return;

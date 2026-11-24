@@ -121,7 +121,7 @@
                                 <span></span><span></span><span></span>
                             </span>
                         </button>
-                        <input type="range" id="bgm-volume" class="bgm-slider" min="0" max="100" value="35"
+                        <input type="range" id="bgm-volume" class="bgm-slider" min="0" max="100" value="20"
                             aria-label="ระดับเสียงเพลงประกอบ">
                     </div>
 
@@ -230,68 +230,6 @@
                                         <span>เริ่มใหม่</span>
                                     </button>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Game Over & No-Login Leaderboard Submission Overlay -->
-                        <div id="gameover-overlay" class="stage-overlay stage-overlay-gameover" hidden>
-                            <div class="overlay-card overlay-gameover">
-                                <div class="gameover-head">
-                                    <h2 class="overlay-heading">จบรอบการบิน</h2>
-                                    <span id="new-best-pill" class="new-best-pill" hidden>สถิติใหม่!</span>
-                                </div>
-
-                                <div class="gameover-stats">
-                                    <div class="stat-box">
-                                        <span class="stat-label">คะแนนรวม</span>
-                                        <strong id="final-score" class="stat-val">0</strong>
-                                    </div>
-                                    <div class="stat-box">
-                                        <span class="stat-label">คอมโบสูงสุด</span>
-                                        <strong id="final-combo" class="stat-val">0</strong>
-                                    </div>
-                                    <div class="stat-box">
-                                        <span class="stat-label">ด่านที่ไปถึง</span>
-                                        <strong id="final-chapter" class="stat-val stat-chapter">สถานียามค่ำคืน</strong>
-                                    </div>
-                                </div>
-
-                                <p id="gameover-lyric" class="gameover-lyric">
-                                    「どこまで行けば 夜明けが見える？」
-                                </p>
-
-                                <form id="score-form" class="score-form" novalidate>
-                                    <div class="field">
-                                        <label for="player-name">บันทึกชื่อบนตารางอันดับ</label>
-                                        <span id="name-hint" class="field-hint">
-                                            ใส่ชื่อ 1–18 ตัวอักษร (ไทย / อังกฤษ / ญี่ปุ่น) · ไม่ต้องล็อกอิน
-                                        </span>
-                                        <input type="text" id="player-name" name="playerName" required minlength="1"
-                                            maxlength="18" autocomplete="nickname" aria-describedby="name-hint"
-                                            aria-invalid="false" data-error="name-error"
-                                            placeholder="เช่น ผู้ประสบภัย_01">
-                                        <div id="name-error" class="field-error">
-                                            <span role="img" aria-label="ข้อผิดพลาด"><i class="fas fa-circle-exclamation"
-                                                    aria-hidden="true"></i></span>
-                                            กรุณาใส่ชื่อ 1–18 ตัวอักษร (ห้ามมีเครื่องหมาย &lt; หรือ &gt;) เพื่อบันทึกคะแนน
-                                        </div>
-                                    </div>
-
-                                    <div class="overlay-actions">
-                                        <button type="submit" id="submit-score-btn"
-                                            class="arcade-btn arcade-btn-primary">
-                                            <i class="fas fa-trophy" aria-hidden="true"></i>
-                                            <span>บันทึกคะแนน</span>
-                                        </button>
-                                        <button type="button" id="play-again-btn"
-                                            class="arcade-btn arcade-btn-secondary">
-                                            <i class="fas fa-rotate-right" aria-hidden="true"></i>
-                                            <span>บินอีกครั้ง</span>
-                                        </button>
-                                    </div>
-
-                                    <p id="submit-status" class="submit-status" role="status" aria-live="polite"></p>
-                                </form>
                             </div>
                         </div>
                     </div>
@@ -507,6 +445,70 @@
         </div>
     </main>
 
+    <!-- Native Top-Layer Game Over & Score Dialog (Cross-browser safe + Dismissible) -->
+    <dialog id="gameover-dialog" class="game-dialog gameover-dialog" aria-labelledby="gameover-title">
+        <div class="dialog-panel overlay-gameover">
+            <div class="gameover-head">
+                <div class="gameover-title-group">
+                    <h2 id="gameover-title" class="overlay-heading">จบรอบการบิน</h2>
+                    <span id="new-best-pill" class="new-best-pill" hidden>สถิติใหม่!</span>
+                </div>
+                <button type="button" id="gameover-close-btn" class="dialog-close" aria-label="ปิดหน้าต่างจบรอบ">
+                    <i class="fas fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <div class="gameover-stats">
+                <div class="stat-box">
+                    <span class="stat-label">คะแนนรวม</span>
+                    <strong id="final-score" class="stat-val">0</strong>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">คอมโบสูงสุด</span>
+                    <strong id="final-combo" class="stat-val">0</strong>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">ด่านที่ไปถึง</span>
+                    <strong id="final-chapter" class="stat-val stat-chapter">สถานียามค่ำคืน</strong>
+                </div>
+            </div>
+
+            <p id="gameover-lyric" class="gameover-lyric">
+                「どこまで行けば 夜明けが見える？」
+            </p>
+
+            <form id="score-form" class="score-form" novalidate>
+                <div class="field">
+                    <label for="player-name">บันทึกชื่อบนตารางอันดับ</label>
+                    <span id="name-hint" class="field-hint">
+                        ใส่ชื่อ 1–18 ตัวอักษร (ไทย / อังกฤษ / ญี่ปุ่น) · ไม่ต้องล็อกอิน
+                    </span>
+                    <input type="text" id="player-name" name="playerName" required minlength="1" maxlength="18"
+                        autocomplete="nickname" aria-describedby="name-hint" aria-invalid="false"
+                        data-error="name-error" placeholder="เช่น ผู้ประสบภัย_01">
+                    <div id="name-error" class="field-error">
+                        <span role="img" aria-label="ข้อผิดพลาด"><i class="fas fa-circle-exclamation"
+                                aria-hidden="true"></i></span>
+                        กรุณาใส่ชื่อ 1–18 ตัวอักษร (ห้ามมีเครื่องหมาย &lt; หรือ &gt;) เพื่อบันทึกคะแนน
+                    </div>
+                </div>
+
+                <div class="overlay-actions">
+                    <button type="submit" id="submit-score-btn" class="arcade-btn arcade-btn-primary">
+                        <i class="fas fa-trophy" aria-hidden="true"></i>
+                        <span>บันทึกคะแนน</span>
+                    </button>
+                    <button type="button" id="play-again-btn" class="arcade-btn arcade-btn-secondary">
+                        <i class="fas fa-rotate-right" aria-hidden="true"></i>
+                        <span>บินอีกครั้ง</span>
+                    </button>
+                </div>
+
+                <p id="submit-status" class="submit-status" role="status" aria-live="polite"></p>
+            </form>
+        </div>
+    </dialog>
+
     <!-- Accessible How-to-Play Dialog -->
     <dialog id="guide-dialog" class="game-dialog" closedby="any" aria-labelledby="guide-dialog-title">
         <div class="dialog-panel">
@@ -531,7 +533,7 @@
                 </ul>
                 <h3>เพลงประกอบ &amp; ตารางอันดับ</h3>
                 <p>
-                    เปิดฟังเพลง <em>Wataridoritachi ni Sora wa Mienai</em> ระหว่างบินได้ทันที เมื่อจบรอบสามารถกรอกชื่อ 1–18 ตัวอักษรเพื่อบันทึกคะแนนลงตารางอันดับโดยไม่ต้องล็อกอิน
+                    ค่าเริ่มต้นจะเปิดเฉพาะเสียงเอฟเฟกต์ หากอยากฟังเพลง <em>Wataridoritachi ni Sora wa Mienai</em> ระหว่างบิน กดปุ่ม <strong>เพลง</strong> ด้านบนได้เลย เมื่อจบรอบสามารถกรอกชื่อ 1–18 ตัวอักษรเพื่อบันทึกคะแนนลงตารางอันดับโดยไม่ต้องล็อกอิน
                 </p>
             </div>
             <div class="dialog-foot">

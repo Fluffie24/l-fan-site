@@ -58,7 +58,7 @@ function sanitizeName(raw) {
     if (typeof raw !== 'string') return null;
     if (/[<>]/.test(raw)) return null;
     const cleaned = raw
-        .replace(/[\u0000-\u001F\u007F]/g, '')
+        .replace(/[\u0000-\u001F\u007F\u200B-\u200D\uFEFF]/g, '')
         .replace(/\s+/g, ' ')
         .trim();
 
@@ -69,42 +69,52 @@ function sanitizeName(raw) {
 
 function validateSubmission(body) {
     if (!body || typeof body !== 'object' || Array.isArray(body)) {
-        return { error: 'Invalid request payload.' };
+        return { errorCode: 'INVALID_PAYLOAD', error: 'Invalid request payload.' };
     }
 
     const name = sanitizeName(body.name);
     if (!name) {
-        return { error: 'Player name must be 1 to 18 valid characters (no < or >).' };
+        return {
+            errorCode: 'INVALID_NAME',
+            error: 'Player name must be 1 to 18 valid characters (no < or >).',
+        };
     }
 
     const score = Number(body.score);
-    if (!Number.isInteger(score) || score < 1 || score > 500000) {
-        return { error: 'Score must be an integer between 1 and 500,000.' };
+    if (!Number.isInteger(score) || score < 1 || score > 10000000) {
+        return {
+            errorCode: 'INVALID_SCORE',
+            error: 'Score must be an integer between 1 and 10,000,000.',
+        };
     }
 
     const maxCombo = Number(body.maxCombo);
-    if (!Number.isInteger(maxCombo) || maxCombo < 0 || maxCombo > 9999) {
-        return { error: 'Invalid maxCombo value.' };
+    if (!Number.isInteger(maxCombo) || maxCombo < 0 || maxCombo > 99999) {
+        return { errorCode: 'INVALID_PAYLOAD', error: 'Invalid maxCombo value.' };
     }
 
     const season = Number(body.season);
-    if (!Number.isInteger(season) || season < 1 || season > 99) {
-        return { error: 'Invalid season value.' };
+    if (!Number.isInteger(season) || season < 1 || season > 999) {
+        return { errorCode: 'INVALID_PAYLOAD', error: 'Invalid season value.' };
     }
 
     const chapter = typeof body.chapter === 'string' ? body.chapter.trim() : '';
     if (!ALLOWED_CHAPTERS.has(chapter)) {
-        return { error: 'Invalid chapter name.' };
+        return { errorCode: 'INVALID_PAYLOAD', error: 'Invalid chapter name.' };
     }
 
     const durationSec = Number(body.durationSec);
-    if (!Number.isFinite(durationSec) || durationSec < 2 || durationSec > 7200) {
-        return { error: 'Invalid flight duration.' };
+    if (!Number.isFinite(durationSec) || durationSec < 1 || durationSec > 21600) {
+        return { errorCode: 'INVALID_DURATION', error: 'Invalid flight duration.' };
     }
 
-    const maxPlausibleScore = Math.ceil(durationSec * 900) + 3000;
+    // Allows sustained x5 combo + Dream Fever streaks while blocking fabricated bursts
+    const maxPlausibleScore = Math.ceil(durationSec * 4500) + 20000;
     if (score > maxPlausibleScore) {
-        return { error: 'Score exceeds plausible flight rate.' };
+        return {
+            errorCode: 'SCORE_RATE_LIMIT',
+            error: 'Score exceeds plausible flight rate.',
+        };
     }
 
     return {
@@ -232,7 +242,10 @@ module.exports = async function handler(req, res) {
 
         const validated = validateSubmission(rawBody);
         if (validated.error) {
-            return res.status(400).json({ error: validated.error });
+            return res.status(400).json({
+                errorCode: validated.errorCode || 'INVALID_PAYLOAD',
+                error: validated.error,
+            });
         }
 
         const entry = {
@@ -264,6 +277,7 @@ module.exports = async function handler(req, res) {
 
             if (typeof hitCount === 'number' && hitCount > RATE_LIMIT_PER_MIN) {
                 return res.status(429).json({
+                    errorCode: 'RATE_LIMITED',
                     error: 'Too many score submissions. Please wait a minute and try again.',
                 });
             }

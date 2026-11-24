@@ -1679,6 +1679,17 @@ section {
     text-align: center;
 }
 
+.bar-link-logo {
+    width: 28px;
+    height: 28px;
+    margin-right: 0.75rem;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid rgba(190, 24, 93, 0.22);
+    background: #FFFDF0;
+}
+
 .bar-link span {
     flex-grow: 1;
 }

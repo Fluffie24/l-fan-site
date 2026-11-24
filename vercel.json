@@ -1,7 +1,6 @@
 {
   "cleanUrls": false,
   "rewrites": [
-    { "source": "/events", "destination": "/events.html" },
-    { "source": "/gallery", "destination": "/gallery.html" }
+    { "source": "/events", "destination": "/events.html" }
   ]
 }

@@ -715,58 +715,136 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    /* ============ IMAGE LIGHTBOX MODAL (gallery.html) ============ */
-    const modal = document.getElementById('image-modal');
-    const modalImg = document.getElementById('full-image');
-    const modalLink = document.getElementById('modal-post-link');
-    const closeBtn = document.querySelector('.close-modal');
-    const galleryImages = document.querySelectorAll('.gallery-grid img, .masonry-grid img');
+    /* ============ COMPACT GALLERY STRIP & NATIVE <DIALOG> LIGHTBOX ============ */
+    const galleryStrip = document.getElementById('gallery-strip');
+    const galleryDialog = document.getElementById('gallery-lightbox');
+    if (galleryStrip) {
+        const galleryTabs = document.querySelectorAll('.gallery-tab');
+        const galleryTiles = Array.from(galleryStrip.querySelectorAll('.gallery-tile'));
+        const galleryCountEl = document.getElementById('gallery-count');
+        const prevScrollBtn = document.getElementById('gallery-prev');
+        const nextScrollBtn = document.getElementById('gallery-next');
 
-    function closeImageModal() {
-        if (!modal) return;
-        modal.style.display = 'none';
-        modal.setAttribute('aria-hidden', 'true');
-        document.body.classList.remove('no-scroll');
-    }
+        const lbImg = document.getElementById('lightbox-img');
+        const lbTitle = document.getElementById('lightbox-title');
+        const lbCat = document.getElementById('lightbox-cat');
+        const lbCounter = document.getElementById('lightbox-counter');
+        const lbClose = document.getElementById('lightbox-close');
+        const lbPrev = document.getElementById('lightbox-prev');
+        const lbNext = document.getElementById('lightbox-next');
 
-    if (modal && modalImg && galleryImages.length > 0) {
-        galleryImages.forEach((img) => {
-            img.addEventListener('click', function () {
-                modal.style.display = 'flex';
-                modal.setAttribute('aria-hidden', 'false');
-                document.body.classList.add('no-scroll');
-                modalImg.src = this.src;
-                modalImg.alt = this.alt || 'Full size preview';
+        let visibleTiles = galleryTiles;
+        let activeLightboxIdx = 0;
 
-                const postUrl = this.getAttribute('data-post-url');
-                if (modalLink) {
-                    if (postUrl) {
-                        modalLink.href = postUrl;
-                        modalLink.style.display = 'inline-flex';
-                    } else {
-                        modalLink.style.display = 'none';
-                    }
+        function applyGalleryFilter(filter) {
+            visibleTiles = galleryTiles.filter((tile) => {
+                const match = filter === 'all' || tile.dataset.category === filter;
+                tile.hidden = !match;
+                return match;
+            });
+            if (galleryCountEl) {
+                galleryCountEl.textContent = `${visibleTiles.length} รูป`;
+            }
+            galleryStrip.scrollTo({ left: 0, behavior: 'smooth' });
+        }
+
+        galleryTabs.forEach((tab) => {
+            tab.addEventListener('click', () => {
+                const filter = tab.dataset.galleryFilter || 'all';
+                galleryTabs.forEach((t) => {
+                    const isActive = t === tab;
+                    t.classList.toggle('active', isActive);
+                    t.setAttribute('aria-selected', String(isActive));
+                });
+                applyGalleryFilter(filter);
+            });
+        });
+
+        const scrollStep = () => Math.max(240, Math.round(galleryStrip.clientWidth * 0.72));
+        if (prevScrollBtn) {
+            prevScrollBtn.addEventListener('click', () => {
+                galleryStrip.scrollBy({ left: -scrollStep(), behavior: 'smooth' });
+            });
+        }
+        if (nextScrollBtn) {
+            nextScrollBtn.addEventListener('click', () => {
+                galleryStrip.scrollBy({ left: scrollStep(), behavior: 'smooth' });
+            });
+        }
+
+        function showLightboxAt(index) {
+            if (!galleryDialog || visibleTiles.length === 0) return;
+            const total = visibleTiles.length;
+            activeLightboxIdx = (index + total) % total;
+            const tile = visibleTiles[activeLightboxIdx];
+            const src = tile.dataset.full || tile.querySelector('img')?.src || '';
+            const label = tile.dataset.label || 'L BNK48';
+            const catLabel = tile.dataset.catLabel || 'Gallery';
+
+            if (lbImg) {
+                lbImg.src = src;
+                lbImg.alt = `${label} — L BNK48`;
+            }
+            if (lbTitle) lbTitle.textContent = label;
+            if (lbCat) lbCat.textContent = catLabel;
+            if (lbCounter) {
+                lbCounter.textContent = `${String(activeLightboxIdx + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+            }
+        }
+
+        galleryTiles.forEach((tile) => {
+            tile.addEventListener('click', () => {
+                const idx = visibleTiles.indexOf(tile);
+                if (idx === -1 || !galleryDialog) return;
+                showLightboxAt(idx);
+                if (!galleryDialog.open) {
+                    galleryDialog.showModal();
                 }
             });
         });
 
-        if (closeBtn) {
-            closeBtn.addEventListener('click', closeImageModal);
-        }
-
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                closeImageModal();
+        if (galleryDialog) {
+            if (lbClose) {
+                lbClose.addEventListener('click', () => galleryDialog.close());
             }
-        });
+            if (lbPrev) {
+                lbPrev.addEventListener('click', () => showLightboxAt(activeLightboxIdx - 1));
+            }
+            if (lbNext) {
+                lbNext.addEventListener('click', () => showLightboxAt(activeLightboxIdx + 1));
+            }
+
+            // Fallback for browsers without <dialog closedby="any"> support (e.g., Safari)
+            if (!('closedBy' in HTMLDialogElement.prototype)) {
+                galleryDialog.addEventListener('click', (event) => {
+                    if (event.target !== galleryDialog) return;
+                    const rect = galleryDialog.getBoundingClientRect();
+                    const isDialogContent =
+                        rect.top <= event.clientY &&
+                        event.clientY <= rect.top + rect.height &&
+                        rect.left <= event.clientX &&
+                        event.clientX <= rect.left + rect.width;
+                    if (!isDialogContent) {
+                        galleryDialog.close();
+                    }
+                });
+            }
+
+            galleryDialog.addEventListener('keydown', (event) => {
+                if (event.key === 'ArrowLeft') {
+                    event.preventDefault();
+                    showLightboxAt(activeLightboxIdx - 1);
+                } else if (event.key === 'ArrowRight') {
+                    event.preventDefault();
+                    showLightboxAt(activeLightboxIdx + 1);
+                }
+            });
+        }
     }
 
     /* ============ GLOBAL ESCAPE KEY HANDLER ============ */
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
-            if (modal && modal.style.display === 'flex') {
-                closeImageModal();
-            }
             if (mobileMenu && mobileMenu.classList.contains('active')) {
                 setMenuOpen(false);
             }

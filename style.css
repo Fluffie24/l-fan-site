@@ -1514,8 +1514,8 @@ section {
 }
 
 #gallery {
-    padding: 2.25rem 5% 4.5rem;
-    background: linear-gradient(180deg, #E0F2FE 0%, #F0F8FF 100%);
+    padding: 2.25rem 5% 2.75rem;
+    background: linear-gradient(180deg, #FFFFFF 0%, #EBF6FF 100%);
 }
 
 .surface-card-gallery {
@@ -4311,7 +4311,7 @@ button.song-pill.is-center.active {
     }
 
     #gallery {
-        padding: 1.75rem 1rem 3.25rem;
+        padding: 1.5rem 1rem 2rem;
     }
 
     .surface-card-gallery {

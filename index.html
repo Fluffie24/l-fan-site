@@ -108,8 +108,8 @@
             <li><a href="#ge6">GE6</a></li>
             <li><a href="#highlights">Highlights</a></li>
             <li><a href="#l-channels">Socials</a></li>
-            <li><a href="#fanbase">Sisasterteam</a></li>
             <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#fanbase">Sisasterteam</a></li>
         </ul>
 
         <button type="button" class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false"
@@ -131,8 +131,8 @@
             <li><a href="#ge6">GE6</a></li>
             <li><a href="#highlights">Highlights</a></li>
             <li><a href="#l-channels">Socials</a></li>
-            <li><a href="#fanbase">Sisasterteam</a></li>
             <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#fanbase">Sisasterteam</a></li>
         </ul>
     </aside>
     <div class="menu-overlay" id="menu-overlay"></div>
@@ -837,6 +837,180 @@
             </div>
         </section>
 
+        <!-- ============ COMPACT PHOTO GALLERY ============ -->
+        <section id="gallery">
+            <div class="container">
+                <div class="surface-card surface-card-gallery reveal">
+                    <div class="gallery-bar">
+                        <div class="gallery-bar-title">
+                            <h2>Gallery</h2>
+                            <span class="gallery-count" id="gallery-count">20 รูป</span>
+                        </div>
+                        <div class="gallery-tabs" role="tablist" aria-label="Filter gallery photos">
+                            <button type="button" class="gallery-tab active" data-gallery-filter="all" role="tab"
+                                aria-selected="true">ทั้งหมด (20)</button>
+                            <button type="button" class="gallery-tab" data-gallery-filter="profile" role="tab"
+                                aria-selected="false">Profile (15)</button>
+                            <button type="button" class="gallery-tab" data-gallery-filter="theatre" role="tab"
+                                aria-selected="false">Theatre (2)</button>
+                            <button type="button" class="gallery-tab" data-gallery-filter="ge-poster" role="tab"
+                                aria-selected="false">GE Poster (3)</button>
+                        </div>
+                    </div>
+
+                    <div class="gallery-strip-wrap">
+                        <button type="button" class="gallery-nav-btn left" id="gallery-prev"
+                            aria-label="Scroll gallery left">
+                            <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                        </button>
+
+                        <div class="gallery-strip" id="gallery-strip" aria-label="L BNK48 photo gallery">
+                            <button type="button" class="gallery-tile" data-category="profile" data-label="Debut"
+                                data-cat-label="Profile" data-full="assets/photos/full/debut.jpg">
+                                <img src="assets/photos/thumb/debut.jpg" alt="L BNK48 4th Generation Debut Profile"
+                                    width="172" height="215" loading="lazy" decoding="async">
+                                <span class="gallery-tile-label">Debut</span>
+                            </button>
+                            <button type="button" class="gallery-tile" data-category="profile"
+                                data-label="Shoujotachi yo" data-cat-label="Profile"
+                                data-full="assets/photos/full/shoujotachi-yo.jpg">
+                                <img src="assets/photos/thumb/shoujotachi-yo.jpg" alt="L BNK48 Shoujotachi yo Profile"
+                                    width="172" height="215" loading="lazy" decoding="async">
+                                <span class="gallery-tile-label">Shoujotachi yo</span>
+                            </button>
+                            <button type="button" class="gallery-tile" data-category="profile" data-label="Iiwake Maybe"
+                                data-cat-label="Profile" data-full="assets/photos/full/iiwake-maybe.jpg">
+                                <img src="assets/photos/thumb/iiwake-maybe.jpg" alt="L BNK48 Iiwake Maybe Profile"
+                                    width="172" height="215" loading="lazy" decoding="async">
+                                <span class="gallery-tile-label">Iiwake Maybe</span>
+                            </button>
+                            <button type="button" class="gallery-tile" data-category="profile" data-label="สัญญานะ"
+                                data-cat-label="Profile" data-full="assets/photos/full/sanyana.jpg">
+                                <img src="assets/photos/thumb/sanyana.jpg" alt="L BNK48 สัญญานะ Profile" width="172"
+                                    height="215" loading="lazy" decoding="async">
+                                <span class="gallery-tile-label">สัญญานะ</span>
+                            </button>
+                            <button type="button" class="gallery-tile" data-category="profile"
+                                data-label="Gingham Check" data-cat-label="Profile"
+                                data-full="assets/photos/full/gingham-check.jpg">
+                                <img src="assets/photos/thumb/gingham-check.jpg" alt="L BNK48 Gingham Check Profile"
+                                    width="172" height="215" loading="lazy" decoding="async">
+                                <span class="gallery-tile-label">Gingham Check</span>
+                            </button>
+                            <button type="button" class="gallery-tile" data-category="profile"
+                                data-label="Kibouteki Refrain" data-cat-label="Profile"
+                                data-full="assets/photos/full/kibouteki-refrain.jpg">
+                                <img src="assets/photos/thumb/kibouteki-refrain.jpg"
+                                    alt="L BNK48 Kibouteki Refrain Profile" width="172" height="215" loading="lazy"
+                                    decoding="async">
+                                <span class="gallery-tile-label">Kibouteki Refrain</span>
+                            </button>
+                            <button type="button" class="gallery-tile" data-category="profile" data-label="Kiss Me!"
+                                data-cat-label="Profile" data-full="assets/photos/full/kiss-me.jpg">
+                                <img src="assets/photos/thumb/kiss-me.jpg" alt="L BNK48 Kiss Me! Profile" width="172"
+                                    height="215" loading="lazy" decoding="async">
+                                <span class="gallery-tile-label">Kiss Me!</span>
+                            </button>
+                            <button type="button" class="gallery-tile" data-category="profile" data-label="BORDERLESS"
+                                data-cat-label="Profile" data-full="assets/photos/full/borderless.jpg">
+                                <img src="assets/photos/thumb/borderless.jpg" alt="L BNK48 BORDERLESS Profile"
+                                    width="172" height="215" loading="lazy" decoding="async">
+                                <span class="gallery-tile-label">BORDERLESS</span>
+                            </button>
+                            <button type="button" class="gallery-tile" data-category="profile" data-label="#Sukinanda"
+                                data-cat-label="Profile" data-full="assets/photos/full/sukinanda.jpg">
+                                <img src="assets/photos/thumb/sukinanda.jpg" alt="L BNK48 #Sukinanda Profile"
+                                    width="172" height="215" loading="lazy" decoding="async">
+                                <span class="gallery-tile-label">#Sukinanda</span>
+                            </button>
+                            <button type="button" class="gallery-tile" data-category="profile" data-label="Green Flash"
+                                data-cat-label="Profile" data-full="assets/photos/full/green-flash.jpg">
+                                <img src="assets/photos/thumb/green-flash.jpg" alt="L BNK48 Green Flash Profile"
+                                    width="172" height="215" loading="lazy" decoding="async">
+                                <span class="gallery-tile-label">Green Flash</span>
+                            </button>
+                            <button type="button" class="gallery-tile" data-category="profile"
+                                data-label="Colorcon Wink" data-cat-label="Profile"
+                                data-full="assets/photos/full/colorcon-wink.jpg">
+                                <img src="assets/photos/thumb/colorcon-wink.jpg" alt="L BNK48 Colorcon Wink Profile"
+                                    width="172" height="215" loading="lazy" decoding="async">
+                                <span class="gallery-tile-label">Colorcon Wink</span>
+                            </button>
+                            <button type="button" class="gallery-tile" data-category="profile"
+                                data-label="Masaka no Confession" data-cat-label="Profile"
+                                data-full="assets/photos/full/masaka-no-confession.jpg">
+                                <img src="assets/photos/thumb/masaka-no-confession.jpg"
+                                    alt="L BNK48 Masaka no Confession Profile" width="172" height="215" loading="lazy"
+                                    decoding="async">
+                                <span class="gallery-tile-label">Masaka no Confession</span>
+                            </button>
+                            <button type="button" class="gallery-tile" data-category="profile"
+                                data-label="12-Gatsu no Kangaroo" data-cat-label="Profile"
+                                data-full="assets/photos/full/12-gatsu-no-kangaroo.jpg">
+                                <img src="assets/photos/thumb/12-gatsu-no-kangaroo.jpg"
+                                    alt="L BNK48 12-Gatsu no Kangaroo Profile" width="172" height="215" loading="lazy"
+                                    decoding="async">
+                                <span class="gallery-tile-label">12-Gatsu no Kangaroo</span>
+                            </button>
+                            <button type="button" class="gallery-tile" data-category="profile"
+                                data-label="Ponytail to Shushu" data-cat-label="Profile"
+                                data-full="assets/photos/full/ponytail-to-shushu.jpg">
+                                <img src="assets/photos/thumb/ponytail-to-shushu.jpg"
+                                    alt="L BNK48 Ponytail to Shushu Profile" width="172" height="215" loading="lazy"
+                                    decoding="async">
+                                <span class="gallery-tile-label">Ponytail to Shushu</span>
+                            </button>
+                            <button type="button" class="gallery-tile" data-category="profile"
+                                data-label="Kimi to Doko ka e Ikitai" data-cat-label="Profile"
+                                data-full="assets/photos/full/kimi-to-doko-ka-e-ikitai.jpg">
+                                <img src="assets/photos/thumb/kimi-to-doko-ka-e-ikitai.jpg"
+                                    alt="L BNK48 Kimi to Doko ka e Ikitai Profile" width="172" height="215"
+                                    loading="lazy" decoding="async">
+                                <span class="gallery-tile-label">Kimi to Doko ka e Ikitai</span>
+                            </button>
+
+                            <button type="button" class="gallery-tile" data-category="theatre" data-label="Trainee"
+                                data-cat-label="Theatre" data-full="assets/photos/full/trainee.jpg">
+                                <img src="assets/photos/thumb/trainee.jpg" alt="L BNK48 Trainee Theatre Portrait"
+                                    width="172" height="215" loading="lazy" decoding="async">
+                                <span class="gallery-tile-label">Trainee</span>
+                            </button>
+                            <button type="button" class="gallery-tile" data-category="theatre" data-label="Team NV"
+                                data-cat-label="Theatre" data-full="assets/photos/full/nv.jpg">
+                                <img src="assets/photos/thumb/nv.jpg" alt="L BNK48 Team NV Theatre Portrait" width="172"
+                                    height="215" loading="lazy" decoding="async">
+                                <span class="gallery-tile-label">Team NV</span>
+                            </button>
+
+                            <button type="button" class="gallery-tile" data-category="ge-poster" data-label="GE4 Poster"
+                                data-cat-label="GE Poster" data-full="assets/photos/full/ge4-poster.jpg">
+                                <img src="assets/photos/thumb/ge4-poster.jpg" alt="L BNK48 GE4 Poster" width="172"
+                                    height="215" loading="lazy" decoding="async">
+                                <span class="gallery-tile-label">GE4 Poster</span>
+                            </button>
+                            <button type="button" class="gallery-tile" data-category="ge-poster" data-label="GE5 Poster"
+                                data-cat-label="GE Poster" data-full="assets/photos/full/ge5-poster.jpg">
+                                <img src="assets/photos/thumb/ge5-poster.jpg" alt="L BNK48 GE5 Poster" width="172"
+                                    height="215" loading="lazy" decoding="async">
+                                <span class="gallery-tile-label">GE5 Poster</span>
+                            </button>
+                            <button type="button" class="gallery-tile" data-category="ge-poster" data-label="GE6 Poster"
+                                data-cat-label="GE Poster" data-full="assets/photos/full/ge6-poster.jpg">
+                                <img src="assets/photos/thumb/ge6-poster.jpg" alt="L BNK48 GE6 Poster" width="172"
+                                    height="215" loading="lazy" decoding="async">
+                                <span class="gallery-tile-label">GE6 Poster</span>
+                            </button>
+                        </div>
+
+                        <button type="button" class="gallery-nav-btn right" id="gallery-next"
+                            aria-label="Scroll gallery right">
+                            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- ============ SISASTERTEAM FANBASE ============ -->
         <section id="fanbase">
             <div class="container">
@@ -892,204 +1066,6 @@
                 </div>
             </div>
         </section>
-
-        <!-- ============ COMPACT PHOTO GALLERY ============ -->
-        <section id="gallery">
-            <div class="container">
-                <div class="surface-card surface-card-gallery reveal">
-                    <div class="gallery-bar">
-                        <div class="gallery-bar-title">
-                            <h2>Gallery</h2>
-                            <span class="gallery-count" id="gallery-count">20 รูป</span>
-                        </div>
-                        <div class="gallery-tabs" role="tablist" aria-label="Filter gallery photos">
-                            <button type="button" class="gallery-tab active" data-gallery-filter="all"
-                                role="tab" aria-selected="true">ทั้งหมด (20)</button>
-                            <button type="button" class="gallery-tab" data-gallery-filter="profile"
-                                role="tab" aria-selected="false">Profile (15)</button>
-                            <button type="button" class="gallery-tab" data-gallery-filter="ge-poster"
-                                role="tab" aria-selected="false">GE Poster (3)</button>
-                            <button type="button" class="gallery-tab" data-gallery-filter="theatre"
-                                role="tab" aria-selected="false">Theatre (2)</button>
-                        </div>
-                    </div>
-
-                    <div class="gallery-strip-wrap">
-                        <button type="button" class="gallery-nav-btn left" id="gallery-prev"
-                            aria-label="Scroll gallery left">
-                            <i class="fas fa-chevron-left" aria-hidden="true"></i>
-                        </button>
-
-                        <div class="gallery-strip" id="gallery-strip" aria-label="L BNK48 photo gallery">
-                            <button type="button" class="gallery-tile" data-category="ge-poster"
-                                data-label="GE6 Poster" data-cat-label="GE Poster"
-                                data-full="assets/gallery/GE%20Poster/GE6%20Poster.png">
-                                <img src="assets/gallery/GE%20Poster/GE6%20Poster.png" alt="L BNK48 GE6 Poster"
-                                    width="172" height="215" loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">GE6 Poster</span>
-                            </button>
-                            <button type="button" class="gallery-tile" data-category="ge-poster"
-                                data-label="GE5 Poster" data-cat-label="GE Poster"
-                                data-full="assets/gallery/GE%20Poster/GE5%20Poster.png">
-                                <img src="assets/gallery/GE%20Poster/GE5%20Poster.png" alt="L BNK48 GE5 Poster"
-                                    width="172" height="215" loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">GE5 Poster</span>
-                            </button>
-                            <button type="button" class="gallery-tile" data-category="ge-poster"
-                                data-label="GE4 Poster" data-cat-label="GE Poster"
-                                data-full="assets/gallery/GE%20Poster/GE4%20Poster.png">
-                                <img src="assets/gallery/GE%20Poster/GE4%20Poster.png" alt="L BNK48 GE4 Poster"
-                                    width="172" height="215" loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">GE4 Poster</span>
-                            </button>
-
-                            <button type="button" class="gallery-tile" data-category="profile"
-                                data-label="Kimi to Doko ka e Ikitai" data-cat-label="Profile"
-                                data-full="assets/gallery/Profile/Kimi%20to%20Doko%20ka%20e%20Ikitai.png">
-                                <img src="assets/gallery/Profile/Kimi%20to%20Doko%20ka%20e%20Ikitai.png"
-                                    alt="L BNK48 Kimi to Doko ka e Ikitai Profile" width="172" height="215"
-                                    loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">Kimi to Doko ka e Ikitai</span>
-                            </button>
-                            <button type="button" class="gallery-tile" data-category="profile"
-                                data-label="Ponytail to Shushu" data-cat-label="Profile"
-                                data-full="assets/gallery/Profile/Ponytail%20to%20Shushu.png">
-                                <img src="assets/gallery/Profile/Ponytail%20to%20Shushu.png"
-                                    alt="L BNK48 Ponytail to Shushu Profile" width="172" height="215"
-                                    loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">Ponytail to Shushu</span>
-                            </button>
-                            <button type="button" class="gallery-tile" data-category="profile"
-                                data-label="12-Gatsu no Kangaroo" data-cat-label="Profile"
-                                data-full="assets/gallery/Profile/12-Gatsu%20no%20Kangaroo.png">
-                                <img src="assets/gallery/Profile/12-Gatsu%20no%20Kangaroo.png"
-                                    alt="L BNK48 12-Gatsu no Kangaroo Profile" width="172" height="215"
-                                    loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">12-Gatsu no Kangaroo</span>
-                            </button>
-                            <button type="button" class="gallery-tile" data-category="profile"
-                                data-label="Masaka no Confession" data-cat-label="Profile"
-                                data-full="assets/gallery/Profile/Masaka%20no%20Confession.png">
-                                <img src="assets/gallery/Profile/Masaka%20no%20Confession.png"
-                                    alt="L BNK48 Masaka no Confession Profile" width="172" height="215"
-                                    loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">Masaka no Confession</span>
-                            </button>
-                            <button type="button" class="gallery-tile" data-category="profile"
-                                data-label="Colorcon Wink" data-cat-label="Profile"
-                                data-full="assets/gallery/Profile/Colorcon%20Wink.png">
-                                <img src="assets/gallery/Profile/Colorcon%20Wink.png"
-                                    alt="L BNK48 Colorcon Wink Profile" width="172" height="215"
-                                    loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">Colorcon Wink</span>
-                            </button>
-                            <button type="button" class="gallery-tile" data-category="profile"
-                                data-label="Green Flash" data-cat-label="Profile"
-                                data-full="assets/gallery/Profile/Green%20Flash.png">
-                                <img src="assets/gallery/Profile/Green%20Flash.png"
-                                    alt="L BNK48 Green Flash Profile" width="172" height="215"
-                                    loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">Green Flash</span>
-                            </button>
-                            <button type="button" class="gallery-tile" data-category="profile"
-                                data-label="#Sukinanda" data-cat-label="Profile"
-                                data-full="assets/gallery/Profile/%23Sukinanda.png">
-                                <img src="assets/gallery/Profile/%23Sukinanda.png"
-                                    alt="L BNK48 #Sukinanda Profile" width="172" height="215"
-                                    loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">#Sukinanda</span>
-                            </button>
-                            <button type="button" class="gallery-tile" data-category="profile"
-                                data-label="BORDERLESS" data-cat-label="Profile"
-                                data-full="assets/gallery/Profile/BORDERLESS.png">
-                                <img src="assets/gallery/Profile/BORDERLESS.png"
-                                    alt="L BNK48 BORDERLESS Profile" width="172" height="215"
-                                    loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">BORDERLESS</span>
-                            </button>
-                            <button type="button" class="gallery-tile" data-category="profile"
-                                data-label="Kiss Me!" data-cat-label="Profile"
-                                data-full="assets/gallery/Profile/Kiss%20Me!.png">
-                                <img src="assets/gallery/Profile/Kiss%20Me!.png"
-                                    alt="L BNK48 Kiss Me! Profile" width="172" height="215"
-                                    loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">Kiss Me!</span>
-                            </button>
-                            <button type="button" class="gallery-tile" data-category="profile"
-                                data-label="Kibouteki Refrain" data-cat-label="Profile"
-                                data-full="assets/gallery/Profile/Kibouteki%20Refrain.png">
-                                <img src="assets/gallery/Profile/Kibouteki%20Refrain.png"
-                                    alt="L BNK48 Kibouteki Refrain Profile" width="172" height="215"
-                                    loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">Kibouteki Refrain</span>
-                            </button>
-                            <button type="button" class="gallery-tile" data-category="profile"
-                                data-label="Gingham Check" data-cat-label="Profile"
-                                data-full="assets/gallery/Profile/Gingham%20Check.png">
-                                <img src="assets/gallery/Profile/Gingham%20Check.png"
-                                    alt="L BNK48 Gingham Check Profile" width="172" height="215"
-                                    loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">Gingham Check</span>
-                            </button>
-                            <button type="button" class="gallery-tile" data-category="profile"
-                                data-label="สัญญานะ" data-cat-label="Profile"
-                                data-full="assets/gallery/Profile/สัญญานะ.png">
-                                <img src="assets/gallery/Profile/สัญญานะ.png"
-                                    alt="L BNK48 สัญญานะ Profile" width="172" height="215"
-                                    loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">สัญญานะ</span>
-                            </button>
-                            <button type="button" class="gallery-tile" data-category="profile"
-                                data-label="Iiwake Maybe" data-cat-label="Profile"
-                                data-full="assets/gallery/Profile/Iiwake%20Maybe.png">
-                                <img src="assets/gallery/Profile/Iiwake%20Maybe.png"
-                                    alt="L BNK48 Iiwake Maybe Profile" width="172" height="215"
-                                    loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">Iiwake Maybe</span>
-                            </button>
-                            <button type="button" class="gallery-tile" data-category="profile"
-                                data-label="Shoujotachi yo" data-cat-label="Profile"
-                                data-full="assets/gallery/Profile/Shoujotachi%20yo.png">
-                                <img src="assets/gallery/Profile/Shoujotachi%20yo.png"
-                                    alt="L BNK48 Shoujotachi yo Profile" width="172" height="215"
-                                    loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">Shoujotachi yo</span>
-                            </button>
-                            <button type="button" class="gallery-tile" data-category="profile"
-                                data-label="Debut" data-cat-label="Profile"
-                                data-full="assets/gallery/Profile/Debut.png">
-                                <img src="assets/gallery/Profile/Debut.png"
-                                    alt="L BNK48 4th Generation Debut Profile" width="172" height="215"
-                                    loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">Debut</span>
-                            </button>
-
-                            <button type="button" class="gallery-tile" data-category="theatre"
-                                data-label="Team NV" data-cat-label="Theatre"
-                                data-full="assets/gallery/Theatre/NV.png">
-                                <img src="assets/gallery/Theatre/NV.png"
-                                    alt="L BNK48 Team NV Theatre Portrait" width="172" height="215"
-                                    loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">Team NV</span>
-                            </button>
-                            <button type="button" class="gallery-tile" data-category="theatre"
-                                data-label="Trainee" data-cat-label="Theatre"
-                                data-full="assets/gallery/Theatre/Trainee.png">
-                                <img src="assets/gallery/Theatre/Trainee.png"
-                                    alt="L BNK48 Trainee Theatre Portrait" width="172" height="215"
-                                    loading="lazy" decoding="async">
-                                <span class="gallery-tile-label">Trainee</span>
-                            </button>
-                        </div>
-
-                        <button type="button" class="gallery-nav-btn right" id="gallery-next"
-                            aria-label="Scroll gallery right">
-                            <i class="fas fa-chevron-right" aria-hidden="true"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
     </main>
 
     <dialog id="gallery-lightbox" class="gallery-lightbox" closedby="any" aria-labelledby="lightbox-title">
@@ -1127,8 +1103,8 @@
                 <a href="#ge6">GE6</a>
                 <a href="#highlights">Highlights</a>
                 <a href="#l-channels">Socials</a>
-                <a href="#fanbase">Sisasterteam</a>
                 <a href="#gallery">Gallery</a>
+                <a href="#fanbase">Sisasterteam</a>
             </div>
             <p class="footer-meta">
                 Fan-made website for Sirikorn Nilkasap (L BNK48) · Not affiliated with BNK48 or iAM
